@@ -51,7 +51,8 @@ PANELS.modal_dialog = (app: App): Panel => {
     box.className = `dialog speaker-${speaker}`;
     clear(who);
     const nm = speaker === 'narrator' ? '' : speaker === 'player' ? st.player.name : t(`npc.${speaker}.name`);
-    who.append(h('span', {}, nm), h('span', { class: 'scene' }, t(cur.scene.title)));
+    who.append(h('span', {}, nm), h('span', { class: 'scene' }, t(cur.scene.title),
+      app.voice.available ? h('button', { class: 'voicebtn', title: t('ui.voice.replay'), 'aria-label': t('ui.voice.replay'), onclick: () => app.voice.speak(full, speaker) }, '🔊') : null));
     if (speaker !== 'agora') {
       const c = portraitCv.getContext('2d')!;
       c.imageSmoothingEnabled = false;
@@ -59,6 +60,7 @@ PANELS.modal_dialog = (app: App): Panel => {
       c.drawImage(portrait(speaker, st.player.classId), 0, 0);
     }
     full = t(cur.node.text);
+    if (app.settings.voiceDialogs) app.voice.speak(full, speaker === 'player' ? 'player' : speaker);
     shown = app.settings.reduceFlicker ? full.length : 0;
     typing = shown < full.length;
     text.textContent = full.slice(0, shown);
@@ -94,6 +96,7 @@ PANELS.modal_dialog = (app: App): Panel => {
   const p = {
     el: box,
     refresh: render,
+    onClose: () => app.voice.stop(),
     tick: (now: number) => {
       if (typing && now - lastT > 16) {
         lastT = now;

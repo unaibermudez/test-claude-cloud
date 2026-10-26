@@ -30,6 +30,8 @@ import { Input, DIR_OF, type CommandEvent } from '../input/input';
 import { Hud } from '../ui/hud';
 import { h, clear, type Panel } from '../ui/dom';
 import { HubScene } from '../render/hub';
+import { RealTime, TICK_MS } from './realtime';
+import { VoiceEngine } from '../audio/voice';
 import { toggleFullscreen } from '../platform/fullscreen';
 
 export type ScreenId = 'boot' | 'warning' | 'title' | 'intro' | 'create' | 'hub' | 'run' | 'over' | 'credits';
@@ -80,6 +82,9 @@ export class App {
   private tutorialTurn = -1;
   private raf = 0;
   e2e = false;
+  rt: RealTime;
+  voice = new VoiceEngine();
+  private lastFrame = 0;
 
   constructor() {
     this.settings = loadSettings();
@@ -89,6 +94,17 @@ export class App {
     const canvas = document.getElementById('world') as HTMLCanvasElement;
     this.world = new WorldRenderer(canvas);
     this.hub = new HubScene(this.world);
+    this.rt = new RealTime(this);
+    this.voice.onState = (on) => { this.audio.duck(on); this.hud.setSpeaking(on); };
+    this.hud.handlers = {
+      onQuick: (i) => { if (this.screen === 'run' && !this.stack.length) this.quickUse(i === 9 ? 0 : i + 1); },
+      onSlot: (which) => {
+        if (this.screen !== 'run' || this.stack.length || !this.run) return;
+        if (which === 'active') this.act({ t: 'active' });
+        else if (which === 'ranged') { if (!(this.realtime && this.rt.fireNearest())) this.startTargeting('fire'); }
+        else this.open('inventory');
+      },
+    };
     this.input = new Input(this.settings.binds);
     this.input.handler = (e) => this.onCommand(e);
     this.audio.onSubtitle = (key) => { if (this.settings.subtitles && this.screen === 'run') this.hud.subtitle(t(key)); };
@@ -102,6 +118,11 @@ export class App {
     this.bindMouse(canvas);
     const saved = deserializeRun(load(KEYS.run));
     if (saved && !saved.over) this.run = saved;
+  }
+
+  /** ¿Se juega en tiempo real ahora mismo? */
+  get realtime(): boolean {
+    return this.settings.timeMode === 'realtime' && this.screen === 'run';
   }
 
   // ------------------------------------------------------------------ ajustes
@@ -121,9 +142,14 @@ export class App {
     for (const c of ['cb-deuter', 'cb-protan', 'cb-tritan']) b.remove(c);
     if (s.colorblind !== 'none') b.add(`cb-${s.colorblind}`);
     setLockPalette(s.colorblind);
-    this.world.setOpts({ shake: s.reduceShake ? 0 : 1, flicker: !s.reduceFlicker, glitch: !s.reduceGlitch, highContrast: s.highContrast, zoom: s.pixelScale, particles: s.reduceFlicker ? 0.6 : 1 });
+    this.world.setOpts({ shake: s.reduceShake ? 0 : 1, flicker: !s.reduceFlicker, glitch: !s.reduceGlitch, highContrast: s.highContrast, zoom: s.pixelScale, particles: s.reduceFlicker ? 0.6 : 1, tweenMs: s.timeMode === 'realtime' ? Math.round((TICK_MS[s.rtSpeed] ?? 300) * 0.95) : 110 });
     this.hud.glitch = !s.reduceGlitch;
     this.audio.setVolumes({ master: s.master, music: s.music, sfx: s.sfx, muted: s.muted });
+    this.voice.enabled = s.voice && !s.muted;
+    this.voice.volume = s.voiceVolume * s.master;
+    this.voice.rate = s.voiceRate;
+    this.voice.lang = s.lang;
+    if (!this.voice.enabled) this.voice.stop();
     this.input.setBinds(s.binds);
   }
 
@@ -181,6 +207,7 @@ export class App {
   }
 
   toScreen(s: ScreenId, arg?: unknown): void {
+    if (s !== this.screen) this.voice.stop();
     this.screen = s;
     this.targeting = null;
     this.travel = null;
@@ -226,9 +253,19 @@ export class App {
   // ------------------------------------------------------------------ bucle
 
   private frame(now: number): void {
+    const dt = Math.min(100, now - (this.lastFrame || now));
+    this.lastFrame = now;
     this.input.pollPad(now);
+    const rtNow = this.realtime && !this.stack.length && !this.targeting;
+    if (document.body.classList.contains('rt') !== rtNow) document.body.classList.toggle('rt', rtNow);
     if (this.screen === 'run' && this.run) {
       const ov: Overlay = {};
+      if (this.realtime) {
+        this.rt.update(dt);
+        if (!this.run) return;
+        ov.playerPos = { x: this.rt.px, y: this.rt.py };
+        if (!this.targeting && this.rt.aim && !this.stack.length) ov.crosshair = this.rt.aim;
+      }
       if (this.targeting) {
         const tg = this.targeting;
         const p = getPlayer(this.run);
@@ -239,12 +276,14 @@ export class App {
           ov.path = line(p.x, p.y, tg.x, tg.y).slice(1);
           ov.valid = chebyshev(p.x, p.y, tg.x, tg.y) <= tg.range;
         }
-      } else if (this.hover) ov.cursor = this.hover;
+      } else if (this.hover && !this.realtime) ov.cursor = this.hover;
       this.world.render(this.run, now, ov);
       this.hud.drawAgora(this.run, now);
+      this.updatePrompt(this.run);
       this.tickTravel(now);
       if (this.dirty && now - this.lastSave > 1200) this.flushSave();
     } else if (this.screen === 'hub' || this.screen === 'title' || this.screen === 'create' || this.screen === 'credits') {
+      if (this.screen === 'hub' && !this.stack.length) this.hub.update(this, dt);
       this.hub.render(now, this.screen !== 'hub');
     } else {
       const c = this.world.c;
@@ -335,6 +374,9 @@ export class App {
           const text = t(e.key, e.p ?? {});
           this.hud.push(text, e.tone ?? 'info', st.turn);
           if (e.tone === 'danger' || e.tone === 'agora' || e.tone === 'lore' || e.tone === 'radio') this.announce(text);
+          if ((e.tone === 'agora' || e.tone === 'radio') && this.settings.voiceMessages && !st.modal && !this.voice.speaking) {
+            this.voice.speak(text.replace(/^ÁGORA( \([^)]*\))?:\s*/, ''), e.tone === 'agora' ? 'agora' : 'radio', false);
+          }
           if (e.tone === 'danger' || e.tone === 'warn') interrupt = true;
           break;
         }
@@ -362,6 +404,7 @@ export class App {
         case 'achievement': this.toast(t('ui.achievement'), t(`ach.${e.id}.name`)); break;
         case 'log': {
           const known = this.meta.logs.includes(e.id);
+          if (this.settings.voiceLogs && !known) this.voice.speak(`${t(`log.${e.id}.title`)}. ${t(`log.${e.id}.body`)}`, 'log');
           this.toast(t(known ? 'ui.log.again' : 'ui.log.new'), t(`log.${e.id}.title`));
           if (!this.seenTutorials.has('log')) this.tutorial('tut.log');
           break;
@@ -419,6 +462,7 @@ export class App {
 
   private onOver(): void {
     const st = this.run!;
+    this.voice.stop();
     remove(KEYS.run);
     const playMs = performance.now() - this.runStartMs;
     const res = finishRun(this.meta, st, playMs);
@@ -484,14 +528,19 @@ export class App {
     const dir = DIR_OF[e.cmd];
     if (dir !== undefined) {
       this.travel = null;
+      if (this.realtime) {
+        // en tiempo real el movimiento sale de las teclas mantenidas; Mayús + dirección empuja
+        if (e.shift && !e.repeat) { this.act({ t: 'shove', dir }); this.rt.act(); }
+        return true;
+      }
       if (e.shift) this.act({ t: 'shove', dir });
       else this.act({ t: 'move', dir });
       return true;
     }
     switch (e.cmd) {
-      case 'wait': this.act({ t: 'wait' }); return true;
+      case 'wait': this.act({ t: 'wait' }); if (this.realtime) this.rt.act(); return true;
       case 'interact': this.interact(); return true;
-      case 'fire': this.startTargeting('fire'); return true;
+      case 'fire': if (!(this.realtime && this.rt.fireNearest())) this.startTargeting('fire'); return true;
       case 'throw': this.open('inventory', { filter: 'gadget' }); return true;
       case 'pickup': this.act({ t: 'pickup' }); return true;
       case 'sneak': this.act({ t: 'toggleSneak' }); return true;
@@ -694,6 +743,25 @@ export class App {
     return parts.join(' · ');
   }
 
+  /** Aviso flotante sobre el personaje: con qué se puede interactuar o qué se puede recoger. */
+  private updatePrompt(st: RunState): void {
+    if (this.stack.length || st.modal || this.targeting) { this.hud.setPrompt(null); return; }
+    const p = getPlayer(st);
+    let text: string | null = null;
+    const prop = interactTarget(st);
+    if (prop) {
+      const nm = prop.kind === 'npc' && prop.npc ? t(`npc.${prop.npc}.name`) : prop.kind === 'decor' ? t(`ui.decor.${prop.label}`) : t(`ui.prop.${prop.kind}`);
+      const more = interactCandidates(st).length > 1 ? ' …' : '';
+      text = `${this.input.label('interact')} · ${nm}${more}`;
+    } else if (st.items.some((it) => it.x === p.x && it.y === p.y)) {
+      text = `${this.input.label('pickup')} · ${t('ui.prompt.pickup')}`;
+    }
+    if (!text) { this.hud.setPrompt(null); return; }
+    const pos = this.realtime ? { x: this.rt.px, y: this.rt.py } : { x: p.x + 0.5, y: p.y + 0.5 };
+    const sc = this.world.worldToScreen(pos.x, pos.y - 1.15);
+    this.hud.setPrompt(text, sc.x, sc.y);
+  }
+
   updateHint(): void {
     const st = this.run;
     if (!st || this.screen !== 'run') return;
@@ -703,16 +771,14 @@ export class App {
       this.hud.setHint(`${t(k)} · ${this.describe(tg.x, tg.y)}`);
       return;
     }
-    const prop = interactTarget(st);
-    if (prop) {
-      const nm = prop.kind === 'npc' && prop.npc ? t(`npc.${prop.npc}.name`) : prop.kind === 'decor' ? t(`ui.decor.${prop.label}`) : t(`ui.prop.${prop.kind}`);
-      this.hud.setHint(t('ui.hint.interact', { k: this.input.label('interact'), what: nm }));
-      return;
+    // lo que hay bajo el puntero (las acciones posibles se muestran junto al personaje)
+    if (this.hover && !this.realtime) { this.hud.setHint(this.describe(this.hover.x, this.hover.y)); return; }
+    if (this.hover && this.realtime && this.rt.aim) {
+      const tx = Math.floor(this.rt.aim.x); const ty = Math.floor(this.rt.aim.y);
+      const v = getVision(st);
+      const a = actorAt(st, tx, ty);
+      if (a && a.id !== st.pid && v.seenActors.has(a.id)) { this.hud.setHint(this.describe(tx, ty)); return; }
     }
-    const p = getPlayer(st);
-    const here = st.items.filter((it) => it.x === p.x && it.y === p.y);
-    if (here.length) { this.hud.setHint(t('ui.hint.pickup', { k: this.input.label('pickup') })); return; }
-    if (this.hover) { this.hud.setHint(this.describe(this.hover.x, this.hover.y)); return; }
     this.hud.setHint(null);
   }
 
@@ -724,9 +790,10 @@ export class App {
       const tl = this.world.screenToTile(e.clientX, e.clientY);
       if (this.targeting) { this.targeting.x = tl.x; this.targeting.y = tl.y; }
       else this.hover = tl;
+      if (this.realtime) this.rt.aim = this.world.screenToWorld(e.clientX, e.clientY);
       this.updateHint();
     });
-    canvas.addEventListener('mouseleave', () => { this.hover = null; this.updateHint(); });
+    canvas.addEventListener('mouseleave', () => { this.hover = null; this.rt.aim = null; this.updateHint(); });
     canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       if (this.screen !== 'run' || !this.run) return;
@@ -743,6 +810,14 @@ export class App {
       if (this.targeting) { this.targeting.x = tl.x; this.targeting.y = tl.y; this.confirmTarget(); return; }
       const p = getPlayer(st);
       const dx = tl.x - p.x; const dy = tl.y - p.y;
+      if (this.realtime) {
+        // clic sobre un objeto adyacente: usarlo; si no, atacar hacia el punto de mira
+        const c = interactCandidates(st).find((q) => q.prop.x === tl.x && q.prop.y === tl.y);
+        if (c && !actorAt(st, tl.x, tl.y)) { this.act(c.dir >= 0 ? { t: 'interact', dir: c.dir } : { t: 'interact' }); return; }
+        const w = this.world.screenToWorld(e.clientX, e.clientY);
+        this.rt.attackToward(w.x, w.y);
+        return;
+      }
       const v = getVision(st);
       const target = actorAt(st, tl.x, tl.y);
       if (target && target.faction === 'enemy' && v.seenActors.has(target.id) && chebyshev(dx, dy, 0, 0) > 1 && (e.shiftKey || st.player.ranged)) {

@@ -24,7 +24,7 @@ PANELS.options = (app: App, arg?: unknown): Panel => {
     rows.push({ el, adjust, activate });
     shell.body.append(el);
   };
-  const slider = (key: 'master' | 'music' | 'sfx'): void => {
+  const slider = (key: 'master' | 'music' | 'sfx' | 'voiceVolume'): void => {
     const inp = h('input', { type: 'range', min: 0, max: 100, value: Math.round(s[key] * 100) }) as HTMLInputElement;
     inp.addEventListener('input', () => { s[key] = Number(inp.value) / 100; apply(); });
     row(t(`ui.opt.${key}`), inp, undefined, (d) => { s[key] = Math.max(0, Math.min(1, Math.round((s[key] + d * 0.1) * 10) / 10)); inp.value = String(Math.round(s[key] * 100)); apply(); });
@@ -52,6 +52,14 @@ PANELS.options = (app: App, arg?: unknown): Panel => {
       slider('master'); slider('music'); slider('sfx');
       toggle('muted', false); toggle('subtitles');
       choice(t('ui.opt.lang'), LANGS as Lang[], () => s.lang, (v) => { s.lang = v; }, (v) => (v === 'es' ? 'Español' : 'English'));
+      shell.body.append(h('h3', { style: 'margin:12px 0 4px' }, t('ui.opt.voices')));
+      if (!app.voice.available) shell.body.append(h('p', { class: 'warn' }, t('ui.opt.voice_none')));
+      else shell.body.append(h('p', { class: 'dim' }, t('ui.opt.voice_count', { n: app.voice.count() })));
+      toggle('voice'); slider('voiceVolume');
+      choice(t('ui.opt.voiceRate'), ['0.8', '0.9', '1', '1.15', '1.3'], () => String(s.voiceRate), (v) => { s.voiceRate = Number(v); }, (v) => `×${v}`);
+      toggle('voiceDialogs'); toggle('voiceLogs'); toggle('voiceMessages');
+      const test = h('button', { class: 'btn', onclick: () => { app.voice.enabled = true; app.voice.speak(t('ui.opt.voice_sample'), 'agora'); app.applySettings(); } }, `🔊 ${t('ui.opt.voice_test')}`);
+      row(t('ui.opt.voice_test'), test, undefined, undefined, () => test.click());
     } else if (tab === 'access') {
       choice(t('ui.opt.textSize'), ['s', 'm', 'l', 'xl'] as TextSize[], () => s.textSize, (v) => { s.textSize = v; }, (v) => t(`ui.opt.size.${v}`));
       toggle('highContrast');
@@ -62,6 +70,9 @@ PANELS.options = (app: App, arg?: unknown): Panel => {
       const fsBtn = h('button', { class: 'btn', onclick: () => toggleFullscreen() }, t(document.fullscreenElement ? 'ui.opt.fullscreen_off' : 'ui.opt.fullscreen_on'));
       row(t('ui.opt.fullscreen'), fsBtn, t('ui.opt.fullscreen.desc'), undefined, () => fsBtn.click());
     } else if (tab === 'game') {
+      choice(t('ui.opt.timeMode'), ['realtime', 'turns'] as Settings['timeMode'][], () => s.timeMode, (v) => { s.timeMode = v; }, (v) => t(`ui.opt.time.${v}`));
+      choice(t('ui.opt.rtSpeed'), ['slow', 'normal', 'fast'] as Settings['rtSpeed'][], () => s.rtSpeed, (v) => { s.rtSpeed = v; }, (v) => t(`ui.opt.speed.${v}`));
+      shell.body.append(h('p', { class: 'dim' }, t('ui.opt.time_note')));
       shell.body.append(h('p', { class: 'dim' }, t('ui.opt.game_note')));
       toggle('generousO2'); toggle('assistHack'); toggle('skipHack'); toggle('dullEnemies'); toggle('longOrbit');
     } else if (tab === 'controls') {

@@ -31,73 +31,122 @@ function cellRand(x: number, y: number, salt = 0): () => number {
   return vrand((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791));
 }
 
+/** Ruido de valor suave en coordenadas de píxel del mundo (no alineado con las casillas). */
+function hash2(x: number, y: number, salt: number): number {
+  let h = (x * 374761393 + y * 668265263 + salt * 1442695041) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+function smoothNoise(wx: number, wy: number, cell: number, salt: number): number {
+  const gx = wx / cell; const gy = wy / cell;
+  const x0 = Math.floor(gx); const y0 = Math.floor(gy);
+  const fx = gx - x0; const fy = gy - y0;
+  const sx = fx * fx * (3 - 2 * fx); const sy = fy * fy * (3 - 2 * fy);
+  const a = hash2(x0, y0, salt); const b = hash2(x0 + 1, y0, salt);
+  const c = hash2(x0, y0 + 1, salt); const d = hash2(x0 + 1, y0 + 1, salt);
+  return (a * (1 - sx) + b * sx) * (1 - sy) + (c * (1 - sx) + d * sx) * sy;
+}
+
+/** Suelo continuo: textura por bloques de 4 px con ruido suave y juntas cada varios metros. */
 function drawFloor(c: CanvasRenderingContext2D, px: number, py: number, pal: ZonePalette, zone: number, x: number, y: number): void {
-  const r = cellRand(x, y, zone);
   const [base, alt, dark] = pal.floor;
-  c.fillStyle = (x + y) % 2 === 0 ? base : mixHex(base, alt, 0.35);
-  c.fillRect(px, py, TS, TS);
-  c.fillStyle = dark;
+  for (let by = 0; by < TS; by += 4) {
+    for (let bx = 0; bx < TS; bx += 4) {
+      const wx = px + bx; const wy = py + by;
+      const n = smoothNoise(wx, wy, 40, zone) * 0.7 + smoothNoise(wx, wy, 11, zone + 9) * 0.3;
+      c.fillStyle = n < 0.33 ? mixHex(base, dark, 0.35) : n < 0.66 ? base : mixHex(base, alt, 0.6);
+      c.fillRect(wx, wy, 4, 4);
+    }
+  }
+  // juntas en coordenadas del mundo (no coinciden con las casillas)
+  const seam = (period: number, off: number, horiz: boolean, col: string): void => {
+    c.fillStyle = col;
+    for (let k = 0; k < TS; k++) {
+      const w = (horiz ? py : px) + k;
+      if ((w + off) % period === 0) {
+        if (horiz) c.fillRect(px, py + k, TS, 1); else c.fillRect(px + k, py, 1, TS);
+      }
+    }
+  };
   if (zone === 1 || zone === 4) {
-    // baldosas
-    c.fillRect(px, py + TS - 1, TS, 1);
-    c.fillRect(px + TS - 1, py, 1, TS);
-    c.fillStyle = shadeHex(base, 0.08);
-    c.fillRect(px, py, TS - 1, 1);
+    // losas grandes y escalonadas, con juntas apenas marcadas
+    const row = Math.floor((py + 5) / 34);
+    seam(34, 5, true, mixHex(base, dark, 0.7));
+    c.fillStyle = mixHex(base, dark, 0.7);
+    for (let k = 0; k < TS; k++) if ((px + k + row * 27) % 54 === 0) c.fillRect(px + k, py, 1, TS);
   } else if (zone === 2) {
-    c.fillRect(px, py + TS - 1, TS, 1);
-    for (let i = 0; i < 4; i++) {
-      c.fillStyle = r() < 0.5 ? shadeHex(pal.accent, -0.55) : shadeHex(pal.accent, -0.7);
-      c.fillRect(px + Math.floor(r() * 15), py + Math.floor(r() * 15), 1, 1 + Math.floor(r() * 2));
+    for (let by = 0; by < TS; by += 2) for (let bx = 0; bx < TS; bx += 2) {
+      const n = smoothNoise(px + bx, py + by, 18, 77);
+      if (n > 0.62) { c.fillStyle = n > 0.75 ? shadeHex(pal.accent, -0.55) : shadeHex(pal.accent, -0.7); c.fillRect(px + bx, py + by, 2, 2); }
     }
   } else if (zone === 3) {
-    for (let i = 2; i < TS; i += 4) c.fillRect(px + 1, py + i, TS - 2, 1);
-    c.fillStyle = shadeHex(base, 0.1);
-    c.fillRect(px, py, 1, TS);
+    c.fillStyle = shadeHex(base, 0.12);
+    for (let by = 0; by < TS; by++) for (let bx = 0; bx < TS; bx++) if ((px + bx + (py + by) * 3) % 7 === 0 && (py + by) % 3 === 0) c.fillRect(px + bx, py + by, 1, 1);
+    seam(53, 5, false, mixHex(base, dark, 0.75));
   } else if (zone === 5) {
-    c.fillRect(px, py + 7, TS, 1);
-    c.fillStyle = shadeHex(alt, 0.05);
-    c.fillRect(px + 7, py, 1, TS);
+    seam(46, 7, true, mixHex(base, alt, 0.5));
+    seam(46, 30, true, mixHex(base, dark, 0.6));
   } else {
-    // casco: planchas remachadas
-    c.fillRect(px, py + TS - 1, TS, 1);
-    c.fillRect(px + TS - 1, py, 1, TS);
-    c.fillStyle = shadeHex(alt, 0.2);
-    c.fillRect(px + 2, py + 2, 1, 1); c.fillRect(px + 13, py + 2, 1, 1);
-    c.fillRect(px + 2, py + 13, 1, 1); c.fillRect(px + 13, py + 13, 1, 1);
+    seam(36, 2, true, mixHex(base, dark, 0.8));
+    seam(52, 9, false, mixHex(base, dark, 0.8));
+    c.fillStyle = shadeHex(alt, 0.25);
+    for (let by = 0; by < TS; by++) for (let bx = 0; bx < TS; bx++) {
+      const wx = px + bx; const wy = py + by;
+      if ((wx + 9) % 40 === 4 && (wy + 2) % 28 === 4) c.fillRect(wx, wy, 1, 1);
+    }
   }
-  // suciedad
-  if (r() < 0.35) {
-    c.fillStyle = 'rgba(0,0,0,0.18)';
-    c.fillRect(px + Math.floor(r() * 12), py + Math.floor(r() * 12), 2 + Math.floor(r() * 3), 1 + Math.floor(r() * 2));
+  // manchas sueltas
+  const r = cellRand(x, y, zone);
+  if (r() < 0.25) {
+    c.fillStyle = 'rgba(0,0,0,0.16)';
+    c.fillRect(px + Math.floor(r() * 12), py + Math.floor(r() * 12), 2 + Math.floor(r() * 4), 1 + Math.floor(r() * 2));
   }
 }
 
-function drawWall(c: CanvasRenderingContext2D, px: number, py: number, pal: ZonePalette, face: boolean, x: number, y: number): void {
+interface WallNb { up: boolean; down: boolean; left: boolean; right: boolean }
+
+/** Pared continua: el brillo y la sombra solo aparecen en los bordes reales del muro. */
+function drawWall(c: CanvasRenderingContext2D, px: number, py: number, pal: ZonePalette, face: boolean, x: number, y: number, nb: WallNb = { up: true, down: true, left: true, right: true }): void {
   const [base, light, dark] = pal.wall;
-  const r = cellRand(x, y, 7);
-  c.fillStyle = dark;
-  c.fillRect(px, py, TS, TS);
-  c.fillStyle = base;
-  c.fillRect(px, py, TS, face ? 9 : TS);
-  c.fillStyle = light;
-  c.fillRect(px, py, TS, 1);
+  const topH = face ? 9 : TS;
+  for (let by = 0; by < topH; by += 4) {
+    for (let bx = 0; bx < TS; bx += 4) {
+      const n = smoothNoise(px + bx, py + by, 30, 31);
+      c.fillStyle = n < 0.4 ? shadeHex(base, -0.06) : n > 0.7 ? shadeHex(base, 0.04) : base;
+      c.fillRect(px + bx, py + by, 4, Math.min(4, topH - by));
+    }
+  }
+  // juntas de los paneles del techo del muro, en coordenadas del mundo
+  c.fillStyle = shadeHex(base, -0.14);
+  for (let k = 0; k < TS; k++) if ((px + k) % 29 === 0) c.fillRect(px + k, py, 1, topH);
+  if (!nb.up) { c.fillStyle = light; c.fillRect(px, py, TS, 1); }
+  if (!nb.left) { c.fillStyle = shadeHex(light, -0.1); c.fillRect(px, py, 1, topH); }
+  if (!nb.right) { c.fillStyle = dark; c.fillRect(px + TS - 1, py, 1, topH); }
   if (face) {
-    // cara frontal con paneles
+    // cara frontal continua
     c.fillStyle = shadeHex(base, -0.25);
     c.fillRect(px, py + 9, TS, 7);
-    c.fillStyle = shadeHex(base, -0.45);
-    c.fillRect(px, py + 15, TS, 1);
-    c.fillRect(px + 7, py + 10, 1, 5);
     c.fillStyle = shadeHex(light, -0.1);
     c.fillRect(px, py + 9, TS, 1);
-    if (r() < 0.25) {
+    c.fillStyle = shadeHex(base, -0.45);
+    c.fillRect(px, py + 15, TS, 1);
+    for (let k = 0; k < TS; k++) if ((px + k) % 23 === 0) c.fillRect(px + k, py + 10, 1, 5);
+    const r = cellRand(x, y, 7);
+    if (r() < 0.2) {
       c.fillStyle = pal.accent;
-      c.fillRect(px + 3 + Math.floor(r() * 9), py + 11, 2, 1);
+      c.fillRect(px + 3 + Math.floor(r() * 9), py + 12, 2, 1);
     }
-  } else if (r() < 0.2) {
-    c.fillStyle = shadeHex(base, -0.12);
-    c.fillRect(px + 2 + Math.floor(r() * 10), py + 3 + Math.floor(r() * 10), 3, 1);
+  } else if (!nb.down) {
+    c.fillStyle = dark;
+    c.fillRect(px, py + TS - 1, TS, 1);
   }
+}
+
+/** Sombra suave del muro sobre el suelo (oclusión ambiental). */
+function wallShadow(c: CanvasRenderingContext2D, px: number, py: number, nb: WallNb): void {
+  if (nb.up) { const g = c.createLinearGradient(px, py, px, py + 6); g.addColorStop(0, 'rgba(0,0,0,0.35)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(px, py, TS, 6); }
+  if (nb.left) { const g = c.createLinearGradient(px, py, px + 5, py); g.addColorStop(0, 'rgba(0,0,0,0.25)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(px, py, 5, TS); }
+  if (nb.right) { const g = c.createLinearGradient(px + TS, py, px + TS - 5, py); g.addColorStop(0, 'rgba(0,0,0,0.25)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(px + TS - 5, py, 5, TS); }
 }
 
 function drawVoid(c: CanvasRenderingContext2D, px: number, py: number, x: number, y: number, exterior: boolean): void {
@@ -166,21 +215,25 @@ export function drawTile(c: CanvasRenderingContext2D, m: FloorMap, x: number, y:
   const t = m.tiles[i];
   const below = y + 1 < m.h ? m.tiles[i + m.w] : TILE.VOID;
   const face = !isWallish(below) && below !== TILE.VOID;
+  const W = (xx: number, yy: number): boolean => xx < 0 || yy < 0 || xx >= m.w || yy >= m.h || isWallish(m.tiles[yy * m.w + xx]) || m.tiles[yy * m.w + xx] === TILE.VOID;
+  const nb: WallNb = { up: W(x, y - 1), down: W(x, y + 1), left: W(x - 1, y), right: W(x + 1, y) };
+  const solid = (xx: number, yy: number): boolean => xx >= 0 && yy >= 0 && xx < m.w && yy < m.h && isWallish(m.tiles[yy * m.w + xx]);
+  const shadowNb: WallNb = { up: solid(x, y - 1), down: false, left: solid(x - 1, y), right: solid(x + 1, y) };
   const ext = m.zone === 6;
   switch (t) {
     case TILE.VOID:
       drawVoid(c, px, py, x, y, true);
       return;
     case TILE.WALL:
-      drawWall(c, px, py, pal, face, x, y);
+      drawWall(c, px, py, pal, face, x, y, nb);
       return;
     case TILE.CRACKED:
-      drawWall(c, px, py, pal, face, x, y);
+      drawWall(c, px, py, pal, face, x, y, nb);
       c.fillStyle = shadeHex(pal.wall[2], -0.4);
       c.fillRect(px + 5, py + 2, 1, 4); c.fillRect(px + 6, py + 5, 1, 3); c.fillRect(px + 7, py + 8, 2, 1); c.fillRect(px + 9, py + 9, 1, 3);
       return;
     case TILE.WINDOW: {
-      drawWall(c, px, py, pal, face, x, y);
+      drawWall(c, px, py, pal, face, x, y, nb);
       c.fillStyle = '#0b1830';
       c.fillRect(px + 2, py + 2, 12, face ? 12 : 12);
       const r = cellRand(x, y, 3);
@@ -203,7 +256,7 @@ export function drawTile(c: CanvasRenderingContext2D, m: FloorMap, x: number, y:
       return;
     }
     case TILE.AIRLOCK:
-      drawWall(c, px, py, pal, face, x, y);
+      drawWall(c, px, py, pal, face, x, y, nb);
       c.fillStyle = '#2a2f38';
       c.fillRect(px + 2, py + 2, 12, 12);
       c.fillStyle = '#ffb347';
@@ -241,6 +294,7 @@ export function drawTile(c: CanvasRenderingContext2D, m: FloorMap, x: number, y:
   }
   // suelos y variantes caminables
   drawFloor(c, px, py, pal, m.zone, x, y);
+  wallShadow(c, px, py, shadowNb);
   const r = cellRand(x, y, 11);
   switch (t) {
     case TILE.COVER:

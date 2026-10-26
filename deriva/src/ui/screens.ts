@@ -8,7 +8,7 @@ import { MAIN_ENDINGS } from '../data/endings';
 import { DIR_OF } from '../input/input';
 import { getStats } from '../core/rules';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 
 function menuPanel(el: HTMLElement, items: HTMLElement[], extra?: (e: Parameters<NonNullable<Panel['onCommand']>>[0]) => boolean): Panel & { nav: Nav } {
   const nav = new Nav();
@@ -76,6 +76,7 @@ PANELS.screen_intro = (app: App): Panel => {
     if (i >= lines.length) { finish(); return; }
     const k = lines[i++];
     box.append(h('p', { class: `ln${k === 'intro.agora' ? ' agora' : ''}` }, t(k)));
+    if (app.settings.voiceDialogs) app.voice.speak(t(k).replace(/^ÁGORA:\s*/, ''), k === 'intro.agora' ? 'agora' : 'narrator');
     timer = setTimeout(next, k === 'intro.agora' ? 5000 : 2300);
   };
   const finish = (): void => {
@@ -186,7 +187,7 @@ PANELS.screen_hub = (app: App): Panel => {
     refresh,
     onCommand: (e) => {
       const d = DIR_OF[e.cmd];
-      if (d !== undefined) { app.hub.move(d); refresh(); return true; }
+      if (d !== undefined) return true; // movimiento continuo con teclas mantenidas (HubScene.update)
       if (e.cmd === 'interact' || e.cmd === 'confirm') {
         const s = app.hub.adjacent();
         if (s) app.open(s.panel);
@@ -254,6 +255,7 @@ PANELS.screen_over = (app: App): Panel => {
       if (fates.length) body.append(h('h3', { style: 'margin-top:14px' }, t('fate.title')), ...fates.map((f) => h('p', { class: 'fate' }, f)));
     }
     parts.push(body);
+    if (app.settings.voiceDialogs) app.voice.speak(body.textContent ?? '', 'narrator');
   } else {
     parts.push(h('h2', { style: 'font-size:1.6em' }, t('ui.over.dead')));
     parts.push(h('p', { class: 'danger' }, causeText(summary.cause)));

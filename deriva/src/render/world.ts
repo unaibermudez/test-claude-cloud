@@ -26,6 +26,8 @@ export interface ViewOpts {
   highContrast: boolean;
   zoom: number; // 0 = automático
   particles: number; // 0..1
+  tweenMs: number; // duración del desplazamiento entre casillas
+  softLight: boolean;
 }
 
 export interface Overlay {
@@ -34,6 +36,10 @@ export interface Overlay {
   aoe?: number;
   mode?: 'target' | 'throw' | 'look' | null;
   valid?: boolean;
+  /** Posición continua del jugador (tiempo real), en casillas. */
+  playerPos?: { x: number; y: number } | null;
+  /** Punto de mira libre (tiempo real), en casillas. */
+  crosshair?: { x: number; y: number } | null;
 }
 
 interface Anim {
@@ -68,10 +74,13 @@ export class WorldRenderer {
   private layer: HTMLCanvasElement | null = null;
   private layerCtx: CanvasRenderingContext2D | null = null;
   private sig: Int32Array | null = null;
+  private fullRedraw = false;
   private map: FloorMap | null = null;
   private mask: HTMLCanvasElement = makeCanvas(1, 1);
   private maskCtx = ctx2d(this.mask);
   private maskData: ImageData | null = null;
+  private maskHi: HTMLCanvasElement = makeCanvas(1, 1);
+  private maskHiCtx = ctx2d(this.maskHi);
   private anims = new Map<number, Anim>();
   private ghosts: Ghost[] = [];
   fx = new FxSystem();
@@ -80,7 +89,7 @@ export class WorldRenderer {
   private hurtFlash = 0;
   private lastNow = 0;
   private glitchUntil = 0;
-  opts: ViewOpts = { shake: 1, flicker: true, glitch: true, highContrast: false, zoom: 0, particles: 1 };
+  opts: ViewOpts = { shake: 1, flicker: true, glitch: true, highContrast: false, zoom: 0, particles: 1, tweenMs: 110, softLight: true };
   private lastTurn = -1;
   bossFocus: number | null = null;
 
@@ -102,7 +111,7 @@ export class WorldRenderer {
 
   /** Fuerza a repintar la capa estática (cambio de paleta). */
   invalidateLayer(): void {
-    this.sig?.fill(-1);
+    this.fullRedraw = true;
   }
 
   setOpts(o: Partial<ViewOpts>): void {
@@ -114,6 +123,21 @@ export class WorldRenderer {
   /** Tamaño de la vista en casillas. */
   viewTiles(): { w: number; h: number } {
     return { w: this.canvas.width / (TS * this.scale), h: this.canvas.height / (TS * this.scale) };
+  }
+
+  /** Punto de la pantalla (CSS px) de una coordenada del mundo en casillas. */
+  worldToScreen(x: number, y: number): { x: number; y: number } {
+    const r = this.canvas.getBoundingClientRect();
+    const k = r.width / this.canvas.width;
+    return { x: r.left + (x * TS - this.camX) * this.scale * k, y: r.top + (y * TS - this.camY) * this.scale * k };
+  }
+
+  /** Coordenadas continuas del mundo (en casillas) bajo un punto de la pantalla. */
+  screenToWorld(px: number, py: number): { x: number; y: number } {
+    const r = this.canvas.getBoundingClientRect();
+    const sx = (px - r.left) * (this.canvas.width / r.width);
+    const sy = (py - r.top) * (this.canvas.height / r.height);
+    return { x: (sx / this.scale + this.camX) / TS, y: (sy / this.scale + this.camY) / TS };
   }
 
   screenToTile(px: number, py: number): { x: number; y: number } {
@@ -134,6 +158,7 @@ export class WorldRenderer {
     this.layer = makeCanvas(m.w * TS, m.h * TS);
     this.layerCtx = ctx2d(this.layer);
     this.sig = new Int32Array(m.w * m.h).fill(-1);
+    this.fullRedraw = true;
     this.mask = makeCanvas(m.w, m.h);
     this.maskCtx = ctx2d(this.mask);
     this.maskData = this.maskCtx.createImageData(m.w, m.h);
@@ -149,13 +174,21 @@ export class WorldRenderer {
     const pal = this.palette(st);
     const c = this.layerCtx!;
     const sig = this.sig!;
+    if (this.fullRedraw) {
+      this.fullRedraw = false;
+      for (let i = 0; i < m.w * m.h; i++) { sig[i] = tileSignature(m, i); drawTile(c, m, i % m.w, Math.floor(i / m.w), pal); }
+      return;
+    }
     for (let i = 0; i < m.w * m.h; i++) {
       const s = tileSignature(m, i);
       if (s === sig[i]) continue;
       const x = i % m.w; const y = Math.floor(i / m.w);
       sig[i] = s;
-      drawTile(c, m, x, y, pal);
-      if (y > 0) drawTile(c, m, x, y - 1, pal); // la cara frontal depende de la casilla de abajo
+      // la casilla y sus vecinas (caras de muro, bordes y sombras dependen de los vecinos)
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx; const yy = y + dy;
+        if (xx >= 0 && yy >= 0 && xx < m.w && yy < m.h) drawTile(c, m, xx, yy, pal);
+      }
     }
   }
 
@@ -255,16 +288,20 @@ export class WorldRenderer {
       const dist = Math.abs(an.fx - tx) + Math.abs(an.fy - ty);
       if (an.dx !== tx || an.dy !== ty) {
         if (Math.abs(an.dx - tx) > TS * 3 || Math.abs(an.dy - ty) > TS * 3) { an.dx = tx; an.dy = ty; an.fx = tx; an.fy = ty; }
-        else if (dist === 0 || now - an.t0 > 120) { an.fx = an.dx; an.fy = an.dy; an.t0 = now; }
+        else if (dist === 0 || now - an.t0 > this.opts.tweenMs + 10) { an.fx = an.dx; an.fy = an.dy; an.t0 = now; }
       }
-      const k = Math.min(1, (now - an.t0) / 110);
-      const e = 1 - (1 - k) * (1 - k);
+      const k = Math.min(1, (now - an.t0) / this.opts.tweenMs);
+      const e = this.opts.tweenMs > 150 ? k : 1 - (1 - k) * (1 - k);
       an.dx = k >= 1 ? tx : Math.round(an.fx + (tx - an.fx) * e);
       an.dy = k >= 1 ? ty : Math.round(an.fy + (ty - an.fy) * e);
       if (k >= 1) { an.fx = tx; an.fy = ty; }
     }
     for (const id of [...this.anims.keys()]) if (!st.actors.some((a) => a.id === id && !a.dead)) this.anims.delete(id);
 
+    if (pl && ov.playerPos) {
+      const an = this.anims.get(pl.id);
+      if (an) { an.dx = (ov.playerPos.x - 0.5) * TS; an.dy = (ov.playerPos.y - 0.5) * TS; an.fx = an.dx; an.fy = an.dy; an.t0 = now - 10000; }
+    }
     if (pl) {
       const an = this.anims.get(pl.id);
       this.centerOn((an ? an.dx / TS : pl.x), (an ? an.dy / TS : pl.y), false, dt);
@@ -615,7 +652,18 @@ export class WorldRenderer {
     }
     this.maskCtx.putImageData(data, 0, 0);
     c.imageSmoothingEnabled = true;
-    c.drawImage(this.mask, 0, 0, m.w * TS, m.h * TS);
+    // desenfoque suave sobre una copia pequeña (4 px por casilla): barato y sin bordes de cuadrícula
+    if (this.opts.softLight) {
+      const k = 4;
+      if (this.maskHi.width !== m.w * k || this.maskHi.height !== m.h * k) { this.maskHi.width = m.w * k; this.maskHi.height = m.h * k; }
+      const hc2 = this.maskHiCtx;
+      hc2.clearRect(0, 0, m.w * k, m.h * k);
+      hc2.imageSmoothingEnabled = true;
+      hc2.filter = 'blur(2px)';
+      hc2.drawImage(this.mask, 0, 0, m.w * k, m.h * k);
+      hc2.filter = 'none';
+      c.drawImage(this.maskHi, 0, 0, m.w * TS, m.h * TS);
+    } else c.drawImage(this.mask, 0, 0, m.w * TS, m.h * TS);
     c.imageSmoothingEnabled = false;
     // bordes del mapa: negro duro
     c.fillStyle = '#000';
@@ -626,6 +674,16 @@ export class WorldRenderer {
   }
 
   private drawOverlay(st: RunState, c: CanvasRenderingContext2D, ov: Overlay, now: number): void {
+    if (ov.crosshair) {
+      const x = ov.crosshair.x * TS; const y = ov.crosshair.y * TS;
+      const r = 4 + Math.sin(now / 200) * 0.6;
+      c.strokeStyle = 'rgba(255,230,160,0.85)';
+      c.lineWidth = 1;
+      c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.stroke();
+      c.fillStyle = 'rgba(255,230,160,0.9)';
+      c.fillRect(x - 0.5, y - r - 3, 1, 3); c.fillRect(x - 0.5, y + r, 1, 3);
+      c.fillRect(x - r - 3, y - 0.5, 3, 1); c.fillRect(x + r, y - 0.5, 3, 1);
+    }
     if (ov.path && ov.path.length) {
       for (const p of ov.path) {
         c.fillStyle = ov.valid === false ? 'rgba(255,80,80,0.35)' : 'rgba(255,230,140,0.3)';
