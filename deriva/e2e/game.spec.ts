@@ -134,12 +134,14 @@ test('arranque, partida nueva, movimiento, inventario, combate y guardado', asyn
     const d = (window as unknown as { __deriva: { app: { run: Record<string, unknown> } } }).__deriva;
     const st = d.app.run as unknown as { actors: { id: number; def: string; x: number; y: number; hp: number; maxHp: number; faction: string; ai: { mode: string }; status: Record<string, number>; facing: number; ap: number }[]; pid: number; nextId: number };
     const p = st.actors.find((a) => a.id === st.pid)!;
+    (window as unknown as { __enemyId: number }).__enemyId = st.nextId;
     st.actors.push({ id: st.nextId++, def: 'eco_errante', x: p.x + dx, y: p.y + dy, hp: 30, maxHp: 30, ap: 0, faction: 'enemy', ai: { mode: 'idle', tx: 0, ty: 0, timer: 0, cd: {}, homeX: 0, homeY: 0 } as unknown as { mode: string }, status: {}, facing: 4 });
   }, dir);
   const key = dir[0] === 1 ? 'ArrowRight' : dir[0] === -1 ? 'ArrowLeft' : dir[1] === 1 ? 'ArrowDown' : 'ArrowUp';
   const enemyHp = async (): Promise<number> => page.evaluate(() => {
-    const st = (window as unknown as { __deriva: { app: { run: { actors: { def: string; hp: number; dead?: boolean }[] } } } }).__deriva.app.run;
-    const e = st.actors.find((a) => a.def === 'eco_errante' && !a.dead);
+    const st = (window as unknown as { __deriva: { app: { run: { actors: { id: number; hp: number; dead?: boolean }[] } } } }).__deriva.app.run;
+    const id = (window as unknown as { __enemyId: number }).__enemyId;
+    const e = st.actors.find((a) => a.id === id && !a.dead);
     return e ? e.hp : 0;
   });
   const hp0 = await enemyHp();
