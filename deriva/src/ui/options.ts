@@ -1,6 +1,6 @@
 /** Opciones: audio, idioma, accesibilidad, ayudas de dificultad, controles y datos (exportar/importar). */
 import { App, PANELS } from '../app/app';
-import { h, clear, panelShell, type Panel } from './dom';
+import { h, clear, panelShell, tabDelta, KEY, type Panel } from './dom';
 import { t, LANGS, type Lang } from '../i18n';
 import { DEFAULT_BINDS, type Settings, type Colorblind, type TextSize } from '../platform/settings';
 import { exportAll, importAll } from '../core/save';
@@ -21,6 +21,8 @@ PANELS.options = (app: App, arg?: unknown): Panel => {
   const apply = (): void => { app.saveSettings(); };
   const row = (label: string, control: HTMLElement, desc?: string, adjust?: (d: number) => void, activate?: () => void): void => {
     const el = h('div', { class: 'opt-row' }, h('div', { class: 'lbl' }, label, desc ? h('small', {}, desc) : null), control);
+    const k = rows.length;
+    el.addEventListener('mouseenter', () => { sel = k; rows.forEach((r, j) => r.el.classList.toggle('sel', j === sel)); });
     rows.push({ el, adjust, activate });
     shell.body.append(el);
   };
@@ -66,7 +68,7 @@ PANELS.options = (app: App, arg?: unknown): Panel => {
       choice(t('ui.opt.colorblind'), ['none', 'deuter', 'protan', 'tritan'] as Colorblind[], () => s.colorblind, (v) => { s.colorblind = v; app.world.invalidateLayer(); }, (v) => t(`ui.opt.cb.${v}`));
       toggle('reduceFlicker'); toggle('reduceShake'); toggle('reduceGlitch'); toggle('crt');
       choice(t('ui.opt.pixelScale'), ['0', '1', '2', '3', '4', '5'], () => String(s.pixelScale), (v) => { s.pixelScale = Number(v); }, (v) => (v === '0' ? t('ui.opt.auto') : `×${v}`));
-      toggle('showTutorial');
+      toggle('showTutorial'); toggle('keyStrip');
       const fsBtn = h('button', { class: 'btn', onclick: () => toggleFullscreen() }, t(document.fullscreenElement ? 'ui.opt.fullscreen_off' : 'ui.opt.fullscreen_on'));
       row(t('ui.opt.fullscreen'), fsBtn, t('ui.opt.fullscreen.desc'), undefined, () => fsBtn.click());
     } else if (tab === 'game') {
@@ -143,13 +145,19 @@ PANELS.options = (app: App, arg?: unknown): Panel => {
     rows.forEach((r, i) => r.el.classList.toggle('sel', i === sel));
   };
   render();
-  shell.footer.append(h('span', {}, t('ui.opt.footer')));
+  shell.footer.append(app.hints([[[KEY.tabs, 'Tab'], t('ui.k.tab')], [KEY.arrows, t('ui.k.select')], [KEY.lr, t('ui.k.adjust')], [KEY.enter(), t('ui.k.ok')], [KEY.esc(), t('ui.k.close')]]));
+  const selectRow = (i: number): void => { sel = Math.max(0, Math.min(rows.length - 1, i)); rows.forEach((r, k) => r.el.classList.toggle('sel', k === sel)); rows[sel]?.el.scrollIntoView({ block: 'nearest' }); };
   const p: Panel = {
     el: shell.root,
     onCommand: (e) => {
       if (e.cmd === 'cancel' || e.cmd === 'pause') { app.pop(p); return true; }
-      if (e.cmd === 'next' || e.cmd === 'prev') { const i = TABS.indexOf(tab); tab = TABS[(i + (e.cmd === 'next' ? 1 : -1) + TABS.length) % TABS.length]; sel = 0; render(); return true; }
-      if (e.cmd === 'up' || e.cmd === 'down') { sel = (sel + (e.cmd === 'up' ? -1 : 1) + rows.length) % rows.length; rows.forEach((r, i) => r.el.classList.toggle('sel', i === sel)); rows[sel]?.el.scrollIntoView({ block: 'nearest' }); return true; }
+      const td = tabDelta(e);
+      if (td) { const i = TABS.indexOf(tab); tab = TABS[(i + td + TABS.length) % TABS.length]; sel = 0; render(); return true; }
+      if (e.code === 'Home') { selectRow(0); return true; }
+      if (e.code === 'End') { selectRow(rows.length - 1); return true; }
+      if (e.code === 'PageUp') { selectRow(sel - 6); return true; }
+      if (e.code === 'PageDown') { selectRow(sel + 6); return true; }
+      if (e.cmd === 'up' || e.cmd === 'down') { selectRow((sel + (e.cmd === 'up' ? -1 : 1) + rows.length) % rows.length); return true; }
       if (e.cmd === 'left' || e.cmd === 'right') { rows[sel]?.adjust?.(e.cmd === 'left' ? -1 : 1); if (tab !== 'audio' || sel > 2) render(); return true; }
       if (e.cmd === 'confirm' || e.cmd === 'interact') { rows[sel]?.activate?.(); return true; }
       return true;

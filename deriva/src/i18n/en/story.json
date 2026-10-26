@@ -109,7 +109,7 @@
   "hub.radio.desc": "Captain Bolt waits for you here now.",
   "hub.door": "Service lift",
   "hub.door.desc": "Go down into the station. Start a new life.",
-  "hub.hint": "Move with the arrow keys · F to use · Esc for the menu",
+  "hub.hint": "Move with the arrow keys · {k}: use · Tab: station list · Esc: menu",
   "hub.memorias": "Memories: {n}",
   "hub.agora.first": "ÁGORA: \"This is the Pod. You come back here every time. It isn't a home, but it has heating.\"",
   "hub.agora.return": "ÁGORA: \"Back in the Pod. The Memories you bring can be fixed at the table.\"",

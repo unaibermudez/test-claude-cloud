@@ -164,7 +164,7 @@ const UI_FAMILIES: Record<string, string[]> = {
   'intro': ['1', '2', '3', '4', '5', '6', 'agora', 'skip'],
 };
 for (const [pre, list] of Object.entries(UI_FAMILIES)) for (const x of list) need(`${pre}.${x}`, `familia ${pre}`);
-for (const k of ['subtitles', 'highContrast', 'reduceFlicker', 'reduceShake', 'reduceGlitch', 'crt', 'showTutorial', 'generousO2', 'assistHack', 'skipHack', 'dullEnemies', 'longOrbit']) { need(`ui.opt.${k}`, 'opción'); need(`ui.opt.${k}.desc`, 'opción'); }
+for (const k of ['subtitles', 'highContrast', 'reduceFlicker', 'reduceShake', 'reduceGlitch', 'crt', 'showTutorial', 'keyStrip', 'generousO2', 'assistHack', 'skipHack', 'dullEnemies', 'longOrbit']) { need(`ui.opt.${k}`, 'opción'); need(`ui.opt.${k}.desc`, 'opción'); }
 for (const s of [2, 3, 4]) for (const n of [1, 2, 3]) need(`ui.radio.s${s}.${n}`, 'radio');
 for (const npc of ['celia', 'tomas', 'bruno', 'solis', 'lenz', 'faro']) { need(`npc.${npc}.name`, 'PNJ'); need(`npc.${npc}.role`, 'PNJ'); need(`npc.${npc}.bio`, 'PNJ'); }
 for (const tut of ['start', 'dark', 'o2', 'terminal', 'door', 'enemy', 'key', 'item', 'log', 'vacuum', 'hallu', 'npc']) { need(`tut.${tut}`, 'tutorial'); need(`tut.${tut}.title`, 'tutorial'); }

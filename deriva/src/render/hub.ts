@@ -113,6 +113,18 @@ export class HubScene {
     if (!this.blocked(nx, ny)) { this.px = nx; this.py = ny; this.fx = nx + 0.5; this.fy = ny + 0.5; }
   }
 
+  /** Coloca al personaje junto a un puesto (atajo de teclado de la lista de puestos). */
+  goTo(st: Station): void {
+    const order = [[0, 1], [-1, 1], [1, 1], [-1, 0], [1, 0], [0, -1], [-1, -1], [1, -1]];
+    for (const [dx, dy] of order) {
+      const x = st.x + dx; const y = st.y + dy;
+      if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1 || this.blocked(x, y)) continue;
+      this.px = x; this.py = y; this.fx = x + 0.5; this.fy = y + 0.5;
+      this.facing = [0, 1, 2, 3, 4, 5, 6, 7].find((d) => { const D = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]][d]; return D[0] === -dx && D[1] === -dy; }) ?? 0;
+      return;
+    }
+  }
+
   adjacent(): Station | null {
     for (const s of this.visibleStations()) if (Math.max(Math.abs(s.x - this.px), Math.abs(s.y - this.py)) <= 1) return s;
     return null;

@@ -28,7 +28,7 @@ import { WorldRenderer, type Overlay } from '../render/world';
 import { lockColor, setLockPalette } from '../render/tiles';
 import { Input, DIR_OF, type CommandEvent } from '../input/input';
 import { Hud } from '../ui/hud';
-import { h, clear, type Panel } from '../ui/dom';
+import { h, clear, keyHints, type Panel } from '../ui/dom';
 import { HubScene } from '../render/hub';
 import { RealTime, TICK_MS } from './realtime';
 import { VoiceEngine } from '../audio/voice';
@@ -151,6 +151,8 @@ export class App {
     this.voice.lang = s.lang;
     if (!this.voice.enabled) this.voice.stop();
     this.input.setBinds(s.binds);
+    this.hud.keyLabel = (c) => this.input.label(c);
+    this.hud.showKeys = s.keyStrip;
   }
 
   saveSettings(): void {
@@ -511,6 +513,11 @@ export class App {
     this.tutorialTurn = this.run?.turn ?? 0;
   }
 
+  /** Fila de ayuda de teclas (pie de los paneles) con las teclas asignadas actualmente. */
+  hints(pairs: [string | string[], string][]): HTMLElement {
+    return keyHints((c) => this.input.label(c), pairs);
+  }
+
   toast(title: string, body: string): void {
     const el = h('div', { class: 'toast' }, h('div', {}, h('div', { class: 't1' }, title), h('div', {}, body)));
     this.ui.append(el);
@@ -524,7 +531,7 @@ export class App {
     const st = this.run;
     if (!st || st.over) return false;
     if (this.targeting) return this.targetCommand(e);
-    if ((e.cmd === 'cancel' || e.cmd === 'pause') && this.hud.hideTutorial()) return true;
+    if (e.cmd === 'cancel' || e.cmd === 'pause') this.hud.hideTutorial();
     const dir = DIR_OF[e.cmd];
     if (dir !== undefined) {
       this.travel = null;

@@ -1,6 +1,6 @@
 /** Paneles de partida: inventario, implantes, mapa, archivo, ayuda, pausa, ÁGORA, puertas. */
 import { App, PANELS } from '../app/app';
-import { h, clear, img, Nav, panelShell, type Panel } from './dom';
+import { h, clear, img, Nav, panelShell, tabDelta, scrollBody, KEY, type Panel } from './dom';
 import { t } from '../i18n';
 import { itemDetail, itemName, isKnownItem, modsView } from './itemview';
 import { itemDef } from '../data/items';
@@ -78,7 +78,8 @@ PANELS.inventory = (app: App, arg?: unknown): Panel => {
     if (!en) return;
     const s = en.kind === 'eq' ? st.player[en.which]! : st.player.inv[en.slot];
     if (!s) return;
-    const acts = h('div', { class: 'actions' }, ...actionsFor(en).map((a) => h('button', { class: 'btn', onclick: () => { a.fn(); afterAct(); } }, a.label)));
+    const acts = h('div', { class: 'actions' }, ...actionsFor(en).map((a, k) => h('button', { class: `btn${k === 0 ? ' primary' : ''}`, onclick: () => { a.fn(); afterAct(); } },
+      h('kbd', {}, k === 0 ? KEY.enter() : a.key ? app.input.label(a.key) : '·'), ' ', a.label)));
     detail.append(itemDetail(st, s, acts));
   };
   const afterAct = (): void => { if (app.top() === p) render(); };
@@ -93,7 +94,7 @@ PANELS.inventory = (app: App, arg?: unknown): Panel => {
   const ammo = st.player.ammo;
   shell.body.append(h('div', { class: 'cols' }, h('div', {}, h('div', { class: 'dim', style: 'margin-bottom:6px;font-size:0.85em' },
     `${t('ui.inv.slots', { n: st.player.inv.length, max: 14 })} · ⚙ ${st.player.scrap} · ${t('ui.ammo.balas')} ${ammo.balas} · ${t('ui.ammo.cartuchos')} ${ammo.cartuchos} · ${t('ui.ammo.clavos')} ${ammo.clavos} · ${t('ui.ammo.virotes')} ${ammo.virotes}`), list), detail));
-  shell.footer.append(h('span', {}, t('ui.inv.footer')));
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.use')], ['@throw', t('ui.k.throw')], ['@drop', t('ui.k.drop')], ['1–0', t('ui.k.slot')], [[KEY.esc(), '@inventory'], t('ui.k.close')]]));
   void s;
   render();
   const p: Panel = {
@@ -169,7 +170,7 @@ PANELS.implants = (app: App): Panel => {
     show();
     shell.body.append(h('div', { class: 'cols' }, left, right));
   };
-  shell.footer.append(h('span', {}, t('ui.imp.footer')));
+  shell.footer.append(h('span', { class: 'faint' }, t('ui.imp.footer_note')), app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.install')], [[KEY.esc(), '@implants'], t('ui.k.close')]]));
   render();
   void modsView;
   const p: Panel = { el: shell.root, refresh: render, onCommand: (e) => { if (closeOn(e, ['implants'])) { close(); return true; } return nav.handle(e) || true; } };
@@ -190,6 +191,7 @@ PANELS.map = (app: App): Panel => {
     L('#ffffff', 'ui.map.you'), L('#7dff9a', 'ui.map.exit'), L('#5fb8e8', 'ui.prop.o2station'), L('#f2d45c', 'ui.prop.powernode'), L('#9fe8ff', 'ui.prop.terminal'),
     L('#ffd166', 'ui.map.people'), L('#f0e0b8', 'ui.prop.log'), L('#ff5a5a', 'ui.map.enemy'), L('#1a2a4a', 'ui.room.vacuum'), L('#ffb347', 'ui.tile.11'),
     L(lockColor('amber'), 'ui.map.amber'), L(lockColor('cyan'), 'ui.map.cyan'), L(lockColor('circuit'), 'ui.map.circuit')));
+  shell.footer.append(app.hints([[[KEY.esc(), '@map'], t('ui.k.close')]]));
   const p: Panel = { el: shell.root, onCommand: (e) => { if (closeOn(e, ['map'])) { close(); return true; } return true; } };
   return p;
 };
@@ -206,8 +208,10 @@ PANELS.archive = (app: App): Panel => {
   const nav = new Nav();
   const btns: HTMLElement[] = [];
   const ids: string[] = [];
+  const zoneStart: number[] = [];
   let zone = 0;
   for (const l of LOGS) {
+    if (l.zone !== zone) zoneStart.push(btns.length);
     if (l.zone !== zone) { zone = l.zone; list.append(h('h3', { style: 'margin:8px 0 2px' }, t(`zone.${zone}`))); }
     const has = known.has(l.id);
     const b = h('button', { class: `item${has ? '' : ' off'}` }, h('span', { class: 'grow' }, has ? t(`log.${l.id}.title`) : '— — —'), h('span', { class: 'r' }, l.id));
@@ -230,7 +234,27 @@ PANELS.archive = (app: App): Panel => {
   if (firstKnown >= 0) { nav.i = firstKnown; nav.mark(); }
   show();
   shell.body.append(h('div', { class: 'cols' }, h('div', { style: 'max-height:66vh;overflow:auto' }, list), read));
-  const p: Panel = { el: shell.root, onClose: () => app.voice.stop(), onCommand: (e) => { if (closeOn(e, ['archive'])) { close(); return true; } return nav.handle(e) || true; } };
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.select')], [KEY.lr, t('ui.k.zone')], [KEY.space(), t('ui.k.listen')], [[KEY.esc(), '@archive'], t('ui.k.close')]]));
+  const listen = (): void => {
+    const id = ids[nav.i];
+    if (app.voice.speaking) { app.voice.stop(); return; }
+    if (known.has(id)) app.voice.speak(`${t(`log.${id}.title`)}. ${t(`log.${id}.body`)}`, 'log');
+  };
+  const p: Panel = {
+    el: shell.root,
+    onClose: () => app.voice.stop(),
+    onCommand: (e) => {
+      if (closeOn(e, ['archive'])) { close(); return true; }
+      if (e.cmd === 'wait' || e.cmd === 'interact') { listen(); return true; }
+      if (e.cmd === 'left' || e.cmd === 'right') {
+        const cur = zoneStart.filter((z) => z <= nav.i).length - 1;
+        const nz = (cur + (e.cmd === 'right' ? 1 : -1) + zoneStart.length) % zoneStart.length;
+        nav.i = zoneStart[nz]; nav.mark(); show();
+        return true;
+      }
+      return nav.handle(e) || true;
+    },
+  };
   return p;
 };
 
@@ -256,6 +280,7 @@ PANELS.help = (app: App): Panel => {
         ['ui.help.implants', k('implants')], ['ui.help.map', k('map')], ['ui.help.archive', k('archive')], ['ui.help.agora', k('agora')],
         ['ui.help.active', k('active')], ['ui.help.rest', k('rest')], ['ui.help.look', k('look')], ['ui.help.quick', '1–0'],
         ['ui.help.mouse', t('ui.help.mouse_how')], ['ui.help.pad', t('ui.help.pad_how')], ['ui.help.pause', k('pause')],
+        ['ui.help.menus', t('ui.help.menus_how')], ['ui.help.hubkeys', t('ui.help.hubkeys_how')],
       ];
       shell.body.append(h('div', { class: 'binds' }, ...rows.flatMap(([a, b]) => [h('span', {}, t(a)), h('span', {}, b)])));
     } else if (tabs[tab] === 'rules') {
@@ -268,12 +293,14 @@ PANELS.help = (app: App): Panel => {
     }
   };
   render();
+  shell.footer.append(app.hints([[[KEY.tabs, KEY.lr], t('ui.k.tab')], [KEY.arrows, t('ui.k.scroll')], [[KEY.esc(), '@help'], t('ui.k.close')]]));
   const p: Panel = {
     el: shell.root,
     onCommand: (e) => {
       if (closeOn(e, ['help'])) { close(); return true; }
-      if (e.cmd === 'right' || e.cmd === 'next') { tab = (tab + 1) % tabs.length; render(); }
-      if (e.cmd === 'left' || e.cmd === 'prev') { tab = (tab + tabs.length - 1) % tabs.length; render(); }
+      const d = tabDelta(e) || (e.cmd === 'right' ? 1 : e.cmd === 'left' ? -1 : 0);
+      if (d) { tab = (tab + d + tabs.length) % tabs.length; render(); return true; }
+      scrollBody(shell.body, e);
       return true;
     },
   };
@@ -287,6 +314,7 @@ PANELS.pause = (app: App): Panel => {
   let confirm = false;
   const menu = h('div', { class: 'menu' });
   const nav = new Nav();
+  nav.numbered = true;
   const render = (): void => {
     clear(menu);
     const items = confirm
@@ -305,7 +333,8 @@ PANELS.pause = (app: App): Panel => {
   render();
   const st = app.run!;
   const el = h('div', { class: 'overlay' }, h('div', { class: 'panel narrow' }, h('header', {}, h('h2', {}, t('ui.pause.title')), h('span', { class: 'dim' }, `${t(`mode.${st.opts.mode}.name`)} · ${st.seed}`)),
-    h('div', { class: 'body' }, menu, h('p', { class: 'faint', style: 'margin-top:10px;font-size:0.85em' }, t('ui.pause.note')))));
+    h('div', { class: 'body' }, menu, h('p', { class: 'faint', style: 'margin-top:10px;font-size:0.85em' }, t('ui.pause.note'))),
+    h('footer', {}, app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], ['1–5', t('ui.k.choose')], [KEY.esc(), t('ui.k.back')]]))));
   const p: Panel = { el, onCommand: (e) => { if (closeOn(e)) { if (confirm) { confirm = false; render(); } else close(); return true; } return nav.handle(e) || true; } };
   return p;
 };
@@ -320,6 +349,7 @@ PANELS.agora = (app: App): Panel => {
   const tier = trustTier(st.narrative.trust);
   const menu = h('div', { class: 'menu' });
   const nav = new Nav();
+  nav.numbered = true;
   const ask = (what: 'identify' | 'door' | 'map'): void => { app.act({ t: 'askAgora', what }); close(); };
   const help = st.narrative.agoraHelp;
   const items = [
@@ -333,6 +363,7 @@ PANELS.agora = (app: App): Panel => {
   shell.body.append(cv, h('p', { class: 'agora', style: 'text-align:center' }, `${t('ui.agora.trust')}: ${st.narrative.trust} · ${t(`agora.trust.${tier}`)}`),
     h('p', { class: 'dim', style: 'text-align:center' }, t(`ui.agora.tier.${tier}`)), menu);
   if (st.opts.mode === 'pesadilla') shell.body.append(h('p', { class: 'warn' }, t('agora.silent')));
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], [[KEY.esc(), '@agora'], t('ui.k.close')]]));
   const p = {
     el: shell.root,
     onCommand: (e: CommandEvent) => { if (closeOn(e, ['agora'])) { close(); return true; } return nav.handle(e) || true; },
@@ -349,6 +380,7 @@ PANELS.doorMenu = (app: App, arg?: unknown): Panel => {
   const close = (): void => app.pop(p);
   const menu = h('div', { class: 'menu' });
   const nav = new Nav();
+  nav.numbered = true;
   const items: HTMLElement[] = [];
   const pl = getPlayer(st);
   const dirName = (x: number, y: number): string => {
@@ -373,7 +405,8 @@ PANELS.doorMenu = (app: App, arg?: unknown): Panel => {
   items.push(h('button', { class: 'mi', onclick: close }, t('ui.cancel')));
   menu.append(...items);
   nav.set(items);
-  const el = h('div', { class: 'overlay clear' }, h('div', { class: 'panel narrow' }, h('header', {}, h('h2', {}, t('ui.door.title'))), h('div', { class: 'body' }, menu, h('p', { class: 'faint', style: 'font-size:0.85em' }, t('ui.door.note')))));
+  const el = h('div', { class: 'overlay clear' }, h('div', { class: 'panel narrow' }, h('header', {}, h('h2', {}, t('ui.door.title'))), h('div', { class: 'body' }, menu, h('p', { class: 'faint', style: 'font-size:0.85em' }, t('ui.door.note'))),
+    h('footer', {}, app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], ['1–9', t('ui.k.choose')], [KEY.esc(), t('ui.k.close')]]))));
   const p: Panel = { el, onCommand: (e) => { if (closeOn(e)) { close(); return true; } return nav.handle(e) || true; } };
   return p;
 };
@@ -386,6 +419,7 @@ PANELS.interactMenu = (app: App, arg?: unknown): Panel => {
   const close = (): void => app.pop(p);
   const menu = h('div', { class: 'menu' });
   const nav = new Nav();
+  nav.numbered = true;
   const DN = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
   const items: HTMLElement[] = cands.map((c) => {
     const nm = c.prop.kind === 'npc' && c.prop.npc ? t(`npc.${c.prop.npc}.name`) : c.prop.kind === 'decor' ? t(`ui.decor.${c.prop.label}`) : t(`ui.prop.${c.prop.kind}`);
@@ -396,12 +430,12 @@ PANELS.interactMenu = (app: App, arg?: unknown): Panel => {
   menu.append(...items);
   nav.set(items);
   void st;
-  const el = h('div', { class: 'overlay clear' }, h('div', { class: 'panel narrow' }, h('header', {}, h('h2', {}, t('ui.interact.title'))), h('div', { class: 'body' }, menu)));
+  const el = h('div', { class: 'overlay clear' }, h('div', { class: 'panel narrow' }, h('header', {}, h('h2', {}, t('ui.interact.title'))), h('div', { class: 'body' }, menu),
+    h('footer', {}, app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], ['1–9', t('ui.k.choose')], [KEY.esc(), t('ui.k.close')]]))));
   const p: Panel = {
     el,
     onCommand: (e) => {
       if (closeOn(e)) { close(); return true; }
-      if (e.cmd === 'num' && e.num !== undefined && e.num >= 1 && e.num <= items.length) { items[e.num - 1].click(); return true; }
       return nav.handle(e) || true;
     },
   };

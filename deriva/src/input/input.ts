@@ -2,6 +2,8 @@
  * Entrada: teclado (remapeable), ratón y mando básico. Traduce todo a comandos con nombre;
  * la aplicación decide qué hace cada comando según la pantalla activa.
  */
+import { t } from '../i18n';
+
 export type Command =
   | 'up' | 'down' | 'left' | 'right' | 'upleft' | 'upright' | 'downleft' | 'downright'
   | 'wait' | 'interact' | 'fire' | 'throw' | 'pickup' | 'sneak' | 'light' | 'inventory' | 'implants'
@@ -12,7 +14,7 @@ export const DIR_OF: Partial<Record<Command, number>> = {
   up: 0, upright: 1, right: 2, downright: 3, down: 4, downleft: 5, left: 6, upleft: 7,
 };
 
-export interface CommandEvent { cmd: Command; shift: boolean; ctrl: boolean; num?: number; repeat: boolean; source: 'key' | 'pad' }
+export interface CommandEvent { cmd: Command; shift: boolean; ctrl: boolean; num?: number; repeat: boolean; source: 'key' | 'pad'; /** Tecla física (solo teclado), para atajos de interfaz como Q/E o Inicio/Fin. */ code?: string; /** El comando sale de un campo de texto. */ fromField?: boolean }
 
 export type Handler = (e: CommandEvent) => boolean | void;
 
@@ -64,8 +66,13 @@ export class Input {
     if (c === 'ArrowDown') return '↓';
     if (c === 'ArrowLeft') return '←';
     if (c === 'ArrowRight') return '→';
-    if (c === 'Space') return 'Espacio';
-    if (c === 'Escape') return 'Esc';
+    if (c === 'Space') return t('ui.key.space');
+    if (c === 'Escape') return t('ui.key.esc');
+    if (c === 'Enter') return t('ui.key.enter');
+    if (c === 'Delete') return 'Supr';
+    if (c === 'Slash') return '/';
+    if (c === 'Period') return '.';
+    if (c === 'Comma') return ',';
     return this.keyName(c);
   }
 
@@ -97,7 +104,13 @@ export class Input {
     }
     const tgt = e.target as HTMLElement | null;
     if (tgt && (tgt.tagName === 'INPUT' || tgt.tagName === 'TEXTAREA' || tgt.tagName === 'SELECT')) {
-      if (e.code === 'Escape') { tgt.blur(); this.emit({ cmd: 'cancel', shift: false, ctrl: false, repeat: false, source: 'key' }); }
+      // en un campo de texto se escribe con normalidad; solo las teclas de navegación salen del campo
+      const leave: Record<string, Command> = { Escape: 'cancel', Enter: 'confirm', NumpadEnter: 'confirm', ArrowUp: 'up', ArrowDown: 'down', Tab: e.shiftKey ? 'prev' : 'next' };
+      const out = leave[e.code];
+      if (!out || !this.handler) return;
+      e.preventDefault();
+      tgt.blur();
+      this.emit({ cmd: out, shift: e.shiftKey, ctrl: false, repeat: false, source: 'key', code: e.code, fromField: true });
       return;
     }
     if (!this.enabled || !this.handler) return;
@@ -118,7 +131,7 @@ export class Input {
       if (now - this.lastMove < this.moveRepeatMs) { e.preventDefault(); return; }
       this.lastMove = now;
     } else if (DIR_OF[cmd] !== undefined) this.lastMove = performance.now();
-    const used = this.emit({ cmd, shift: e.shiftKey, ctrl: e.ctrlKey, num, repeat: e.repeat, source: 'key' });
+    const used = this.emit({ cmd, shift: e.shiftKey, ctrl: e.ctrlKey, num, repeat: e.repeat, source: 'key', code: e.code });
     if (used !== false) e.preventDefault();
   }
 

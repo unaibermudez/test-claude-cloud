@@ -109,7 +109,7 @@
   "hub.radio.desc": "El Capitán Tuerca te espera aquí ahora.",
   "hub.door": "Ascensor de servicio",
   "hub.door.desc": "Baja a la estación. Empieza una nueva vida.",
-  "hub.hint": "Muévete con las flechas · F para usar · Esc para el menú",
+  "hub.hint": "Muévete con las flechas · {k}: usar · Tab: lista de puestos · Esc: menú",
   "hub.memorias": "Memorias: {n}",
   "hub.agora.first": "ÁGORA: «Esto es la Cápsula. Aquí vuelves cada vez. No es un hogar, pero tiene calefacción.»",
   "hub.agora.return": "ÁGORA: «De vuelta en la Cápsula. Las Memorias que traes se pueden fijar en la mesa.»",

@@ -1,6 +1,6 @@
 /** Paneles de La Cápsula: árbol de mejoras, bestiario, finales, estadísticas, logros, taquilla y nueva partida. */
 import { App, PANELS } from '../app/app';
-import { h, clear, Nav, panelShell, type Panel } from './dom';
+import { h, clear, Nav, panelShell, scrollBody, KEY, type Panel } from './dom';
 import { t, tOpt } from '../i18n';
 import { UPGRADES, upgradeDef } from '../data/upgrades';
 import { ENDINGS, MAIN_ENDINGS, DEATH_ENDINGS } from '../data/endings';
@@ -52,6 +52,7 @@ PANELS.tree = (app: App): Panel => {
     const all = shell.body.querySelectorAll('.node');
     let idx = 0;
     cols.forEach((nodes, bi) => nodes.forEach((_, ni) => { all[idx++]?.classList.toggle('sel', bi === b && ni === k); }));
+    shell.body.querySelector('.node.sel')?.scrollIntoView({ block: 'nearest' });
   };
   const showDetail = (): void => {
     clear(detail);
@@ -75,10 +76,13 @@ PANELS.tree = (app: App): Panel => {
     render();
   };
   render();
+  shell.footer.append(app.hints([[KEY.lr, t('ui.k.branch')], [KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.buy_up')], [KEY.esc(), t('ui.k.close')]]));
   const p: Panel = {
     el: shell.root,
     onCommand: (e) => {
       if (close(e)) { app.pop(p); return true; }
+      if (e.code === 'Home') { k = 0; mark(); showDetail(); return true; }
+      if (e.code === 'End') { k = cols[b].length - 1; mark(); showDetail(); return true; }
       if (e.cmd === 'left') { b = (b + 5) % 6; k = Math.min(k, cols[b].length - 1); }
       else if (e.cmd === 'right') { b = (b + 1) % 6; k = Math.min(k, cols[b].length - 1); }
       else if (e.cmd === 'up') k = (k + cols[b].length - 1) % cols[b].length;
@@ -100,7 +104,7 @@ PANELS.bestiary = (app: App): Panel => {
   const shell = panelShell(`${t('hub.bestiary')} · ${known}/${BESTIARY_IDS.length}`, { cls: 'wide', onClose: () => app.pop(p) });
   const cards = h('div', { class: 'cards' });
   const nav = new Nav();
-  nav.cols = 3;
+  nav.cols = 'auto';
   const btns: HTMLElement[] = [];
   for (const id of BESTIARY_IDS) {
     const e = meta.bestiary[id];
@@ -118,8 +122,9 @@ PANELS.bestiary = (app: App): Panel => {
     btns.push(card);
     cards.append(card);
   }
-  nav.set(btns);
   shell.body.append(cards);
+  nav.set(btns);
+  shell.footer.append(app.hints([[[KEY.arrows, KEY.lr], t('ui.k.select')], [KEY.esc(), t('ui.k.close')]]));
   const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } return nav.handle(e) || true; } };
   return p;
 };
@@ -145,8 +150,9 @@ PANELS.endings = (app: App): Panel => {
     return h('div', {}, h('h3', { style: 'margin-bottom:6px' }, title), wrap);
   };
   shell.body.append(section(t('ui.ending.main'), MAIN_ENDINGS), section(t('ui.ending.death'), DEATH_ENDINGS));
-  nav.cols = 3;
+  nav.cols = 'auto';
   nav.set(btns);
+  shell.footer.append(app.hints([[[KEY.arrows, KEY.lr], t('ui.k.select')], [KEY.esc(), t('ui.k.close')]]));
   const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } return nav.handle(e) || true; } };
   return p;
 };
@@ -175,12 +181,13 @@ PANELS.stats = (app: App): Panel => {
       h('span', { class: `r ${r.victory ? 'good' : 'danger'}` }, r.ending ? t(`ending.${r.ending}.title`) : r.victory ? '✓' : '✝'), h('span', { class: 'r' }, ` ${r.score} · +${r.memorias}`)));
   }
   shell.body.append(list);
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.scroll')], [KEY.esc(), t('ui.k.close')]]));
   const dailies = Object.entries(m.daily).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 7);
   if (dailies.length) {
     shell.body.append(h('h3', { style: 'margin-top:10px' }, t('mode.diario.name')));
     for (const [k, v] of dailies) shell.body.append(h('div', { class: 'dim' }, `${k}: ${v.score} · ${t('ui.depth', { n: v.floor })}${v.ending ? ` · ${t(`ending.${v.ending}.title`)}` : ''}`));
   }
-  const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } return true; } };
+  const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } scrollBody(shell.body, e); return true; } };
   return p;
 };
 
@@ -197,7 +204,8 @@ PANELS.achievements = (app: App): Panel => {
     cards.append(h('div', { class: `card${has ? ' on' : ' off'}` }, h('div', { class: 'ct' }, `${has ? '★' : '☆'} ${hide ? t('ui.ach.secret') : t(`ach.${a.id}.name`)}`), h('p', {}, hide ? t('ui.ach.secret_desc') : t(`ach.${a.id}.desc`))));
   }
   shell.body.append(cards);
-  const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } return true; } };
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.scroll')], [KEY.esc(), t('ui.k.close')]]));
+  const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } scrollBody(shell.body, e); return true; } };
   return p;
 };
 
@@ -207,7 +215,7 @@ PANELS.wardrobe = (app: App): Panel => {
   const m = app.meta;
   const shell = panelShell(t('hub.wardrobe'), { cls: 'wide', onClose: () => app.pop(p) });
   const nav = new Nav();
-  nav.cols = 3;
+  nav.cols = 'auto';
   const render = (): void => {
     clear(shell.body);
     const cards = h('div', { class: 'cards' });
@@ -226,10 +234,11 @@ PANELS.wardrobe = (app: App): Panel => {
       btns.push(card);
       cards.append(card);
     }
-    nav.set(btns);
     shell.body.append(cards);
+    nav.set(btns);
   };
   render();
+  shell.footer.append(app.hints([[[KEY.arrows, KEY.lr], t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], [KEY.esc(), t('ui.k.close')]]));
   const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } return nav.handle(e) || true; } };
   return p;
 };
@@ -244,9 +253,11 @@ PANELS.newrun = (app: App): Panel => {
   let zone = 1;
   const seedIn = h('input', { type: 'text', maxlength: 32, placeholder: t('ui.newrun.seed_ph'), 'aria-label': t('ui.newrun.seed') }) as HTMLInputElement;
   const nav = new Nav();
+  let first = true;
   const render = (): void => {
     clear(shell.body);
     const items: HTMLElement[] = [];
+    const rows: HTMLElement[][] = [];
     const modeRow = h('div', { class: 'cards' });
     for (const md of modes) {
       const ok = modeUnlocked(m, md);
@@ -256,7 +267,8 @@ PANELS.newrun = (app: App): Panel => {
       modeRow.append(b);
     }
     shell.body.append(h('h3', {}, t('ui.newrun.mode')), modeRow);
-    if (mode === 'semilla') shell.body.append(h('div', { class: 'form', style: 'margin-top:8px' }, h('label', {}, t('ui.newrun.seed')), seedIn));
+    rows.push([...items]);
+    if (mode === 'semilla') { shell.body.append(h('div', { class: 'form', style: 'margin-top:8px' }, h('label', {}, t('ui.newrun.seed')), seedIn)); rows.push([seedIn]); }
     if (mode === 'diario') {
       const seed = dailySeed(new Date());
       const best = m.daily[seed];
@@ -265,21 +277,26 @@ PANELS.newrun = (app: App): Panel => {
     const zones = startZones(m);
     if (zones.length > 1 && mode !== 'diario') {
       const row = h('div', { class: 'radio-row' });
+      const zr: HTMLElement[] = [];
       for (const z of zones) {
         const b = h('button', { class: `btn${z === zone ? ' primary' : ''}`, onclick: () => { zone = z; render(); } }, t(`zone.${z}`));
         items.push(b);
+        zr.push(b);
         row.append(b);
       }
+      rows.push(zr);
       shell.body.append(h('h3', { style: 'margin-top:10px' }, t('ui.newrun.zone')), row);
     }
     const cls = m.profile.lastClass && classUnlocked(m, m.profile.lastClass) ? m.profile.lastClass : 'tecnico';
     const clsBtn = h('button', { class: 'btn', onclick: () => app.open('wardrobe') }, t('ui.newrun.change_class'));
     items.push(clsBtn);
+    rows.push([clsBtn]);
     shell.body.append(h('h3', { style: 'margin-top:10px' }, t('ui.newrun.class')), h('p', {}, `${t(`class.${cls}.name`)} · `, clsBtn));
     const s = app.settings;
     const assists = [s.generousO2 && 'ui.opt.generousO2', s.assistHack && 'ui.opt.assistHack', s.skipHack && 'ui.opt.skipHack', s.dullEnemies && 'ui.opt.dullEnemies', s.longOrbit && 'ui.opt.longOrbit'].filter(Boolean) as string[];
     const optBtn = h('button', { class: 'btn', onclick: () => app.open('options', { tab: 'game' }) }, t('ui.newrun.adjust'));
     items.push(optBtn);
+    rows.push([optBtn]);
     shell.body.append(h('h3', { style: 'margin-top:10px' }, t('ui.newrun.assists')), h('p', { class: 'dim' }, assists.length ? assists.map((k) => t(k)).join(' · ') : t('ui.newrun.no_assists'), ' ', optBtn));
     if (mode === 'pesadilla') shell.body.append(h('p', { class: 'warn' }, t('ui.newrun.nightmare_note')));
     const perks = m.upgrades.length;
@@ -291,12 +308,13 @@ PANELS.newrun = (app: App): Panel => {
       app.startRun(app.newRunOptions({ mode, seed, classId: cls, startZone: (mode === 'diario' ? 1 : zone) as 1 }));
     } }, t('ui.newrun.go'));
     items.push(go);
+    rows.push([go]);
     shell.body.append(h('div', { class: 'actions' }, go));
-    nav.set(items);
-    nav.i = items.length - 1;
-    nav.mark();
+    nav.setRows(rows, !first);
+    if (first) { nav.i = nav.items.indexOf(go); nav.mark(); first = false; }
   };
   render();
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.select')], [KEY.lr, t('ui.newrun.mode')], [KEY.enter(), t('ui.k.ok')], [KEY.esc(), t('ui.k.close')]]));
   const p: Panel = { el: shell.root, refresh: render, onCommand: (e) => { if (close(e)) { app.pop(p); return true; } return nav.handle(e) || true; } };
   return p;
 };
@@ -308,6 +326,7 @@ PANELS.printer = (app: App): Panel => {
   const shell = panelShell(t('hub.printer'), { cls: 'narrow', onClose: () => app.pop(p) });
   shell.body.append(h('p', {}, t('ui.printer.body', { n: m.stats.deaths + 1 })), h('p', { class: 'dim' }, t('ui.printer.stats', { m: m.memoriasTotal, r: m.stats.runs })));
   if (m.flags.truth_seen) shell.body.append(h('p', { class: 'lore' }, t('ui.printer.truth')));
+  shell.footer.append(app.hints([[[KEY.enter(), KEY.esc()], t('ui.k.close')]]));
   const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e) || e.cmd === 'confirm' || e.cmd === 'interact') { app.pop(p); return true; } return true; } };
   return p;
 };
@@ -319,6 +338,7 @@ PANELS.radio = (app: App): Panel => {
   const n = 1 + ((m.stats.runs + stage) % 3);
   shell.body.append(h('p', { class: 'radio' }, t(`ui.radio.s${stage}.${n}`)));
   app.audio.play('radio');
+  shell.footer.append(app.hints([[[KEY.enter(), KEY.esc()], t('ui.k.close')]]));
   const p: Panel = { el: shell.root, onCommand: (e) => { if (close(e) || e.cmd === 'confirm' || e.cmd === 'interact') { app.pop(p); return true; } return true; } };
   return p;
 };

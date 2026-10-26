@@ -1,6 +1,7 @@
 /** Pantallas completas: aviso de contenido, título, introducción, creación, Cápsula, fin de partida, créditos. */
 import { App, PANELS } from '../app/app';
-import { h, clear, Nav, type Panel } from './dom';
+import { h, clear, Nav, KEY, scrollBody, type Panel } from './dom';
+import { STATIONS } from '../render/hub';
 import { t, tOpt, setPronoun, setGlobal, LANGS, type Lang } from '../i18n';
 import type { Pronoun, RunState } from '../core/state';
 import { hasEnemy } from '../data/enemies';
@@ -10,8 +11,9 @@ import { getStats } from '../core/rules';
 
 const VERSION = '1.1.0';
 
-function menuPanel(el: HTMLElement, items: HTMLElement[], extra?: (e: Parameters<NonNullable<Panel['onCommand']>>[0]) => boolean): Panel & { nav: Nav } {
+function menuPanel(el: HTMLElement, items: HTMLElement[], extra?: (e: Parameters<NonNullable<Panel['onCommand']>>[0]) => boolean, numbered = false): Panel & { nav: Nav } {
   const nav = new Nav();
+  nav.numbered = numbered;
   nav.set(items);
   return {
     el, nav,
@@ -39,8 +41,19 @@ PANELS.screen_warning = (app: App): Panel => {
     h('p', {}, t('ui.warning.body')),
     h('p', { class: 'dim' }, t('ui.warning.options')),
     langs,
-    h('div', { class: 'actions' }, btn)));
-  return menuPanel(el, [btn]);
+    h('div', { class: 'actions' }, btn),
+    app.hints([[KEY.lr, t('ui.opt.lang')], [KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')]])));
+  const nav = new Nav();
+  nav.setRows([Array.from(langs.children) as HTMLElement[], [btn]]);
+  nav.i = nav.items.indexOf(btn); nav.mark();
+  return {
+    el,
+    onCommand: (e) => {
+      // ←→ cambian el idioma directamente aunque la selección esté en «Continuar»
+      if ((e.cmd === 'left' || e.cmd === 'right') && nav.current === btn) { const next = LANGS[(LANGS.indexOf(app.settings.lang) + 1) % LANGS.length] as Lang; app.settings.lang = next; app.saveSettings(); app.toScreen('warning'); return true; }
+      return nav.handle(e);
+    },
+  };
 };
 
 // ------------------------------------------------------------------ título
@@ -60,9 +73,10 @@ PANELS.screen_title = (app: App): Panel => {
     h('div', { class: 'title-sub' }, t('ui.title.sub')),
     h('div', { class: 'menu', role: 'menu' }, ...items),
     hasRun ? h('p', { class: 'dim', style: 'margin-top:16px' }, t('ui.title.saved', { zone: t(`zone.${app.run!.map.zone}`), n: app.run!.floorNo })) : null,
-    h('div', { class: 'version' }, `v${VERSION} · ${t('ui.title.hint')}`));
+    h('div', { class: 'title-keys' }, app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], [`1–${items.length}`, t('ui.k.choose')]])),
+    h('div', { class: 'version' }, `v${VERSION}`));
   app.audio.music?.setTheme('title');
-  return menuPanel(el, items);
+  return menuPanel(el, items, undefined, true);
 };
 
 // ------------------------------------------------------------------ introducción
@@ -98,7 +112,7 @@ PANELS.screen_intro = (app: App): Panel => {
 
 // ------------------------------------------------------------------ creación (nombre y pronombres)
 
-function identityForm(app: App, onDone: () => void, submitLabel: string): { el: HTMLElement; items: HTMLElement[] } {
+function identityForm(app: App, onDone: () => void, submitLabel: string): { el: HTMLElement; rows: HTMLElement[][] } {
   const input = h('input', { type: 'text', maxlength: 24, value: app.meta.profile.name || t('ui.default_name'), 'aria-label': t('ui.create.name') }) as HTMLInputElement;
   let pron: Pronoun = app.meta.profile.pronoun ?? 'elle';
   const pbtns: HTMLButtonElement[] = [];
@@ -125,28 +139,32 @@ function identityForm(app: App, onDone: () => void, submitLabel: string): { el: 
     h('label', {}, t('ui.create.name')), input,
     h('label', {}, t('ui.create.pronouns')), h('div', { class: 'radio-row' }, ...pbtns),
     h('span', {}), preview);
-  return { el: h('div', {}, el, h('div', { class: 'actions' }, ok)), items: [...pbtns, ok] };
+  return { el: h('div', {}, el, h('div', { class: 'actions' }, ok)), rows: [[input], pbtns, [ok]] };
+}
+
+function formHints(app: App): HTMLElement {
+  return app.hints([[KEY.arrows, t('ui.k.next')], [KEY.lr, t('ui.create.pronouns')], [KEY.enter(), t('ui.k.ok')]]);
 }
 
 PANELS.screen_create = (app: App): Panel => {
   const f = identityForm(app, () => app.toScreen('hub'), t('ui.create.wake'));
   const el = h('div', { class: 'screen' }, h('div', { class: 'warning', style: 'border-color:var(--line2)' },
-    h('h2', {}, t('ui.create.title')), h('p', { class: 'dim' }, t('ui.create.body')), f.el));
+    h('h2', {}, t('ui.create.title')), h('p', { class: 'dim' }, t('ui.create.body')), f.el, formHints(app)));
   const nav = new Nav();
-  nav.cols = 1;
-  nav.set(f.items);
+  nav.setRows(f.rows);
   return { el, onCommand: (e) => nav.handle(e) };
 };
 
 PANELS.identity = (app: App): Panel => {
   const close = (): void => app.pop(p);
   const f = identityForm(app, close, t('ui.save'));
+  const replay = h('button', { class: 'btn', onclick: () => { app.pop(p); app.toScreen('intro'); } }, t('ui.replay_intro'));
   const el = h('div', { class: 'overlay' }, h('div', { class: 'panel narrow' },
     h('header', {}, h('h2', {}, t('hub.pod')), h('button', { class: 'btn', onclick: close }, '✕')),
     h('div', { class: 'body' }, h('p', { class: 'dim' }, t('hub.pod.desc.long')), f.el,
-      h('div', { class: 'actions' }, h('button', { class: 'btn', onclick: () => { app.pop(p); app.toScreen('intro'); } }, t('ui.replay_intro'))))));
+      h('div', { class: 'actions' }, replay)), h('footer', {}, formHints(app))));
   const nav = new Nav();
-  nav.set(f.items);
+  nav.setRows([...f.rows, [replay]]);
   const p: Panel = { el, onCommand: (e) => { if (e.cmd === 'cancel' || e.cmd === 'pause') { close(); return true; } return nav.handle(e); } };
   return p;
 };
@@ -178,7 +196,7 @@ PANELS.screen_hub = (app: App): Panel => {
     mem.textContent = t('hub.memorias', { n: app.meta.memorias });
     clear(tip);
     if (s) tip.append(h('div', { class: 'n' }, t(`hub.${s.id}`)), h('div', { class: 'dim' }, t(`hub.${s.id}.desc`)), h('div', { class: 'faint' }, t('ui.hub.use', { k: app.input.label('interact') })));
-    else tip.append(h('div', { class: 'dim' }, t('hub.hint')));
+    else tip.append(h('div', { class: 'dim' }, t('hub.hint', { k: app.input.label('interact') })));
   };
   refresh();
   app.checkMetaAchievements();
@@ -195,6 +213,7 @@ PANELS.screen_hub = (app: App): Panel => {
       }
       if (e.cmd === 'pause' || e.cmd === 'cancel') { app.open('hubmenu'); return true; }
       if (e.cmd === 'archive') { app.open('archive'); return true; }
+      if (e.cmd === 'next' || e.cmd === 'prev' || e.cmd === 'map') { app.open('hubstations'); return true; }
       if (e.cmd === 'help') { app.open('help'); return true; }
       return false;
     },
@@ -202,17 +221,34 @@ PANELS.screen_hub = (app: App): Panel => {
   } as Panel & { tick: () => void };
 };
 
+PANELS.hubstations = (app: App): Panel => {
+  const close = (): void => app.pop(p);
+  const list = STATIONS.filter((s) => s.visible(app.meta));
+  const items = list.map((s) => h('button', { class: 'mi station', onclick: () => { app.pop(p); app.hub.goTo(s); app.open(s.panel); } },
+    h('span', { class: 'grow' }, t(`hub.${s.id}`)), h('small', { class: 'faint' }, t(`hub.${s.id}.desc`))));
+  const el = h('div', { class: 'overlay' }, h('div', { class: 'panel narrow' },
+    h('header', {}, h('h2', {}, t('ui.hub.stations')), h('button', { class: 'btn', onclick: close, 'aria-label': 'close' }, '✕')),
+    h('div', { class: 'body' }, h('div', { class: 'menu' }, ...items)),
+    h('footer', {}, app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], ['1–9', t('ui.k.choose')], [KEY.esc(), t('ui.k.close')]]))));
+  const nav = new Nav();
+  nav.numbered = true;
+  nav.set(items);
+  const p: Panel = { el, onCommand: (e) => { if (e.cmd === 'cancel' || e.cmd === 'pause' || e.cmd === 'next' || e.cmd === 'map') { close(); return true; } return nav.handle(e) || true; } };
+  return p;
+};
+
 PANELS.hubmenu = (app: App): Panel => {
   const close = (): void => app.pop(p);
   const items = [
     mi(t('ui.resume'), close),
+    mi(t('ui.hub.stations'), () => { app.pop(p); app.open('hubstations'); }),
     mi(t('ui.title.options'), () => app.open('options')),
     mi(t('ui.help'), () => app.open('help')),
     mi(t('ui.to_title'), () => { app.toScreen('title'); }),
   ];
   const el = h('div', { class: 'overlay' }, h('div', { class: 'panel narrow' }, h('header', {}, h('h2', {}, t('hub.title'))), h('div', { class: 'body' }, h('div', { class: 'menu' }, ...items))));
-  const nav = new Nav(); nav.set(items);
-  const p: Panel = { el, onCommand: (e) => { if (e.cmd === 'cancel' || e.cmd === 'pause') { close(); return true; } return nav.handle(e); } };
+  const nav = new Nav(); nav.numbered = true; nav.set(items);
+  const p: Panel = { el, onCommand: (e) => { if (e.cmd === 'cancel' || e.cmd === 'pause') { close(); return true; } return nav.handle(e) || true; } };
   return p;
 };
 
@@ -284,7 +320,7 @@ PANELS.screen_over = (app: App): Panel => {
   parts.push(h('div', { class: 'actions', style: 'justify-content:center' }, btn));
   const el = h('div', { class: 'screen scroll', style: 'justify-content:flex-start;padding-top:6vh' }, h('div', { style: 'max-width:820px;width:100%' }, ...parts));
   void getStats;
-  return menuPanel(el, [btn]);
+  return menuPanel(el, [btn], (e) => { if (e.cmd === 'up' || e.cmd === 'down' || e.code === 'PageUp' || e.code === 'PageDown' || e.code === 'Home' || e.code === 'End') { scrollBody(el, e); return true; } return false; });
 };
 
 // ------------------------------------------------------------------ créditos
@@ -296,5 +332,9 @@ PANELS.screen_credits = (app: App): Panel => {
     h('div', { class: 'credits', style: 'margin:16px 0' }, t('credits.body')),
     h('div', { class: 'actions' }, back));
   app.audio.music?.setTheme('credits');
-  return menuPanel(el, [back], (e) => { if (e.cmd === 'cancel') { back.click(); return true; } return false; });
+  return menuPanel(el, [back], (e) => {
+    if (e.cmd === 'cancel') { back.click(); return true; }
+    if (e.cmd === 'up' || e.cmd === 'down' || e.code === 'PageUp' || e.code === 'PageDown' || e.code === 'Home' || e.code === 'End') { scrollBody(el, e); return true; }
+    return false;
+  });
 };

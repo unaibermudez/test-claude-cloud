@@ -1,6 +1,6 @@
 /** Paneles ligados a modales de la lógica: diálogo, hackeo, tienda, taller, autocirujano y terminal. */
 import { App, PANELS } from '../app/app';
-import { h, clear, img, Nav, panelShell, type Panel } from './dom';
+import { h, clear, img, Nav, panelShell, tabDelta, KEY, type Panel } from './dom';
 import { t, tOpt } from '../i18n';
 import { currentNode, visibleOptions, evalCond } from '../core/narrative';
 import { sceneDef } from '../data/scenes';
@@ -33,7 +33,8 @@ PANELS.modal_dialog = (app: App): Panel => {
   const who = h('div', { class: 'who' });
   const text = h('div', { class: 'text', 'aria-live': 'polite' });
   const opts = h('div', { class: 'opts' });
-  const box = h('div', { class: 'dialog', role: 'dialog' }, portraitCv, h('div', {}, who, text, opts));
+  const keys = h('div', { class: 'dialog-keys' }, app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.answer')], ['1–9', t('ui.k.choose')], [KEY.space(), t('ui.k.skip_text')], ...(app.voice.available ? [['@fire', t('ui.k.replay')] as [string, string]] : [])]));
+  const box = h('div', { class: 'dialog', role: 'dialog' }, portraitCv, h('div', {}, who, text, opts, keys));
   const nav = new Nav();
   let speaker = '';
   let full = '';
@@ -119,6 +120,7 @@ PANELS.modal_dialog = (app: App): Panel => {
         return true;
       }
       if (e.cmd === 'wait') { nav.current?.click(); return true; }
+      if (e.cmd === 'fire') { app.voice.speak(full, speaker === 'player' ? 'player' : speaker); return true; }
       return nav.handle(e) || true;
     },
   };
@@ -139,6 +141,7 @@ PANELS.modal_hack = (app: App): Panel => {
     const hk = md.hack;
     clear(shell.body);
     const valid = new Set(validPicks(hk));
+    acts.length = 0;
     const hint = st.opts.assistHack ? hackHint(st) : -1;
     const grid = h('div', { class: 'hgrid', style: `grid-template-columns:repeat(${hk.n}, auto)` });
     const cells: HTMLElement[] = [];
@@ -172,15 +175,22 @@ PANELS.modal_hack = (app: App): Panel => {
       h('h3', { style: 'margin-top:8px' }, t('ui.hack.targets')), targets,
       h('p', { class: 'dim', style: 'margin-top:10px' }, t('ui.hack.rules')),
       h('p', { class: 'dim' }, t(hk.axis === 'row' ? 'ui.hack.row' : 'ui.hack.col', { n: hk.line + 1 })),
-      h('div', { class: 'actions' },
+      h('div', { class: 'actions' }, ...pushActs(
         h('button', { class: 'btn', onclick: () => app.act({ t: 'hackSkip' }) }, t('ui.hack.skip', { n: BAL.skipHackCost })),
         hk.success
           ? h('button', { class: 'btn primary', onclick: () => app.act({ t: 'hackAbort' }) }, t('ui.hack.finish'))
-          : h('button', { class: 'btn danger', onclick: () => app.act({ t: 'hackAbort' }) }, t('ui.hack.abort'))),
+          : h('button', { class: 'btn danger', onclick: () => app.act({ t: 'hackAbort' }) }, t('ui.hack.abort')))),
       hk.success ? h('p', { class: 'good' }, t('ui.hack.bonus')) : null);
     shell.body.append(h('div', { class: 'hack' }, grid, side));
+    actNav.set(acts, true);
+    acts.forEach((b) => b.classList.toggle('sel', onActs && b === actNav.current));
+    if (!onActs) nav.mark(); else nav.items.forEach((c) => c.classList.remove('sel'));
   };
-  shell.footer.append(h('span', {}, t('ui.hack.footer')));
+  const acts: HTMLElement[] = [];
+  const pushActs = (...b: HTMLElement[]): HTMLElement[] => { acts.push(...b); return b; };
+  const actNav = new Nav();
+  let onActs = false;
+  shell.footer.append(h('span', { class: 'faint' }, t('ui.hack.footer_note')), app.hints([[[KEY.lr, KEY.arrows], t('ui.k.pick')], [KEY.enter(), t('ui.k.ok')], ['Tab', t('ui.hack.k.buttons')], [KEY.esc(), t('ui.k.abort')]]));
   render();
   nav.onSelect = () => { sel = -1; };
   const p: Panel = {
@@ -188,6 +198,14 @@ PANELS.modal_hack = (app: App): Panel => {
     refresh: render,
     onCommand: (e) => {
       if (e.cmd === 'cancel' || e.cmd === 'pause') { app.act({ t: 'hackAbort' }); return true; }
+      if (e.cmd === 'next' || e.cmd === 'prev') { onActs = !onActs; render(); return true; }
+      if (onActs) {
+        if (e.cmd === 'left' || e.cmd === 'up') actNav.move(-1);
+        else if (e.cmd === 'right' || e.cmd === 'down') actNav.move(1);
+        else if (e.cmd === 'confirm' || e.cmd === 'interact') { onActs = false; actNav.current?.click(); }
+        render();
+        return true;
+      }
       if (e.cmd === 'up' || e.cmd === 'left') { nav.move(-1); return true; }
       if (e.cmd === 'down' || e.cmd === 'right') { nav.move(1); return true; }
       return nav.handle(e) || true;
@@ -204,6 +222,8 @@ PANELS.modal_terminal = (app: App): Panel => {
   const close = (): void => { app.act({ t: 'closeModal' }); };
   const shell = panelShell(t('ui.term.title'), { cls: 'narrow', onClose: close });
   const nav = new Nav();
+  nav.numbered = true;
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.ok')], ['1–9', t('ui.k.choose')], [KEY.esc(), t('ui.k.abort')]]));
   const render = (): void => {
     const pr = st.map.props.find((q) => q.id === md.propId);
     if (!pr) return;
@@ -282,11 +302,12 @@ PANELS.modal_shop = (app: App): Panel => {
     shell.body.append(h('p', { class: 'dim' }, `${t('ui.shop.scrap')}: ⚙ ${st.player.scrap} · ${t('ui.inv.slots', { n: st.player.inv.length, max: BAL.invSize })}`), h('div', { class: 'cols' }, list, detail));
   };
   render();
+  shell.footer.append(app.hints([...(merchant ? [[[KEY.tabs, KEY.lr], t('ui.k.tab')] as [string[], string]] : []), [KEY.arrows, t('ui.k.select')], [KEY.enter(), `${t('ui.k.buy')}${merchant ? ` / ${t('ui.k.sell')}` : ''}`], [KEY.esc(), t('ui.k.close')]]));
   const p: Panel = {
     el: shell.root, refresh: render,
     onCommand: (e) => {
       if (e.cmd === 'cancel' || e.cmd === 'pause') { close(); return true; }
-      if (merchant && (e.cmd === 'next' || e.cmd === 'prev' || e.cmd === 'left' || e.cmd === 'right')) { tab = 1 - tab; nav.i = 0; render(); return true; }
+      if (merchant && (tabDelta(e) || e.cmd === 'left' || e.cmd === 'right')) { tab = 1 - tab; nav.i = 0; render(); return true; }
       return nav.handle(e) || true;
     },
   };
@@ -321,6 +342,7 @@ PANELS.modal_workbench = (app: App): Panel => {
     shell.body.append(h('div', { class: 'cols' }, list, detail));
   };
   render();
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.craft')], [KEY.esc(), t('ui.k.close')]]));
   const p: Panel = { el: shell.root, refresh: render, onCommand: (e) => { if (e.cmd === 'cancel' || e.cmd === 'pause') { close(); return true; } return nav.handle(e) || true; } };
   return p;
 };
@@ -367,6 +389,7 @@ PANELS.modal_surgeon = (app: App): Panel => {
     shows[nav.i]?.();
     shell.body.append(h('p', { class: 'dim' }, `⚙ ${st.player.scrap}`), h('div', { class: 'cols' }, list, detail));
   };
+  shell.footer.append(app.hints([[KEY.arrows, t('ui.k.select')], [KEY.enter(), t('ui.k.surgery')], [KEY.esc(), t('ui.k.close')]]));
   render();
   const p: Panel = { el: shell.root, refresh: render, onCommand: (e) => { if (e.cmd === 'cancel' || e.cmd === 'pause') { close(); return true; } return nav.handle(e) || true; } };
   return p;

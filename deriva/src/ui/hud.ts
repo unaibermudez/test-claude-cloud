@@ -16,6 +16,7 @@ import { drawMinimap } from '../render/minimap';
 import { IMPLANT_SLOTS } from '../core/content';
 import { knownItemName } from '../core/narrative';
 import type { Tone } from '../core/events';
+import { objective, bearing } from './objective';
 
 export interface LogLine { text: string; tone: Tone; turn: number; n: number; at: number }
 
@@ -65,6 +66,11 @@ export class Hud {
   subs = h('div', { class: 'subtitles' });
   private tut = h('div', { class: 'tutorial', style: 'display:none' });
   private speaking = h('div', { class: 'speaking', style: 'display:none' }, '🔊');
+  private keys = h('div', { class: 'keystrip', 'aria-hidden': 'true' });
+  private keysSig = '';
+  /** Etiqueta de la tecla asignada a un comando (la pone la aplicación). */
+  keyLabel: ((cmd: string) => string) | null = null;
+  showKeys = true;
   lines: LogLine[] = [];
   bossId: number | null = null;
   glitch = true;
@@ -73,7 +79,7 @@ export class Hud {
 
   constructor() {
     this.nav.append(h('div', { class: 'minimap-wrap' }, this.mini), this.navText);
-    this.el = h('div', { class: 'hud' }, this.vitals, this.nav, this.boss, this.hotbar, this.log, this.hint, this.prompt, this.subs, this.tut, this.speaking);
+    this.el = h('div', { class: 'hud' }, this.vitals, h('div', { class: 'hud-right' }, this.nav, this.tut), this.boss, this.hotbar, this.log, this.hint, this.prompt, this.subs, this.speaking, this.keys);
   }
 
   push(text: string, tone: Tone, turn: number): void {
@@ -193,6 +199,23 @@ export class Hud {
         pips),
       h('div', { class: 'row' }, this.agoraCv, h('span', { class: 'agora' }, `ÁGORA · ${t(`agora.trust.${trustTier(st.narrative.trust)}`)}`), h('span', { class: 'scrap' }, `⚙ ${pl.scrap}`)),
     );
+    const obj = objective(st);
+    const dir = bearing(st, obj);
+    this.navText.append(h('div', { class: `objective${obj.urgent ? ' urgent' : ''}`, title: t('ui.obj.title') },
+      h('span', { class: 'ot' }, '▸'), h('span', { class: 'otext' }, t(obj.key, obj.params)), dir ? h('span', { class: 'odir' }, dir) : null));
+
+    // ---------------------------------------------------------- franja de teclas
+    const lab = this.keyLabel;
+    const sig = this.showKeys && lab ? ['interact', 'fire', 'inventory', 'map', 'help', 'pause'].map((c) => lab(c)).join('|') + t('ui.ks.use') : '';
+    if (sig !== this.keysSig) {
+      this.keysSig = sig;
+      clear(this.keys);
+      if (sig && lab) {
+        const pairs: [string, string][] = [['interact', 'ui.ks.use'], ['fire', 'ui.ks.fire'], ['inventory', 'ui.ks.inv'], ['map', 'ui.ks.map'], ['help', 'ui.ks.help'], ['pause', 'ui.ks.menu']];
+        for (const [c, k] of pairs) this.keys.append(h('span', { class: 'kh' }, h('kbd', {}, lab(c)), h('span', {}, t(k))));
+      }
+      this.keys.style.display = sig ? '' : 'none';
+    }
 
     // ---------------------------------------------------------- jefe
     const boss = this.bossId !== null ? st.actors.find((a) => a.id === this.bossId && !a.dead) : null;
