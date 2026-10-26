@@ -12,6 +12,8 @@ No hay recursos externos.
 
 ## Cómo jugar
 
+**Juega en el navegador:** https://unaibermudez.github.io/test-claude-cloud/
+
 ```bash
 cd deriva
 npm install
