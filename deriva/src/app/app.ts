@@ -664,7 +664,7 @@ export class App {
     for (const it of st.items) if (it.x === x && it.y === y) { const k = (st.known[it.item.id] || !itemDef(it.item.id).unknown) ? `item.${it.item.id}.name` : null; parts.push(k ? t(k) + (it.item.n > 1 ? ` ×${it.item.n}` : '') : t('ui.look.unknown_item')); }
     for (const p of m.props) {
       if (p.x !== x || p.y !== y) continue;
-      if (p.kind === 'decor') parts.push(t(`ui.decor.${p.label}`));
+      if (p.kind === 'decor' || (p.kind === 'corpse' && p.label)) parts.push(t(`ui.decor.${p.label}`));
       else if (p.kind === 'npc' && p.npc) parts.push(t(`npc.${p.npc}.name`));
       else if (p.kind === 'keycard' && p.used) continue;
       else if (p.kind === 'log' && p.used) continue;

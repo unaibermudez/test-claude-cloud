@@ -15,7 +15,7 @@ import { monsterAct, beginMonsterPhase, noteSeen } from './ai';
 import { actorSpeed, getPlayer, spawnActor, freeSpotNear } from './actors';
 import { environmentTurn } from './atmos';
 import { computeVision, getVision } from './vision';
-import { getStats, addItem } from './rules';
+import { getStats, addItem, hasPerkFlag } from './rules';
 import { classDef } from '../data/classes';
 import { itemDef, ALL_ITEMS, INJECTOR_LOOKS, MODULE_LOOKS } from '../data/items';
 import { upgradeDef } from '../data/upgrades';
@@ -219,6 +219,16 @@ export function enterFloor(st: RunState, ev: EventSink, zone: ZoneId, floor: num
     const tier = st.narrative.trust < 20 ? 'hostile' : st.narrative.trust < 40 ? 'wary' : st.narrative.trust < 60 ? 'neutral' : st.narrative.trust < 80 ? 'warm' : 'close';
     ev.msg(`agora.zone${zone}.${tier}`, {}, 'agora');
   }
+  // mejoras de información al llegar
+  if (hasPerkFlag(st, 'log_radar')) for (const q of map.props) if (q.kind === 'log' && !q.used) map.seen[q.y * map.w + q.x] = 1;
+  if (hasPerkFlag(st, 'service_map')) {
+    for (const r of map.rooms) {
+      if (chebyshev(r.x + (r.w >> 1), r.y + (r.h >> 1), p.x, p.y) > 22) continue;
+      for (let x = r.x - 1; x <= r.x + r.w; x++) for (const y of [r.y - 1, r.y + r.h]) if (x >= 0 && y >= 0 && x < map.w && y < map.h) map.seen[y * map.w + x] = 1;
+      for (let y = r.y; y < r.y + r.h; y++) for (const x of [r.x - 1, r.x + r.w]) if (x >= 0 && y >= 0 && x < map.w && y < map.h) map.seen[y * map.w + x] = 1;
+    }
+  }
+  if (zone !== prevZone && hasPerkFlag(st, 'agora_extra') && st.opts.mode !== 'pesadilla') ev.msg(`agora.extra.${zone}`, {}, 'agora');
   if (tutorial && st.metaSnapshot.runs === 0) ev.push({ t: 'tutorial', key: 'tut.start' });
   if (map.event) ev.msg(`event.${map.event}`, {}, 'warn');
   ev.push({ t: 'floor', zone, floor });

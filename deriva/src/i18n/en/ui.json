@@ -666,5 +666,6 @@
  "tut.npc.title": "Survivors",
  "ui.hack.finish": "Finish (access granted)",
  "ui.hack.bonus": "Access granted. You can keep going for the extra sequences or finish now.",
- "ui.miss": "miss"
+ "ui.miss": "miss",
+ "ui.decor.clone": "A previous clone"
 }

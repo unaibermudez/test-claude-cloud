@@ -20,7 +20,7 @@ Este documento se regenera automáticamente. No editar a mano.
 | entradas de bestiario | 67 | — |
 | escenas narrativas | 63 | — |
 | objetos en total | 122 | — |
-| claves de texto (por idioma) | 2544 | — |
+| claves de texto (por idioma) | 2551 | — |
 
 ## Zonas
 

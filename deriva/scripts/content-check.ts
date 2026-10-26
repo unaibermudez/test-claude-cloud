@@ -160,6 +160,7 @@ const UI_FAMILIES: Record<string, string[]> = {
   'key': ['amber', 'cyan', 'violet', 'circuit', 'boss'],
   'slot': ['brain', 'eyes', 'torso', 'arms', 'legs'],
   'agora.death': ['1', '2', '3', '4', '5', '6', '7', '8'],
+  'agora.extra': ['1', '2', '3', '4', '5', '6'],
   'intro': ['1', '2', '3', '4', '5', '6', 'agora', 'skip'],
 };
 for (const [pre, list] of Object.entries(UI_FAMILIES)) for (const x of list) need(`${pre}.${x}`, `familia ${pre}`);

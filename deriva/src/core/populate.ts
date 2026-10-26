@@ -94,6 +94,20 @@ export function populateFloor(st: RunState, tutorial: boolean): void {
     const cont = m.props.find((p) => p.kind === 'container');
     if (cont) cont.loot = [...(cont.loot ?? []), { id: 'traje_eva', n: 1 }];
   }
+  // rastro de clones anteriores (mejora): un cuerpo con algo útil al lado
+  if (!tutorial && !m.boss && st.metaSnapshot.deaths > 0 && hasPerkFlag(st, 'clone_notes') && chance(rng, 0.55)) {
+    const r = pick(rng, lootRooms.filter((q) => q.kind !== 'start'));
+    const cells = r ? roomCellsFree(st, r) : [];
+    if (cells.length >= 2) {
+      const c = pick(rng, cells);
+      m.props.push({ id: nextPropId(st), kind: 'corpse', x: c.x, y: c.y, label: 'clone' });
+      const id = lootRoll(st, { types: ['consumable', 'gadget', 'ammo'] });
+      const c2 = cells.find((q) => Math.max(Math.abs(q.x - c.x), Math.abs(q.y - c.y)) === 1) ?? c;
+      if (id) st.items.push({ id: st.nextId++, x: c2.x, y: c2.y, item: stackFor(st, id) });
+      st.items.push({ id: st.nextId++, x: c2.x, y: c2.y, item: { id: 'piezas', n: 2 + int(rng, 0, 3) } });
+      invalidateProps(m);
+    }
+  }
   // alijo de zona (mejora)
   if (m.floor === 1 && hasPerkFlag(st, 'zone_cache') && !tutorial) {
     const cells = roomCellsFree(st, startRoom);
