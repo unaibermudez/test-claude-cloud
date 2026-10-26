@@ -36,6 +36,7 @@ export function hpMult(st: RunState): number {
 export function dmgMult(st: RunState, a: Actor): number {
   let m = 1;
   if (a.faction === 'enemy') {
+    m *= BAL.enemyDmg;
     if (st.opts.mode === 'dificil') m *= BAL.hardDmg;
     if (st.opts.mode === 'pesadilla') m *= BAL.nightmareDmg;
     if (a.elite === 'resonante' || a.elite === 'voraz') m *= 1.15;

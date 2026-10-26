@@ -31,9 +31,9 @@ export const BAL = {
   breachRate: 25,
   equalizeRate: 0.3,
   lifeSupportRate: 3,
-  fireSpread: 0.12,
+  fireSpread: 0.09,
   fireDmg: 2,
-  naturalRegen: 12,
+  naturalRegen: 10,
   fireMinPressure: 40,
   pullPressure: 60,
   // reloj
@@ -65,7 +65,8 @@ export const BAL = {
   memoriasLog: 2,
   memoriasPerKills: 15,
   // generación
-  enemyScaleHp: 0.1, // +10 % de vida por piso global
+  enemyScaleHp: 0.06, // +6 % de vida por piso dentro de la zona
+  enemyDmg: 0.85,
   hardHp: 1.25,
   hardDmg: 1.2,
   nightmareHp: 1.35,

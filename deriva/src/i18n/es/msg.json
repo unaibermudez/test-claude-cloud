@@ -184,7 +184,6 @@
   "msg.arc_advance": "La historia de {name} avanza.",
   "msg.received": "Recibes: {item} ×{n}.",
   "msg.tremor": "La estación tiembla.",
-
   "key.amber": "ámbar",
   "key.cyan": "cian",
   "key.violet": "violeta",
@@ -195,7 +194,6 @@
   "slot.torso": "torso",
   "slot.arms": "brazos",
   "slot.legs": "piernas",
-
   "unknown.injector.0": "inyector ámbar",
   "unknown.injector.1": "inyector cobalto",
   "unknown.injector.2": "inyector esmeralda",
@@ -215,14 +213,12 @@
   "unknown.module.6": "módulo antiguo sin etiqueta",
   "unknown.module.7": "módulo blanco sin etiqueta",
   "unknown.desc": "No sabes qué hace hasta que lo uses, lo analice un laboratorio o se lo preguntes a ÁGORA.",
-
   "event.gravedad": "Avería de gravedad: sin anclajes, cada paso te lleva más lejos de lo previsto.",
   "event.apagon": "Apagón general: solo quedan las luces de emergencia y tu linterna.",
   "event.fuego": "Incendio en cubierta: el fuego necesita aire. Tú también.",
   "event.brecha": "Brecha de casco: una sección del piso está abierta al vacío.",
   "event.radiacion": "Tormenta de radiación: Tártaro escupe partículas contra el blindaje.",
   "event.ruido": "Subida del Ruido mental: el Coro está más cerca en este piso.",
-
   "sub.tremor": "[Temblor estructural]",
   "sub.vent": "[Alarma de esclusa]",
   "sub.alarm": "[Alarma]",
@@ -235,7 +231,6 @@
   "sub.shot": "[Disparo]",
   "sub.boss": "[Rugido]",
   "sub.heartbeat": "[Latido acelerado]",
-
   "tut.start": "Te mueves con las flechas, WASD o el teclado numérico. Pulsa H para ver la ayuda. Moverte contra un enemigo lo ataca.",
   "tut.dark": "Está oscuro: pulsa L para encender la linterna. Gasta energía y te hace visible.",
   "tut.o2": "El oxígeno baja con cada turno. Las estaciones azules lo rellenan.",
@@ -248,7 +243,6 @@
   "tut.vacuum": "Una sección en vacío: el oxígeno se agota muy deprisa. Si abres una puerta, el aire saldrá en esa dirección.",
   "tut.hallu": "Ruido mental alto: verás cosas que no están. Las alucinaciones no proyectan sombra ni hacen ruido.",
   "tut.npc": "Alguien vivo. Acércate y pulsa F para hablar.",
-
   "hallu.msg1": "ÁGORA: «Vuelve a la cápsula. Aún no es la hora.»",
   "hallu.msg2": "Te parece oír tu nombre. El de verdad.",
   "hallu.msg3": "Un panel dice SALIDA donde antes decía MORGUE.",
@@ -257,7 +251,6 @@
   "hallu.msg6": "Oxígeno: 100 %. (No te lo crees.)",
   "hallu.msg7": "Tus manos tienen demasiados dedos. Luego, no.",
   "hallu.msg8": "Las luces laten al ritmo de tu corazón.",
-
   "agora.decay1": "ÁGORA: «La órbita de este piso empieza a quejarse. No es urgente. Aún.»",
   "agora.decay2": "ÁGORA: «El casco cede por varios puntos. Te recomiendo moverte.»",
   "agora.decay3": "ÁGORA: «Estado crítico. Si te quedas aquí, el piso te tendrá a ti.»",
@@ -273,7 +266,6 @@
   "agora.door": "ÁGORA: «Abierta. Por ti, y solo esta vez.»",
   "agora.map": "ÁGORA: «Te paso los planos. Están desactualizados unos once años.»",
   "agora.silent": "ÁGORA no contesta.",
-
   "agora.zone1.hostile": "ÁGORA: «Criogenia. Tú sabrás lo que haces aquí.»",
   "agora.zone1.wary": "ÁGORA: «Bienvenid{o|a|e} a Criogenia y Residencial. Procura no despertar a nadie que no quiera ser despertado.»",
   "agora.zone1.neutral": "ÁGORA: «Buenos días, Tripulante 114. Estás en Criogenia. La temperatura es de cuatro grados y el ambiente, mejorable.»",
@@ -304,7 +296,6 @@
   "agora.zone6.neutral": "ÁGORA: «Casco exterior. Tártaro está a 40.000 kilómetros y acercándose. Bonita vista.»",
   "agora.zone6.warm": "ÁGORA: «Estás fuera. Mantén las botas pegadas a la plancha. Si sueltas, yo no puedo ir a buscarte.»",
   "agora.zone6.close": "ÁGORA: «Fuera, en el casco. Aquí murió alguien a quien quise. No sé cómo sé eso. Ten cuidado.»",
-
   "agora.death.1": "ÁGORA: «Bienvenid{o|a|e} de nuevo. No te preocupes: es la primera vez. Más o menos.»",
   "agora.death.2": "ÁGORA: «Otra vez aquí. Tu clon anterior llegó al piso {floor}. Te he guardado lo que pude de él.»",
   "agora.death.3": "ÁGORA: «Hola. Has vuelto a morir. No te lo tomes como un reproche; es estadística.»",
@@ -313,5 +304,6 @@
   "agora.death.6": "ÁGORA: «Lo que te mató no te reconoció. Yo sí. Siempre.»",
   "agora.death.7": "ÁGORA: «He tenido tiempo de pensar mientras se imprimía tu clon. No he llegado a ninguna conclusión útil.»",
   "agora.death.8": "ÁGORA: «Hola, otra vez. La órbita ha bajado un poco más. Tú no tienes la culpa. De esto no.»",
-  "agora.end.1": "ÁGORA: «Has llegado al final de algo. No sé si de esto. Vuelve cuando quieras.»"
+  "agora.end.1": "ÁGORA: «Has llegado al final de algo. No sé si de esto. Vuelve cuando quieras.»",
+  "msg.brink": "El Coro te roza por dentro. Si vuelves a llegar a este punto en los laboratorios, no saldrás."
 }

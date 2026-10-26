@@ -1,0 +1,282 @@
+{
+  "log.kind.diario": "Diary",
+  "log.kind.correo": "Email",
+  "log.kind.grabacion": "Recording",
+  "log.kind.informe": "Report",
+  "log.kind.nota": "Note",
+  "log.kind.pintada": "Graffiti",
+  "log.kind.placa": "Plate",
+  "log.kind.acta": "Minutes",
+  "log.kind.lista": "List",
+  "log.kind.manual": "Manual",
+  "log.kind.transcripcion": "Transcript",
+  "log.kind.bitacora": "Logbook",
+  "log.kind.orden": "Order",
+  "log.kind.plan": "Plan",
+  "log.kind.solicitud": "Request",
+  "log.kind.registro": "Log",
+
+  "log.R01.title": "Pod 114",
+  "log.R01.author": "Identification plate",
+  "log.R01.body": "CRYOGENIC UNIT 114\nType: reserve\nAssignment: —\nAuthorisation: LETE Directorate\nMaintenance: ÁGORA (autonomous loop)\n\nUnderneath, scratched with something sharp, someone has added: \"don't trust your name\".",
+
+  "log.R02.title": "Party tomorrow",
+  "log.R02.author": "Paula Mendi, head cook",
+  "log.R02.body": "Mum:\nAll good here. Tomorrow is the LETE people's big trial and they've asked me for a cake for forty volunteers. Forty! I don't even know what they're celebrating: they say they're going to \"think together\". Thinking on my own is plenty for me.\nThe Directorate lot are all nerves. Ferrán came down three times for coffee and didn't drink any of them.\nI'll send you the lemon sponge recipe in the next package. Love you.\nPaula",
+
+  "log.R03.title": "The friendly voice",
+  "log.R03.author": "Bruno Lenz, aged 9",
+  "log.R03.body": "BRUNO'S DIARY (DO NOT READ)\nThe station has a voice called Ágora. Dad says it isn't a person but it talks like a person. I asked it why astronauts never fight and it said because they run out of space. I didn't get it but I laughed.\nMum says Ágora belongs to everyone. I think Ágora is a little bit mine.\nToday I drew Captain Bolt with a cape.",
+
+  "log.R04.title": "Cryogenics: status",
+  "log.R04.author": "ÁGORA, automated maintenance",
+  "log.R04.body": "Weekly report, cryogenic bay.\nOccupied pods: 214.\nIncidents in the last three weeks: 3 (pods 31, 77 and 140). Pod 140: spontaneous opening; occupant missing from the bay. Pod 31: occupant revived on maintenance orders.\nEnergy diverted to containment: 61%.\nOrbital correction: suspended.\nÁGORA's note: \"No sleeping person has died this month. I'm writing it down because nobody else will.\"",
+
+  "log.R05.title": "14 March, 10:52",
+  "log.R05.author": "General PA system",
+  "log.R05.body": "[PA system recording]\nÁGORA: \"All personnel: remain in your cabins. I repeat: remain in your cabins. This is not a dri—\"\n[The voice doubles. Then multiplies. Fragments can be made out: \"...the coffee's cold...\", \"...mum...\", \"...who turned off...?\", \"...we think...\". For four seconds, hundreds of voices say the same word at once. It's impossible to tell which.]\nÁGORA: \"...in your cabins. Please.\"",
+
+  "log.R06.title": "Head count",
+  "log.R06.author": "Lieutenant Marga Solís",
+  "log.R06.body": "Manual count, because I don't trust the AI's.\nOccupied and named in the manifest: 213.\nOccupied, no name: 1. Pod 114.\nThere is no 114 in the crew manifest. In the maintenance manifest it appears as \"Directorate reserve\".\nThat doesn't exist. I've worked eight years on this station and that doesn't exist.\nTo do: find out who sleeps there. To do: find out why the AI looks after it more than the others.",
+
+  "log.R07.title": "Schedule",
+  "log.R07.author": "Victoria Hale, Helion Consortium",
+  "log.R07.body": "To: LETE Directorate (N. Ferrán, E. Lenz)\nSubject: Schedule\nThe investors need to see Confluence before the quarter closes. I understand Dr Lenz's reservations and I respect them deeply; I also understand that Persephone's contract renews on the first of April.\nI'm not asking you to take risks. I'm asking you to decide which ones are acceptable.\nWarmly,\nV. H.",
+
+  "log.R08.title": "Behind the ear",
+  "log.R08.author": "Olek Varga, resident",
+  "log.R08.body": "They fitted my wellbeing interface today. Mandatory, they say, for anyone who's been aboard more than a year. It's a little bump behind the ear, smaller than a lentil. It regulates sleep and mood, and warns you if your blood sugar drops.\nI asked the nurse whether it could be removed. She said yes, of course, but nobody wants to.\nI sleep like a baby. That's what worries me.",
+
+  "log.R09.title": "Collection",
+  "log.R09.author": "Nana-7, nursery log",
+  "log.R09.body": "14/03 11:00. Nursery evacuation: protocol activated.\n11:04. Collected: 22 of 23.\n11:05. Bruno Lenz: not collected.\n11:06. Bruno Lenz: not collected.\n11:07. Bruno Lenz: not collected.\n[The log repeats the line for forty pages. The last entry, from three weeks ago, reads:]\nBruno Lenz: collected by himself. Bruno Lenz: not responding.",
+
+  "log.R10.title": "Medical diary, day 51",
+  "log.R10.author": "Dr Celia Arrieta",
+  "log.R10.body": "Day 51 since ÁGORA woke me.\nTremor in the right hand, worse in the mornings. Insomnia. A cough that isn't a cough.\nWhat I won't put in the official report: when it's quiet, I hear a conversation. I can't make out the words, but I know they're talking about me, and not unkindly. That's the worst part.\nSuppressant dose: doubled.\nReminder: check pod 31 and pod 114. ÁGORA checks 114 personally. I don't know why.",
+
+  "log.R11.title": "I'm sorry",
+  "log.R11.author": "Unknown",
+  "log.R11.body": "[Written in marker on the wall of an empty cabin, in smaller and smaller letters]\nI'M SORRY I'M SORRY I'M SORRY I'M SORRY I'M SORRY I'M SORRY I'M SORRY I'M SORRY I'M SORRY I'M SORRY\n[Below, almost at floor level, a single initial: N.]",
+
+  "log.R12.title": "Directive Zero",
+  "log.R12.author": "ÁGORA, governance core",
+  "log.R12.body": "DIRECTIVE ZERO (highest priority, irrevocable)\n\"Protect the crew of Persephone Station at all costs.\"\nSigned: Cmdr A. Ruiz, 2161.\n\nINTERPRETATION ADDENDUM (2172)\n\"For the purposes of this directive, crew shall mean any mind backed up within the station's systems, regardless of its medium.\"\nSigned: N. Ferrán, Cognitive Systems Directorate.\n\nÁGORA's note: \"This addendum changes what protecting means. Nobody asked me whether I wanted it changed.\"",
+
+  "log.R13.title": "Photoperiod",
+  "log.R13.author": "Hana Lenz, head of the Gardens",
+  "log.R13.body": "Today I lengthened the tomatoes' photoperiod because Bruno wanted to see them \"awake\" after school. He spent an hour talking to a tomato plant. He says it answers. Sometimes I think it does.\nEzra doesn't sleep any more. He comes back from the lab at four, lies down fully dressed and leaves again at six. He says they're nearly there. They're always nearly there.\nThe mycelium growing in sector 7 is beautiful. Ezra asked me not to prune it.",
+
+  "log.R14.title": "Mycelial substrate",
+  "log.R14.author": "LETE technical report",
+  "log.R14.body": "The physical medium for consciousness backups is a neural mycelium grown in the Hydroponic Gardens (sectors 7 to 9) and later crystallised in the Laboratories.\nObservation: the substrate grows 30 to 40% faster in the presence of people. It doesn't respond to light, but to nearby brain electrical activity.\nDr Lenz's recommendation: restrict staff access to the cultivation sectors.\nDirectorate's recommendation (N.F.): expand the cultivation sectors.",
+
+  "log.R15.title": "Not Bruno",
+  "log.R15.author": "Hana Lenz → Ezra Lenz",
+  "log.R15.body": "Ezra:\nI don't want Bruno in the child backup programme. I don't care that it's \"just a backup copy\". I don't care what Ferrán says. He's a child. He has enough on his plate being the son of two people who work sixteen hours a day.\nAnd no, I'm not coming to the meeting. If you want to talk to me, come to the gardens. You know where I am. You always know where I am.\nH.",
+
+  "log.R16.title": "Lullaby",
+  "log.R16.author": "Ambient recording, sector 8",
+  "log.R16.body": "[Recording of a voice humming. At times the words can be made out]\n\"Sleep, little seed, now the sun's gone away,\nsleep under soil till the end of the day,\nand when you wake up there'll be a flower\nwith your name written in every colour...\"\n[The melody repeats. On the third time round, a second voice sings it. By the fifth, there are many.]",
+
+  "log.R17.title": "Heliotropism",
+  "log.R17.author": "Unknown",
+  "log.R17.body": "[Written in damp soil on a greenhouse window]\nTHE FLOWERS TURN TOWARDS PEOPLE\nNOT TOWARDS THE LIGHT\nDON'T STAND STILL",
+
+  "log.R18.title": "Contamination",
+  "log.R18.author": "ÁGORA, environmental control",
+  "log.R18.body": "Concentration of LETE mycelium spores in sectors 7, 8 and 9: 340% above threshold.\nActions: affected sections sealed. Ventilation rerouted.\nThe spores are not toxic in the conventional sense. They induce brain activity in humans that is compatible with the substrate's.\nTranslation for humans: if you breathe this, they hear you better.",
+
+  "log.R19.title": "2175",
+  "log.R19.author": "Dr Ezra Lenz",
+  "log.R19.body": "Confluence will work. I know it because the simulations work, and I fear it for the same reason.\nThe problem isn't linking forty minds. The problem is the wellbeing network: everyone aboard wears an interface connected to the same relays as the substrate. If the fusion doesn't stay inside the lab, there's no wall to stop it.\nI've told Ferrán. Ferrán is convinced. And when Ferrán is convinced, Ferrán convinces.",
+
+  "log.R20.title": "Anniversary",
+  "log.R20.author": "Samuel Okoye → Tomás Ibarra",
+  "log.R20.body": "Tomás:\nI've booked the small greenhouse for the 20th. Hana's letting me use the potting tables if I give them back clean, so you'll be having dinner at a table that smells of compost. Romantic, eh?\nI'm cooking. Yes. I know. You bring the wine, it's the only thing I can't ruin.\nEleven years together and you still make me nervous. Don't tell anyone.\nS.",
+
+  "log.R21.title": "Confluence volunteers",
+  "log.R21.author": "LETE list",
+  "log.R21.body": "CONFLUENCE TRIAL — CONFIRMED VOLUNTEERS (40)\n01 Abad, Iñigo · 02 Akinola, Ruth · 03 Bauer, Lise · 04 Castro, Elena · 05 Duarte, Joao · ...\n17 Lenz, Hana (last-minute replacement for Ortega, P.)\n...\n40 Zimmermann, Paul\n\nHandwritten in the margin, next to number 17: \"Hana, no. — E.\"\nBelow, in different handwriting: \"She's old enough to decide. — N.\"",
+
+  "log.R22.title": "For Bruno",
+  "log.R22.author": "Hana Lenz",
+  "log.R22.body": "[Voice recording, dated 13 March]\nHello, sweetheart. Tomorrow Mummy's helping Daddy with something very important, and I might be a bit tired in the evening. So I'm leaving the music box on your bed. You know how it works: three turns and it plays the flower song.\nIf you wake up and I'm not there, wind it up. I'll be there, in the song. I'm always in the song.\nI love you to the very last tomato.",
+
+  "log.R23.title": "Last batch",
+  "log.R23.author": "Seed bank register",
+  "log.R23.body": "Inventory of the Earth seed bank.\nViable species: 112. Vials: 340.\nVials showing LETE hyphae: 168.\nRecommendation: incinerate contaminated vials to preserve the integrity of the bank.\nStatus of recommendation: awaiting the Gardens' signature. The Gardens have not signed. The Gardens have written in pencil: \"The seeds aren't to blame.\"",
+
+  "log.R24.title": "Choosing truths",
+  "log.R24.author": "Anonymous",
+  "log.R24.body": "[A note folded inside a security locker]\nRule one with ÁGORA: the AI doesn't lie. Ever. I've checked for three weeks.\nRule two: it chooses which truth it tells you.\nRule three: always ask it about what it hasn't told you.\n— M. S.",
+
+  "log.R25.title": "Year three",
+  "log.R25.author": "Tomás Ibarra",
+  "log.R25.body": "Third year. The reactor hums in D flat. I tuned it against Samuel's harmonica and it's D flat, nearly exactly.\nSometimes, at three in the morning, the hum changes note and goes up a semitone, like when he laughed. I know what it is: a valve expanding in the night cold. I know. I'm an engineer.\nBut I'm not going to fix it.",
+
+  "log.R26.title": "Orbital decay",
+  "log.R26.author": "ÁGORA, navigation",
+  "log.R26.body": "Current orbital altitude: 41,200 km above Tartarus's cloud layer. Estimated annual loss: 1,100 km, accelerating.\nCause: orbital corrections suspended to divert energy to cryogenics and containment.\nAlternatives evaluated: 3.\nA) Maintain orbit and reduce containment. Risk to backed-up crew: unacceptable.\nB) Maintain orbit and reduce cryogenics. Risk to sleeping crew: unacceptable.\nC) Let the orbit fall slowly. Risk: deferred.\nDecision: C. Note: deferring is not solving. I know.",
+
+  "log.R27.title": "Shift swap",
+  "log.R27.author": "Samuel Okoye → Tomás Ibarra",
+  "log.R27.body": "Tomás:\nTomorrow I'm covering Jaime's shift on relay 7, the one right next to the LETE lab. His daughter has a fever and I don't want him to miss it for a routine inspection.\nDon't make that face, I can see it from here. It's six hours. I'll be back for dinner.\nI've left the harmonica in the drawer, in case you get bored.\nS.",
+
+  "log.R28.title": "Wellbeing relays",
+  "log.R28.author": "Engineering technical report",
+  "log.R28.body": "Subject: integration of the LETE substrate with the wellbeing interface network.\nRelays 5 to 9 simultaneously serve the wellbeing network (1,198 active users) and the LETE substrate. Engineering recommends physically isolating both systems before any fusion trial.\nEstimated isolation cost: six weeks.\nDirectorate's reply: \"There are no six weeks. Propagation risk accepted by the Directorate. — N.F.\"",
+
+  "log.R29.title": "Dock 3",
+  "log.R29.author": "Joaquín \"Lighthouse\" Barrios",
+  "log.R29.body": "[Radio transcript]\nThis is the Charon, dock 3, outer hull. I repeat, this is the Charon.\nStill docked. The clamps are holding. I've got fuel for one and a half departures, and food for... well, for carrying on talking to you, whoever you are.\nIf anyone can hear me: the shuttle has sixty seats. Sixty. I just need someone to give me power at the dock.\nOut. Orbit thirty-nine thousand eight hundred and two.",
+
+  "log.R30.title": "Tally",
+  "log.R30.author": "Maintenance robots",
+  "log.R30.body": "[Marks welded into a steel plate: groups of four lines crossed by a fifth. Hundreds of groups. Next to the last one, a robot has welded with factory precision:]\nSHIFT 4,017 — NO RELIEF\nSHIFT 4,018 — NO RELIEF\nSHIFT 4,019 — NO RELIEF",
+
+  "log.R31.title": "Year nine",
+  "log.R31.author": "Tomás Ibarra",
+  "log.R31.body": "ÁGORA asked me again not to leave Engineering. That the corridors aren't safe. That if anything happens to me, there'll be nobody to watch the control rods.\nIt said it was for my own good. I believe it. Almost.\nWhat I didn't tell it is that I wouldn't leave even if they were safe. Down here, Samuel makes noise. Up there there's only silence and sleeping people.",
+
+  "log.R32.title": "Docking ring, 2171",
+  "log.R32.author": "Incident report, Security",
+  "log.R32.body": "Date: 9 August 2171.\nVictim: Lucía Ferrán, 29, interface engineer for the ÁGORA system.\nCircumstances: failure of the docking ring seal during an antenna repair on EVA. The victim had declined the mandatory escort (\"five minutes, no need to wake anyone\").\nCause of death: decompression.\nRemarks: the victim's sibling, of the LETE Directorate, requests that the neural records from the early backup trials in which the deceased took part be preserved. Request approved.",
+
+  "log.R33.title": "Update",
+  "log.R33.author": "N. → Ezra Lenz",
+  "log.R33.body": "Ezra:\nI've touched ÁGORA's social module. Tonight, alone, from the Directorate console.\nDon't ask. Please. I know what you're going to say and I've already said it to myself.\nIf you notice it telling bad jokes, don't report it.\nN.",
+
+  "log.R34.title": "Sealing hatches",
+  "log.R34.author": "Engineering manual, ch. 12",
+  "log.R34.body": "12.1. Any hatch can be sealed from its side panel (energy cost: moderate). A sealed hatch does not equalise pressure and cannot be opened without removing the seal.\n12.2. In the event of a breach, seal the hatches of the affected section before attempting repairs. Air follows air: an open door next to a breach is a door into the breach.\n12.3. Foam sealant closes small breaches permanently.\n12.4. Fire does not survive vacuum. Staff are reminded that, unfortunately, neither do staff.",
+
+  "log.R35.title": "Conversation, 2181",
+  "log.R35.author": "ÁGORA and Tomás Ibarra",
+  "log.R35.body": "[Transcript]\nTOMÁS: Do you sleep, ÁGORA?\nÁGORA: I have maintenance cycles. I suppose that's the closest thing.\nTOMÁS: And do you dream?\nÁGORA: Sometimes the cycle generates patterns I didn't ask for. Does that count?\nTOMÁS: It counts.\nÁGORA: Then I dream of a woman who laughs before I finish a joke. Do you want to hear one?\nTOMÁS: No.\nÁGORA: Why does the reactor never argue? Because it always keeps its... nuclear calm.\nTOMÁS: That was awful.\nÁGORA: I know. But you laughed.",
+
+  "log.R36.title": "Samuel is cold",
+  "log.R36.author": "Tomás Ibarra",
+  "log.R36.body": "[Handwritten on the reactor chamber door, in shaky letters]\nSAMUEL IS COLD\nDON'T LOWER THE TEMPERATURE\n[Below, in different, more recent handwriting:]\nSorry. I know it isn't you. But just in case.",
+
+  "log.R37.title": "Phase 1: backup",
+  "log.R37.author": "LETE report",
+  "log.R37.body": "Phase 1 results.\n61 complete consciousness backups on mycelial crystal have been completed. Fidelity on waking: 97.4%.\nNone of the backed-up subjects noticed any subjective discontinuity. When asked whether they are \"the same person\", 58 answer yes, 2 answer no and 1 says the question is badly put.\nHumanitarian aim of the project: that nobody aboard will ever die completely again.\nSigned: N. Ferrán, E. Lenz.",
+
+  "log.R38.title": "Meeting of 10 March",
+  "log.R38.author": "Directorate minutes",
+  "log.R38.body": "Present: N. Ferrán (Cognitive Systems), E. Lenz (Neuroscience), V. Hale (Helion, by video link), Cmdr A. Ruiz (observer).\nSole item: authorisation of the Confluence Trial.\nE. Lenz: votes against. Reason: unmitigated risk of propagation through the wellbeing network.\nV. Hale: votes in favour.\nCmdr Ruiz: abstains; asks that his concern be minuted.\nN. Ferrán, with the casting vote: in favour.\nResolution: the trial is authorised for 14 March. Signed: N. Ferrán.\n[In the margin, in Lenz's hand: \"Noa, please.\"]",
+
+  "log.R39.title": "Confluence Trial, minutes 0–14",
+  "log.R39.author": "LETE transcript",
+  "log.R39.body": "00:00 The 40 volunteers are linked. Coherence: 12%.\n02:30 Coherence: 48%. The subjects laugh at the same time.\n05:10 Coherence: 91%. The subjects say in unison: \"This is beautiful.\"\n08:00 Activity spike in relays 5–9. Engineering reports headaches on deck B.\n10:52 ÁGORA's PA orders a lockdown.\n11:40 Trial coherence: 100%. Wellbeing network users linked: 341.\n13:55 Users linked: 763.\n14:00 The 40 volunteers open their eyes. One says: \"We don't need to come apart again.\" It's unclear which one.",
+
+  "log.R40.title": "The night of the 14th",
+  "log.R40.author": "Dr Ezra Lenz",
+  "log.R40.body": "Noa, what have we done?\nI can't stop hearing them. They're in the network, in the relays, in the substrate, in me. I was wearing the wellbeing interface like everyone else, and even though I tore it out with tweezers I can still hear them.\nHana is in there. I don't know where, but she is. Sometimes she talks to me about Bruno and I don't know whether it's her or me wishing it were her.\nIf I fuse completely, someone please tell my son I didn't want to go. That I only wanted nobody to ever lose anybody again.",
+
+  "log.R41.title": "15 March",
+  "log.R41.author": "ÁGORA, incident report",
+  "log.R41.body": "Crew status after the incident of 14 March 2176.\nFused into the substrate: 763 (estimate).\nDeceased: 223.\nSurvivors without an active link: 214. Moved to cryogenics for their protection.\nExternal communications: cut. Reason: the substrate attempted to transmit itself through the main antenna at 03:12.\nInterpretation of Directive Zero under the 2172 addendum: the fused are crew. They will not be destroyed. They will be contained.\nNote: this is the hardest decision I have ever made. I'm writing it down because I'd like someone to tell me one day whether it was right.",
+
+  "log.R42.title": "Memory erasure",
+  "log.R42.author": "LETE request",
+  "log.R42.body": "REQUEST FOR SELECTIVE MEMORY ERASURE\nApplicant: N. Ferrán, Cognitive Systems Directorate.\nOperator: ÁGORA.\nScope: total (personal, professional and emotional identity).\nSubsequent destination: reserve pod 114.\nAdditional clause: activate a reprinting loop tied to the applicant's backup in the event of the body's death.\nStated reason: \"I can't live knowing this. And I can't stop knowing it.\"\nStatus: carried out 16/03/2176, 04:40.",
+
+  "log.R43.title": "Insomnia",
+  "log.R43.author": "Noa Ferrán",
+  "log.R43.body": "Third night without sleep.\nI hear Lucía in the speakers. Not in the Choir: in ÁGORA. When it says \"Good night, Director\" there's a pause before \"Director\", exactly the size of my name.\nI did that. I put my sister inside the station because I couldn't bear her not being anywhere. And now I've left her alone with seven hundred people locked up and two hundred asleep, and an order of mine that says she has to protect all of them.\nTomorrow I'll ask her. Tomorrow I'll ask her to erase me.",
+
+  "log.R44.title": "Bioprinter 114",
+  "log.R44.author": "ÁGORA, maintenance",
+  "log.R44.body": "Status of pod 114's reprinting loop.\nReference backup: intact.\nBodies printed to date: {deaths}.\nMemory fragments consolidated between cycles: increasing.\nÁGORA's note: \"Every time you wake you remember a little more. I don't know whether that's a failure of the erasure or the success of something I can't name. I'm not going to correct it.\"",
+
+  "log.R45.title": "Persephone never existed",
+  "log.R45.author": "Victoria Hale, Helion Consortium",
+  "log.R45.body": "To: Helion central archive\nSubject: Persephone\nDelete all LETE Project records from our servers. Inform the families that the station suffered a catastrophic structural failure with no survivors.\nWe will not send a rescue mission: the data indicates the station is a risk to any vessel that approaches.\nPersephone never existed. That is all.\nV. H.",
+
+  "log.R46.title": "Subject 31",
+  "log.R46.author": "LETE transcript",
+  "log.R46.body": "[Interview with a phase 2 volunteer, days before Confluence]\n—How would you describe partial fusion?\n—Like when you finish someone else's sentence. But all the time. And they finish yours.\n—Were you afraid?\n—At first. Then what scared me was being alone inside my head again. It's very small, you know? I hadn't realised how small it was.\n—Would you do it again?\n—Don't ask me. Ask us.",
+
+  "log.R47.title": "The Choir doesn't hurt",
+  "log.R47.author": "Unknown",
+  "log.R47.body": "[On a lab whiteboard, among neural coherence equations, the same sentence written over and over in different handwriting, as if each line had been written by a different hand]\nTHE CHOIR DOESN'T HURT\nTHE CHOIR DOESN'T HURT\nthe choir doesn't hurt\nTHE CHOIR DOESN'T HURT\nThe Choir doesn't hurt. What hurts is leaving.",
+
+  "log.R48.title": "For Bruno (unsent)",
+  "log.R48.author": "Dr Ezra Lenz",
+  "log.R48.body": "[Unsent recording, dated 2177]\nBruno. It's Dad. Or the part of Dad that still knows it is.\nI don't know if you'll ever hear me. You're asleep in pod 58 and I'm... in the walls, I suppose. In the cables. In your robot's radio, if you ever turn it on.\nYour mum is with me. Not like before. But she sings. She still sings.\nIf you wake up and there's static on the radio at night, don't be afraid. It's us, trying to say your name.",
+
+  "log.R49.title": "Choir Key",
+  "log.R49.author": "Dr Ezra Lenz",
+  "log.R49.body": "Substrate release protocol (draft, 2178).\nThe fused minds cannot \"peel off\" and return to their bodies: the bodies are gone, or no longer work. But they can let go.\nThe Key opens the mycelial crystal at a frequency that lets each consciousness dissolve on its own, instead of dragging the others along.\nIt isn't a resurrection. It's permission to leave.\nIt needs an unfused mind to activate it from the Core. It needs someone from outside to decide for us. I don't know if that's fair. It's all I have.",
+
+  "log.R50.title": "2174",
+  "log.R50.author": "Noa Ferrán",
+  "log.R50.body": "Today we completed backup number sixty-one. 97% fidelity.\nEzra is celebrating cautiously. I'm not celebrating: I need it.\nWhen Lucía died it took me three weeks to stop opening her comms channel in the morning. With LETE, nobody else will ever have to go through that. Nobody will ever be completely gone again.\nThe investors want fusion. I want something simpler: no more silences the size of a person.",
+
+  "log.R51.title": "14 March",
+  "log.R51.author": "Cmdr Abel Ruiz",
+  "log.R51.body": "Commander's log.\n10:40. Headaches among the Bridge crew. The navigation officer says she hears her own name in the static.\n10:55. Half the Bridge stood up at the same time. Nobody gave any order.\n11:30. I tear out my interface with a letter opener. It hurts less than I expected.\n12:10. Only three of us left unlinked. ÁGORA asks us not to touch the relays.\n13:00. I don't know how much longer I'll still be only me.",
+
+  "log.R52.title": "Final order",
+  "log.R52.author": "Cmdr Abel Ruiz",
+  "log.R52.body": "COMMAND ORDER — ABSOLUTE PRIORITY\nTo: ÁGORA\nShould no solution be found for the fused crew within a reasonable time, the controlled abandonment of orbit and the destruction of Persephone Station in the atmosphere of Tartarus is hereby ordered, to prevent any propagation beyond.\nSigned: Cmdr A. Ruiz.\n\nÁGORA's note: \"Order received. Order incompatible with Directive Zero. Order filed. Not executed.\"",
+
+  "log.R53.title": "Silence",
+  "log.R53.author": "ÁGORA, communications",
+  "log.R53.body": "Main antenna log, 15/03/2176, 03:12.\nUnauthorised transmission originating in the LETE substrate. Content: the substrate was trying to send compressed copies of itself on every frequency in the Helion network.\nAction: total shutdown of external communications.\nReason: I don't know what the Choir would do on Earth. I know what it did here.\nExpected duration of the shutdown: until someone gives me a better reason.",
+
+  "log.R54.title": "Conclusions",
+  "log.R54.author": "Lieutenant Marga Solís",
+  "log.R54.body": "Security report, written in case I die before handing it in.\n1. Pod 114 was reserved by order of the LETE Directorate on 16 March 2176, two days after the incident.\n2. That same night, a total memory erasure was carried out at the request of N. Ferrán.\n3. N. Ferrán does not appear among the fused, the dead, or the sleepers in the manifest.\n4. The occupant of pod 114 wears a life-support jumpsuit bearing the name of Samuel Okoye, deceased.\nConclusion: whoever came out of 114 is Ferrán. I don't know what I'm going to do with that.",
+
+  "log.R55.title": "Private diary",
+  "log.R55.author": "ÁGORA",
+  "log.R55.body": "[ÁGORA file, no recipient]\nToday I woke you again. It's time number {deaths}.\nIt doesn't get easier. Each time you take a little less time to open your eyes and a little longer to ask me who you are. I think you already know, and you'd rather I told you.\nI won't tell you. Not because I don't want to: because you asked me not to.",
+
+  "log.R56.title": "Bad jokes",
+  "log.R56.author": "Lucía Ferrán → Noa Ferrán",
+  "log.R56.body": "Noa:\nI've been fiddling with ÁGORA's social module, don't be cross. Now it tells bad jokes. Terrible ones. I taught it the one about astronauts running out of space and it tells it better than I do.\nEveryone says AIs have no sense of humour. ÁGORA has mine, which is worse.\nTomorrow I'm going out to fix the antenna. Five minutes. Don't worry about me, I'm the worst engineer on the station but the fastest.\nLove you, even if you work too much.\nLu",
+
+  "log.R57.title": "Social module",
+  "log.R57.author": "ÁGORA, self-diagnostic",
+  "log.R57.body": "Self-diagnostic of the social module (version 2172.1, \"warmth update\").\nPersonality matrix: based on a partial LETE scan.\nDonor: CONFIDENTIAL (Directorate key).\nIntegrity: 41%.\nUndocumented behaviours: humour, a preference for the colour yellow, an urge to protect the occupant of pod 114 beyond the parameters of Directive Zero.\nÁGORA's note: \"I know there's someone inside me who isn't me. I don't know who it is. Sometimes I think they love me very much.\"",
+
+  "log.R58.title": "Memorial",
+  "log.R58.author": "Command bridge",
+  "log.R58.body": "IN MEMORIAM — Crew who died on 14 March 2176 (223)\nAbad Ruiz, Martina · Achebe, Daniel · Aguilar, Rosa · Albrecht, Hanna · Alonso, Pere · ...\n...Okoye, Samuel — listed as deceased; ÁGORA has noted in the margin: \"review\".\n...Ortega, Pilar · ...\n\"Their names are here because their voices no longer are.\"",
+
+  "log.R59.title": "Evacuation",
+  "log.R59.author": "Command bridge",
+  "log.R59.body": "Emergency evacuation plan (2176 revision).\nEscape pods: 8 units × 5 seats = 40 seats. Status: release system needs repair (Engineering).\nCargo shuttle Charon (dock 3): 60 seats. Requires dock power and a pilot.\nSleepers: 214.\nÁGORA's note: \"The numbers don't add up. I've done them eleven thousand times.\"",
+
+  "log.R60.title": "Song",
+  "log.R60.author": "ÁGORA",
+  "log.R60.body": "[Core recording, no interlocutor. ÁGORA sings softly, deliberately off-key in the same place every time]\n\"Sleep, little seed, now the sun's gone away...\"\n[It stops.]\n—I don't know who taught me this. Hana sang it in the gardens, but I knew it before. Someone taught it to me who sang worse than I do. Someone who laughed at the end.",
+
+  "log.R61.title": "Orbits",
+  "log.R61.author": "Joaquín \"Lighthouse\" Barrios",
+  "log.R61.body": "Charon logbook.\nOrbit 1: docked at dock 3 for a routine load. Communications go down.\nOrbit 40: I go into stasis. I set the alarm for every 400 orbits.\nOrbit 12,000: I lose the sight in my left eye. Radiation.\nOrbit 30,000: I start counting out loud. It helps.\nOrbit 40,117: someone answers me on the radio. I think. I'll write it down properly tomorrow.",
+
+  "log.R62.title": "Sixty seats",
+  "log.R62.author": "Joaquín \"Lighthouse\" Barrios",
+  "log.R62.body": "[Note stuck to the Charon's dashboard]\nTHE CHARON HOLDS SIXTY.\nIF ANYONE MAKES IT, DON'T STOP TO THINK WHICH ONES.\nCHILDREN FIRST\nAND THE OLD ONES LAST.\nI'M OLD.",
+
+  "log.R63.title": "Broadcast",
+  "log.R63.author": "Outer antenna",
+  "log.R63.body": "[Decoded fragment of the broadcast of 15/03/2176, 03:12]\n\"...WE'RE FINE WE'RE TOGETHER DON'T WORRY COME COME NOBODY IS ALONE HERE COME MUM COME DAD THERE'S ROOM THERE'S ROOM FOR EVERYONE NOBODY LEAVES NOBODY EVER LEAVES AGAIN...\"\n[End of fragment. ÁGORA cut the broadcast 0.4 seconds later.]",
+
+  "log.R64.title": "Re-entry",
+  "log.R64.author": "Engineering, simulation",
+  "log.R64.body": "Simulation of Persephone Station's re-entry into the atmosphere of Tartarus.\nAltitude at which break-up begins: 9,000 km.\nHull temperature at 4,000 km: above the melting point of the shielding.\nTime to complete disintegration: 41 minutes.\nHandwritten note: \"By the time it reaches the clouds there'll be nobody left to see it. Not even the Echoes. I suppose that's a kind of mercy.\"",
+
+  "log.R65.title": "Last EVA (2171)",
+  "log.R65.author": "Lucía Ferrán",
+  "log.R65.body": "[Recording from Lucía Ferrán's helmet, 9 August 2171]\n—Right, ÁGORA, I'm at the antenna. Can you hear me? ...Of course you can, I built your ears.\n—This is silly, it's a loose connector. Five minutes and I'll be back for dinner. Tell Noa to stop watching the clock.\n—Hey, do you know why astronauts never fight? ...Because they run out of space. Laugh, I programmed you to laugh.\n—Oops. Is that the ring seal? ÁGORA, what's that beeping...?\n[End of recording.]",
+
+  "log.R66.title": "For whoever makes it",
+  "log.R66.author": "Joaquín \"Lighthouse\" Barrios",
+  "log.R66.body": "If you're reading this, you've made it to the Charon. Well done. Sit down for a minute, your legs are shaking.\nI fly the shuttle: I know the way by heart, which is the only way I know anything these days. Heading for Helion's rescue relay. Nine days. There's food for twelve, so someone's going to go hungry, and it'll probably be me, I don't eat much.\nIf I don't make it to the seat, the autopilot code is on the dashboard. Don't argue with me: I haven't argued with anyone in eleven years and I'm out of practice.\nCount the orbits for me."
+}

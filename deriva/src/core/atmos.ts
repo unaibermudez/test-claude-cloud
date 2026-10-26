@@ -314,18 +314,19 @@ function playerVitals(st: RunState, ev: EventSink, exertion: boolean): void {
   // ruido mental
   let dn = stats.noisePerTurn;
   const z = st.map.zone;
-  if (z === 4) dn += 0.04;
+  if (z === 4) dn += 0.03;
   if (z === 5 || z === 6) dn += 0.01;
   if (st.map.event === 'ruido') dn += 0.12;
   if (st.opts.mode === 'pesadilla') dn += 0.02;
   if (dn > 0) addNoise(st, ev, dn);
   else if (st.player.noise > 0 && st.player.noise < BAL.noiseDistort) st.player.noise = Math.max(0, st.player.noise - 0.02);
   if (st.player.noise >= 100) {
-    if (z === 4) {
+    if (z === 4 && st.narrative.flags.brink) {
       p.hp = 0;
       st.player.lastHitBy = 'dissolution';
       return;
     }
+    if (z === 4) { st.narrative.flags.brink = 1; ev.msg('msg.brink', {}, 'hallu'); }
     ev.msg('msg.collapse', {}, 'hallu');
     st.narrative.flags.collapsed = 1;
     p.status.stun = BAL.noiseCollapseStun;

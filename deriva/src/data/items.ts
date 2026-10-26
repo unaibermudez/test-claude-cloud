@@ -43,8 +43,8 @@ const C = (id: string, tier: number, price: number, icon: string, color: string,
   ({ id, type: 'consumable', tier, price, icon, color, consumable, stack: 9, weight: 1, ...extra });
 
 export const CONSUMABLES: ItemDef[] = [
-  C('botiquin', 1, 28, 'medkit', '#e85a5a', { heal: 12, cleanse: true }, { weight: 1.4 }),
-  C('vendas', 1, 12, 'bandage', '#f0e6d2', { heal: 5, cleanse: true }, { weight: 1.6 }),
+  C('botiquin', 1, 28, 'medkit', '#e85a5a', { heal: 12, cleanse: true }, { weight: 2.0 }),
+  C('vendas', 1, 12, 'bandage', '#f0e6d2', { heal: 5, cleanse: true }, { weight: 2.2 }),
   C('medigel', 3, 55, 'medgel', '#ff7aa8', { heal: 25, cleanse: true }, { weight: 0.6 }),
   C('raciones', 1, 8, 'ration', '#c9a46b', { heal: 4 }, { weight: 1.2 }),
   C('bombona', 1, 22, 'o2', '#7fc4e0', { o2: 35 }, { weight: 1.8 }),

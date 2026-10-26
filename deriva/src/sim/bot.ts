@@ -81,9 +81,10 @@ function costFn(st: RunState, strategy: Strategy) {
       if (!walk) return -1;
       for (const p of m.props) if (p.x === x && p.y === y && blocks(p)) return -1;
     }
-    if (m.fire[i] > 0) c += 25;
+    if (m.fire[i] > 0) c += 60;
+    for (const d of DIRS) if (m.fire[i + d.y * m.w + d.x] > 0) { c += 4; break; }
     if (pressureAt(m, x, y) < 30 && m.zone !== 6) c += stats.vacuum > 0.5 ? 2 : 8;
-    if (m.gas[i] >= 3) c += 3;
+    if (m.gas[i] >= 3) c += 8;
     if (danger[i]) c += strategy === 'sigilo' ? 12 : 2;
     const s = m.sec[i];
     if (s >= 0 && m.sections[s].radiation > 0) c += 3;

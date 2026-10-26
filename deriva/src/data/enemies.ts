@@ -43,7 +43,7 @@ const Z2 = z(2, [
   { id: 'raiz', hp: 10, dmg: [2, 3], acc: 80, armor: 1, evasion: 0, speed: 100, sight: 3, hearing: 1.5, weight: 3, behavior: 'ambush', abilities: ['grab'], organic: true, darkvision: true, scrap: [0, 2], threat: 2, sprite: sp('tentacle', 'fungus', '#a6d96a') },
   { id: 'polinizador', hp: 5, dmg: [1, 3], acc: 78, armor: 0, evasion: 25, speed: 150, sight: 7, hearing: 1, weight: 1, behavior: 'flyer', abilities: [], robot: true, flying: true, scrap: [1, 2], threat: 2, sprite: sp('drone', 'gold', '#a6d96a', 'wings') },
   { id: 'moho', hp: 10, dmg: [2, 3], acc: 75, armor: 0, evasion: 0, speed: 60, sight: 3, hearing: 1, weight: 2, behavior: 'melee', abilities: ['split'], organic: true, darkvision: true, scrap: [0, 1], threat: 2, sprite: sp('crawler', 'fungus', '#f0e0a0') },
-  { id: 'abejas', hp: 3, dmg: [1, 2], acc: 72, armor: 0, evasion: 20, speed: 140, sight: 6, hearing: 1.2, weight: 1, behavior: 'swarm', abilities: [], robot: true, flying: true, scrap: [0, 1], threat: 1, sprite: sp('swarm', 'gold', '#ffd166') },
+  { id: 'abejas', hp: 3, dmg: [1, 2], acc: 65, armor: 0, evasion: 20, speed: 140, sight: 6, hearing: 1.2, weight: 1, behavior: 'swarm', abilities: [], robot: true, flying: true, scrap: [0, 1], threat: 1, sprite: sp('swarm', 'gold', '#ffd166') },
   { id: 'espantapajaros', hp: 18, dmg: [4, 6], acc: 85, armor: 2, evasion: 0, speed: 120, sight: 8, hearing: 0.5, weight: 3, behavior: 'stalker', abilities: [], eco: true, darkvision: true, scrap: [2, 5], threat: 4, minFloor: 2, sprite: sp('statue', 'fungus', '#ff5a5a', 'growth') },
   { id: 'compostador', hp: 24, dmg: [4, 7], acc: 70, armor: 1, evasion: 0, speed: 70, sight: 5, hearing: 1, weight: 3, behavior: 'melee', abilities: ['grab'], organic: true, eco: true, doorBreaker: true, scrap: [3, 6], threat: 4, minFloor: 2, sprite: sp('amalgam', 'plant', '#e3a344', 'growth') },
 ]);
@@ -152,12 +152,12 @@ const MINIS: EnemyDef[] = [
       { hpPct: 1, patterns: [{ kind: 'beam', dmg: [6, 8], cooldown: 3 }, { kind: 'summon', summon: 'vigia', count: 2, cooldown: 7 }], msg: 'boss.argos.p1' },
       { hpPct: 0.5, patterns: [{ kind: 'rain', dmg: [5, 7], count: 12, cooldown: 4 }, { kind: 'emp', cooldown: 7 }, { kind: 'cross', dmg: [6, 8], cooldown: 3 }], msg: 'boss.argos.p2' },
     ], 'boss.argos.intro', 'boss.argos.death', 'boss') }),
-  mini(6, { id: 'remora', hp: 140, dmg: [6, 9], acc: 78, armor: 3, evasion: 5, speed: 95, sight: 8, hearing: 1, weight: 3, behavior: 'boss', abilities: [], organic: true, vacuumImmune: true, scrap: [30, 45], sprite: sp('crawler', 'void', '#ffb46e', 'spikes', 3),
+  mini(6, { id: 'remora', hp: 110, dmg: [6, 9], acc: 78, armor: 3, evasion: 5, speed: 95, sight: 8, hearing: 1, weight: 3, behavior: 'boss', abilities: [], organic: true, vacuumImmune: true, scrap: [30, 45], sprite: sp('crawler', 'void', '#ffb46e', 'spikes', 3),
     boss: B([
       { hpPct: 1, patterns: [{ kind: 'charge', dmg: [7, 9], cooldown: 3 }, { kind: 'summon', summon: 'parasito', count: 2, cooldown: 7 }], msg: 'boss.remora.p1' },
       { hpPct: 0.5, patterns: [{ kind: 'slam', dmg: [8, 10], cooldown: 2 }, { kind: 'ring', dmg: [5, 7], radius: 2, cooldown: 4 }], speedBonus: 15, msg: 'boss.remora.p2' },
     ], 'boss.remora.intro', 'boss.remora.death', 'boss') }),
-  mini(6, { id: 'ahogado', hp: 130, dmg: [5, 8], acc: 80, armor: 1, evasion: 10, speed: 100, sight: 8, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, flying: true, vacuumImmune: true, scrap: [30, 45], sprite: sp('humanoid', 'void', '#7fc4e0', 'cables', 2),
+  mini(6, { id: 'ahogado', hp: 105, dmg: [5, 8], acc: 80, armor: 1, evasion: 10, speed: 100, sight: 8, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, flying: true, vacuumImmune: true, scrap: [30, 45], sprite: sp('humanoid', 'void', '#7fc4e0', 'cables', 2),
     boss: B([
       { hpPct: 1, patterns: [{ kind: 'pull', cooldown: 4 }, { kind: 'ring', dmg: [5, 7], radius: 3, cooldown: 4 }], msg: 'boss.ahogado.p1' },
       { hpPct: 0.5, patterns: [{ kind: 'phantoms', count: 3, cooldown: 7 }, { kind: 'scream', dmg: [3, 5], radius: 5, cooldown: 5 }, { kind: 'line', dmg: [6, 8], cooldown: 3 }], msg: 'boss.ahogado.p2' },

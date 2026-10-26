@@ -184,7 +184,6 @@
   "msg.arc_advance": "{name}'s story moves on.",
   "msg.received": "You receive: {item} ×{n}.",
   "msg.tremor": "The station shakes.",
-
   "key.amber": "amber",
   "key.cyan": "cyan",
   "key.violet": "violet",
@@ -195,7 +194,6 @@
   "slot.torso": "torso",
   "slot.arms": "arms",
   "slot.legs": "legs",
-
   "unknown.injector.0": "amber injector",
   "unknown.injector.1": "cobalt injector",
   "unknown.injector.2": "emerald injector",
@@ -215,14 +213,12 @@
   "unknown.module.6": "unlabelled old module",
   "unknown.module.7": "unlabelled white module",
   "unknown.desc": "You won't know what it does until you use it, a lab analyses it or you ask ÁGORA.",
-
   "event.gravedad": "Gravity failure: without anchors, every step carries you further than planned.",
   "event.apagon": "General blackout: only the emergency lights and your flashlight remain.",
   "event.fuego": "Deck fire: fire needs air. So do you.",
   "event.brecha": "Hull breach: one section of this deck is open to vacuum.",
   "event.radiacion": "Radiation storm: Tartarus is spitting particles against the shielding.",
   "event.ruido": "Mental Noise surge: the Choir is closer on this deck.",
-
   "sub.tremor": "[Structural tremor]",
   "sub.vent": "[Airlock alarm]",
   "sub.alarm": "[Alarm]",
@@ -235,7 +231,6 @@
   "sub.shot": "[Gunshot]",
   "sub.boss": "[Roar]",
   "sub.heartbeat": "[Racing heartbeat]",
-
   "tut.start": "Move with the arrow keys, WASD or the numpad. Press H for help. Moving into an enemy attacks it.",
   "tut.dark": "It's dark: press L to turn on your flashlight. It uses energy and makes you visible.",
   "tut.o2": "Oxygen drops every turn. The blue stations refill it.",
@@ -248,7 +243,6 @@
   "tut.vacuum": "A section in vacuum: oxygen drains very fast. If you open a door, the air will escape that way.",
   "tut.hallu": "High Mental Noise: you'll see things that aren't there. Hallucinations cast no shadow and make no sound.",
   "tut.npc": "Someone alive. Get close and press F to talk.",
-
   "hallu.msg1": "ÁGORA: \"Go back to the pod. It isn't time yet.\"",
   "hallu.msg2": "You think you hear your name. Your real one.",
   "hallu.msg3": "A panel says EXIT where it used to say MORGUE.",
@@ -257,7 +251,6 @@
   "hallu.msg6": "Oxygen: 100%. (You don't believe it.)",
   "hallu.msg7": "Your hands have too many fingers. Then they don't.",
   "hallu.msg8": "The lights pulse in time with your heart.",
-
   "agora.decay1": "ÁGORA: \"This deck's orbit is starting to complain. It isn't urgent. Yet.\"",
   "agora.decay2": "ÁGORA: \"The hull is giving way in several places. I'd recommend moving.\"",
   "agora.decay3": "ÁGORA: \"Critical state. If you stay here, the deck will have you.\"",
@@ -273,7 +266,6 @@
   "agora.door": "ÁGORA: \"Open. For you, and just this once.\"",
   "agora.map": "ÁGORA: \"Here are the schematics. They're about eleven years out of date.\"",
   "agora.silent": "ÁGORA doesn't answer.",
-
   "agora.zone1.hostile": "ÁGORA: \"Cryogenics. I'm sure you know what you're doing here.\"",
   "agora.zone1.wary": "ÁGORA: \"Welcome to Cryogenics and Residential. Try not to wake anyone who doesn't want to be woken.\"",
   "agora.zone1.neutral": "ÁGORA: \"Good morning, Crew Member 114. You're in Cryogenics. It's four degrees and the atmosphere could be better.\"",
@@ -304,7 +296,6 @@
   "agora.zone6.neutral": "ÁGORA: \"Outer hull. Tartarus is 40,000 kilometres away and getting closer. Lovely view.\"",
   "agora.zone6.warm": "ÁGORA: \"You're outside. Keep your boots on the plating. If you let go, I can't come and get you.\"",
   "agora.zone6.close": "ÁGORA: \"Outside, on the hull. Someone I loved died out here. I don't know how I know that. Be careful.\"",
-
   "agora.death.1": "ÁGORA: \"Welcome back. Don't worry: it's the first time. More or less.\"",
   "agora.death.2": "ÁGORA: \"Here again. Your previous clone reached deck {floor}. I kept what I could of them.\"",
   "agora.death.3": "ÁGORA: \"Hello. You died again. Don't take it as a reproach; it's statistics.\"",
@@ -313,5 +304,6 @@
   "agora.death.6": "ÁGORA: \"Whatever killed you didn't recognise you. I did. Always.\"",
   "agora.death.7": "ÁGORA: \"I had time to think while your clone was printing. I reached no useful conclusion.\"",
   "agora.death.8": "ÁGORA: \"Hello, again. The orbit has dropped a little more. That isn't your fault. Not this.\"",
-  "agora.end.1": "ÁGORA: \"You've reached the end of something. I don't know if it's this. Come back whenever you like.\""
+  "agora.end.1": "ÁGORA: \"You've reached the end of something. I don't know if it's this. Come back whenever you like.\"",
+  "msg.brink": "The Choir brushes against you from the inside. If you reach this point again in the laboratories, you will not come back."
 }

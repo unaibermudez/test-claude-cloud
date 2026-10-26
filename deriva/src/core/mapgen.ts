@@ -482,8 +482,8 @@ function decorate(b: Builder, opts: GenOptions): void {
   // accesos
   const start = b.rooms[startId];
   const exit = b.rooms[exitId];
-  placeProp(b, start, 'entry', {}, { wall: true, block: true }) ?? placeProp(b, start, 'entry', {}, { block: true });
-  placeProp(b, exit, 'exit', {}, { center: true, block: true }) ?? placeProp(b, exit, 'exit', {}, { block: true });
+  if (!placeProp(b, start, 'entry', {}, { wall: true, block: true })) placeProp(b, start, 'entry', {}, { block: true });
+  if (!placeProp(b, exit, 'exit', {}, { center: true, block: true })) placeProp(b, exit, 'exit', {}, { block: true });
   if (opts.hullExit) {
     const cand = b.rooms.filter((r) => r.kind === 'normal' || r.kind === 'airlock');
     const r = cand.length ? pick(rng, cand) : exit;
