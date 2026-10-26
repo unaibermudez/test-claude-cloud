@@ -31,6 +31,26 @@ Revisión crítica del estado del juego en la versión 1.0, hecha después de ju
 9. **Balance** — jefes de Z2+ invencibles para el bot, disolución mental casi segura en LETE, muertes por O₂ por un error de interacción. Ver `BALANCE.md`.
 10. **Pantalla completa** — faltaba; añadida en Opciones y con F10.
 
+## Versión 1.1 — tiempo real, voces e interfaces
+
+Revisión de los cambios pedidos tras la 1.0 («2D real, sin cuadrícula, voces que lean los textos, mejores interfaces»):
+
+| Área | Estado |
+|---|---|
+| Tiempo real | Movimiento libre con colisiones y reloj del mundo sobre el mismo núcleo determinista (D25). Ataque y apuntado con ratón, disparo al más cercano, pausa al abrir paneles (D26). Modo por turnos y tres velocidades en Opciones. 60 FPS medidos. |
+| Escenario | Sin rejilla visible: texturas y juntas en coordenadas del mundo, muros con borde exterior, sombras, luz suavizada, enemigos interpolados (D27). |
+| Voces | Diálogos, ÁGORA, radio, registros, introducción y epílogos con voz sintetizada y perfil por personaje; repetir/escuchar/parar; atenuación de música; configurables por tipo (D28). |
+| Interfaces | HUD rediseñado (D29), barra de acceso rápido clicable, aviso de interacción flotante, paneles y diálogos con nuevo estilo. |
+| Calidad | 58 pruebas unitarias, 4 E2E (incluida una de tiempo real con ataque por ratón y voces), content-check, lint y compilación limpios. |
+
+Problemas encontrados y corregidos durante esta ronda: un desenfoque de luz a pantalla completa bajaba a
+41 FPS (sustituido por uno a baja resolución), etiquetas de armas solapadas en la barra rápida (sustituidas
+por iconos) y una radio que abría un diálogo encima del inventario en las pruebas E2E.
+
+Puntos débiles nuevos: la calidad y variedad de las voces dependen de las instaladas en el sistema (en
+Linux sin voces el juego queda en silencio con subtítulos); los enemigos siguen moviéndose casilla a casilla
+(interpolados) porque la IA y el combate siguen siendo por turnos.
+
 ## Puntos débiles que quedan (honestamente)
 
 - **Balance sin personas.** El bot llega con regularidad a la zona 3 y gana a todos los jefes con la
@@ -42,8 +62,8 @@ Revisión crítica del estado del juego en la versión 1.0, hecha después de ju
 - **Audio no verificable de forma automática.** Se comprueba que no produce errores, pero la mezcla y el
   carácter de la música solo se pueden juzgar escuchando.
 - **Mando** implementado con la API estándar y probado solo por código, no con hardware real.
-- **Sin controles táctiles**: en móvil se puede jugar con toques (clic para moverse y atacar), pero no hay
-  botones en pantalla para el inventario y el resto de acciones.
+- **Sin controles táctiles**: en móvil se puede jugar con toques en modo por turnos (clic para moverse y
+  atacar), pero no hay stick ni botones en pantalla para el tiempo real, el inventario y el resto de acciones.
 - **Inglés** completo y revisado, pero no por un hablante nativo.
 - La escena `hull_entry` quedó sin uso (la transición al casco la hace la escotilla); se mantiene por si se
   quiere añadir una conversación con Faro antes de salir.

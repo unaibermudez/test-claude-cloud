@@ -3,12 +3,12 @@
 > Año 2187. La Estación Perséfone lleva once años en silencio, cayendo muy despacio hacia Tártaro.
 > En la bahía de criogenia se abre la cápsula 114.
 
-**DERIVA** es un roguelike por turnos de ciencia ficción y terror psicológico. Recorres una estación
+**DERIVA** es un roguelike 2D en tiempo real (con modo por turnos opcional) de ciencia ficción y terror psicológico. Recorres una estación
 espacial a la deriva con oxígeno y energía limitados, decides en quién confiar (empezando por ÁGORA,
 la IA que te despierta) y, muerte a muerte, reconstruyes qué pasó con el Proyecto LETE… y contigo.
 
-Todo es código: el arte se dibuja con rectángulos, la música y los efectos se sintetizan con Web Audio.
-No hay recursos externos.
+Todo es código: el arte se dibuja con rectángulos, la música y los efectos se sintetizan con Web Audio
+y los personajes hablan con la síntesis de voz del navegador. No hay recursos externos.
 
 ## Cómo jugar
 
@@ -35,30 +35,40 @@ Basta con publicar el contenido de `dist/` (por ejemplo en la rama `gh-pages`).
 
 ## Controles
 
+Por defecto el juego va en **tiempo real**: te mueves libremente (sin casillas) mientras el mundo
+avanza con un reloj propio. Abrir cualquier panel o diálogo pausa el mundo. En **Opciones → Partida**
+puedes cambiar al modo **por turnos** (el mundo solo avanza cuando actúas) y elegir la velocidad del reloj.
+
 | Acción | Teclado | Ratón / mando |
 |---|---|---|
-| Moverse (8 direcciones) | Flechas · WASD + QEZC · teclado numérico | Clic en una casilla (viaja por lo explorado) · cruceta/stick |
-| Atacar cuerpo a cuerpo | Moverse contra el enemigo | Clic en el enemigo adyacente |
+| Moverse (libre, 8 direcciones combinables) | Mantener flechas · WASD + QEZC · teclado numérico | Stick analógico · cruceta |
+| Apuntar | — | Mover el ratón (punto de mira) |
+| Atacar | Chocar contra el enemigo | Clic izquierdo hacia el enemigo (cuerpo a cuerpo si está al lado, disparo si está lejos) |
 | Empujar | Mayús + dirección | Mayús + clic |
-| Esperar | Espacio · `.` · Num 5 | — |
-| Interactuar / hablar / puertas | F · Intro | A |
-| Disparar | R (Tab cambia de objetivo) | Clic en un enemigo lejano · X |
+| Esperar / reiniciar el reloj | Espacio · `.` · Num 5 | — |
+| Interactuar / hablar / puertas | F · Intro (si hay varias cosas cerca, se abre un menú) | Clic en el objeto adyacente · A |
+| Disparar al enemigo más cercano | R (en modo turnos: Tab cambia de objetivo) | X |
 | Lanzar artefacto | G | RB |
-| Recoger | P · `,` | — |
+| Recoger · soltar | P · `,` · Supr / T | — |
 | Sigilo | X | LB |
 | Linterna | L | — |
 | Inventario · implantes · mapa | I · U · M | Y (inventario) |
 | Archivo de registros · ÁGORA | J · K | — |
 | Implante activo · descansar | Y · V | — |
 | Examinar | O (o clic derecho) | — |
-| Atajos de la mochila | 1–0 | — |
+| Atajos de la mochila | 1–0 (o clic en la barra inferior) | — |
+| Pantalla completa | F10 | — |
 | Ayuda · pausa | H · Esc | Start |
 
 Todos los controles se pueden reasignar en **Opciones → Controles**.
 
 ## Lo esencial
 
-- **Turnos**: el mundo solo avanza cuando actúas.
+- **Tiempo real sobre un núcleo por turnos**: el reloj del mundo marca un turno cada 230–400 ms
+  (según la velocidad elegida); atacar o abrir puertas consume tiempo. En modo por turnos, el mundo
+  solo avanza cuando actúas.
+- **Voces**: ÁGORA, los PNJ, la radio, los registros, la introducción y los epílogos se leen en voz alta
+  con la síntesis de voz del navegador (cada personaje con su timbre). Se configura en **Opciones → Audio**.
 - **Oxígeno y energía**: el O₂ baja cada turno (y mucho en vacío); la energía alimenta la linterna,
   las armas de energía, el sellado de puertas y los implantes.
 - **Salas con estado**: presurizadas, en vacío, en llamas, irradiadas, con refrigerante, a oscuras.
@@ -76,7 +86,7 @@ Pesadilla (se desbloquea al ver un final).
 
 ## Accesibilidad
 
-Tamaño de texto, alto contraste, tres modos de daltonismo, reducir parpadeo / temblor / interferencias,
+Modo por turnos, velocidad del reloj, voces activables por tipo de texto, tamaño de texto, alto contraste, tres modos de daltonismo, reducir parpadeo / temblor / interferencias,
 filtro CRT opcional, subtítulos de sonido, hackeo asistido o saltable, oxígeno generoso, enemigos menos
 atentos, órbita más larga, controles reasignables, ratón y mando, aviso de contenido al empezar.
 Español e inglés completos.

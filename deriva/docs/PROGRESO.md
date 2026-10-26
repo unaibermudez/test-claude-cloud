@@ -14,6 +14,7 @@ Este documento se lee al empezar cada sesión y se actualiza al cerrar cada fase
 | 6. Presentación | ✅ Render procedural con luz y niebla, partículas, efectos de pantalla, retratos, patrón de ÁGORA, HUD diegético, todos los paneles, audio y música generativos, entrada remapeable con ratón y mando |
 | 7. QA y balance | ✅ 55 pruebas unitarias, content-check, 3 E2E con capturas revisadas, informe de balance (`BALANCE.md`) |
 | 8. Cierre | ✅ README, `REVISION_FINAL.md`, versión 1.0.0, rama `main` unificada y publicación en GitHub Pages |
+| 9. Versión 1.1 | ✅ Tiempo real con movimiento libre, escenario sin cuadrícula, voces sintetizadas, HUD e interfaces rediseñados |
 
 ## Diario
 
@@ -38,5 +39,12 @@ Este documento se lee al empezar cada sesión y se actualiza al cerrar cada fase
 - Pantalla completa, reloj orbital a dos segundos por turno, finales bloqueados visibles en el Núcleo.
 - Revisión final (`REVISION_FINAL.md`), versión 1.0.0.
 
+### Sesión 5
+- Tiempo real 2D (`src/app/realtime.ts`): posición continua con colisiones, reloj del mundo, apuntado y ataque con el ratón, disparo al más cercano, pausa automática con paneles; el modo por turnos sigue disponible. La Cápsula también se recorre con movimiento libre.
+- Render sin cuadrícula: suelos y muros con texturas en coordenadas del mundo, sombras de pared, luz suavizada e interpolación de enemigos (60 FPS medidos en Chromium).
+- Voces (`src/audio/voice.ts`): diálogos, ÁGORA, radio, registros, introducción y epílogos leídos en voz alta con perfiles por personaje; botones de repetir/escuchar; sección de voces en Opciones.
+- HUD y estilos rediseñados (tarjetas, barras segmentadas, minimapa vivo, barra de acceso rápido, aviso flotante de interacción); paneles y diálogos con animaciones y retrato más grande.
+- Pruebas: 58 unitarias (3 nuevas de pasos libres), 4 E2E (nueva: tiempo real, ataque con ratón y voces sin errores), content-check sin errores. Versión 1.1.0.
+
 ## Problemas conocidos
-- Ver «Puntos débiles que quedan» en `REVISION_FINAL.md` (balance sin pruebas con personas, arte procedural sencillo, mando sin probar en hardware, sin controles táctiles).
+- Ver «Puntos débiles que quedan» en `REVISION_FINAL.md` (balance sin pruebas con personas, arte procedural sencillo, mando sin probar en hardware, sin controles táctiles; la calidad de las voces depende de las que tenga instaladas el sistema).
