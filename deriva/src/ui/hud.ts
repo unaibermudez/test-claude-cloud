@@ -20,7 +20,7 @@ export function trustTier(trust: number): string {
 }
 
 export function orbitClock(turns: number): string {
-  const s = Math.max(0, turns);
+  const s = Math.max(0, turns) * 2; // un turno = dos segundos de ficción (D19)
   const hh = Math.floor(s / 3600); const mm = Math.floor((s % 3600) / 60); const ss = s % 60;
   return `${hh}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
 }

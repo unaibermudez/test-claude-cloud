@@ -62,6 +62,10 @@ export class Nav {
     this.items = items;
     if (!keep) this.i = 0;
     this.i = Math.max(0, Math.min(this.i, items.length - 1));
+    if ((items[this.i] as HTMLButtonElement | undefined)?.disabled) {
+      const first = items.findIndex((el) => !(el as HTMLButtonElement).disabled);
+      if (first >= 0) this.i = first;
+    }
     items.forEach((el, k) => {
       el.addEventListener('mouseenter', () => { this.i = k; this.mark(); this.onSelect?.(k); });
     });
@@ -76,7 +80,10 @@ export class Nav {
 
   move(d: number): void {
     if (!this.items.length) return;
-    this.i = (this.i + d + this.items.length) % this.items.length;
+    let k = 0;
+    do {
+      this.i = (this.i + d + this.items.length) % this.items.length;
+    } while ((this.items[this.i] as HTMLButtonElement).disabled && ++k < this.items.length);
     this.mark();
     this.onSelect?.(this.i);
   }

@@ -106,7 +106,7 @@ export const MISC: ItemDef[] = [
   { id: 'fragmento_final', type: 'quest', tier: 0, price: 0, icon: 'fragment', color: '#ffffff' },
 ];
 
-// ------------------------------------------------------------------ implantes (46)
+// ------------------------------------------------------------------ implantes (45)
 const I = (id: string, slot: ImplantSlot, rarity: 1 | 2 | 3, mods: Mods, extra: Partial<ImplantDef> = {}, price?: number): ItemDef => ({
   id, type: 'implant', tier: rarity === 1 ? 1 : rarity === 2 ? 2 : 3, price: price ?? (rarity === 1 ? 60 : rarity === 2 ? 95 : 140),
   icon: `imp_${slot}`, color: extra.lete ? '#c48cff' : slot === 'brain' ? '#ff9db5' : slot === 'eyes' ? '#7af0ff' : slot === 'torso' ? '#e8c46a' : slot === 'arms' ? '#ffb347' : '#9be36b',

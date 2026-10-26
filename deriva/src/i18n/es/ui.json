@@ -33,7 +33,7 @@
  "ui.stab.1": "crujidos",
  "ui.stab.2": "inestable",
  "ui.stab.3": "colapsando",
- "ui.orbit.tip": "Tiempo hasta el reingreso en la atmósfera de Tártaro (un turno = un segundo).",
+ "ui.orbit.tip": "Tiempo hasta el reingreso en la atmósfera de Tártaro (cada turno son dos segundos).",
  "ui.resume.line": "Retomas la partida en {zone}.",
  "ui.chip.light": "Linterna",
  "ui.chip.sneak": "Sigilo",

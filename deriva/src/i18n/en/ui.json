@@ -33,7 +33,7 @@
  "ui.stab.1": "creaking",
  "ui.stab.2": "unstable",
  "ui.stab.3": "collapsing",
- "ui.orbit.tip": "Time until re-entry into Tartarus's atmosphere (one turn = one second).",
+ "ui.orbit.tip": "Time until re-entry into Tartarus's atmosphere (each turn is two seconds).",
  "ui.resume.line": "You resume your run in {zone}.",
  "ui.chip.light": "Flashlight",
  "ui.chip.sneak": "Sneaking",

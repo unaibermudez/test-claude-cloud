@@ -18,7 +18,7 @@ export const ZONES: Record<ZoneId, ZoneDef> = {
     id: 2, w: 60, h: 38, rooms: [8, 12], roomW: [6, 11], roomH: [4, 8],
     darkChance: 0.3, vacuumChance: 0.03, radiationChance: 0, coolantChance: 0.05, sporeChance: 0.3,
     plants: 0.55, cover: 0.25, pillars: 0, windows: 0.45,
-    enemyBudget: [10, 2], eliteChance: 0.07, mentalAmbient: 0,
+    enemyBudget: [8, 2], eliteChance: 0.07, mentalAmbient: 0,
     music: 'zone2',
     palette: {
       floor: ['#283121', '#333e2a', '#1e2518'], wall: ['#3d4a32', '#4f6042', '#2b3423'],
@@ -31,7 +31,7 @@ export const ZONES: Record<ZoneId, ZoneDef> = {
     id: 3, w: 62, h: 38, rooms: [8, 12], roomW: [6, 12], roomH: [5, 8],
     darkChance: 0.25, vacuumChance: 0.1, radiationChance: 0.3, coolantChance: 0.2, sporeChance: 0,
     plants: 0, cover: 0.7, pillars: 0.2, windows: 0.25,
-    enemyBudget: [12, 3], eliteChance: 0.1, mentalAmbient: 0,
+    enemyBudget: [10, 2], eliteChance: 0.1, mentalAmbient: 0,
     music: 'zone3',
     palette: {
       floor: ['#332a20', '#3f3427', '#241d16'], wall: ['#5b4732', '#70593e', '#403224'],
@@ -44,7 +44,7 @@ export const ZONES: Record<ZoneId, ZoneDef> = {
     id: 4, w: 60, h: 38, rooms: [9, 12], roomW: [6, 11], roomH: [5, 8],
     darkChance: 0.35, vacuumChance: 0.05, radiationChance: 0.05, coolantChance: 0.05, sporeChance: 0.1,
     plants: 0, cover: 0.3, pillars: 0.5, windows: 0.2,
-    enemyBudget: [13, 3], eliteChance: 0.13, mentalAmbient: 0.05,
+    enemyBudget: [11, 3], eliteChance: 0.13, mentalAmbient: 0.05,
     music: 'zone4',
     palette: {
       floor: ['#2d2937', '#393445', '#201d28'], wall: ['#5d5571', '#71678a', '#3f3951'],
@@ -57,7 +57,7 @@ export const ZONES: Record<ZoneId, ZoneDef> = {
     id: 5, w: 62, h: 38, rooms: [9, 12], roomW: [6, 12], roomH: [5, 8],
     darkChance: 0.2, vacuumChance: 0.08, radiationChance: 0.05, coolantChance: 0.05, sporeChance: 0,
     plants: 0, cover: 0.5, pillars: 0.35, windows: 0.4,
-    enemyBudget: [14, 3], eliteChance: 0.16, mentalAmbient: 0.01,
+    enemyBudget: [12, 3], eliteChance: 0.16, mentalAmbient: 0.01,
     music: 'zone5',
     palette: {
       floor: ['#1d2433', '#262f42', '#151a25'], wall: ['#3b4662', '#4b597a', '#293149'],
@@ -70,7 +70,7 @@ export const ZONES: Record<ZoneId, ZoneDef> = {
     id: 6, w: 64, h: 40, rooms: [8, 10], roomW: [5, 8], roomH: [4, 6],
     darkChance: 0.1, vacuumChance: 0, radiationChance: 0.15, coolantChance: 0, sporeChance: 0,
     plants: 0, cover: 0.3, pillars: 0, windows: 0.3,
-    enemyBudget: [12, 3], eliteChance: 0.15, mentalAmbient: 0.01,
+    enemyBudget: [10, 2], eliteChance: 0.15, mentalAmbient: 0.01,
     music: 'zone6',
     exterior: true,
     palette: {

@@ -214,7 +214,7 @@ function gasTurn(st: RunState, ev: EventSink): void {
   const g = m.gas[p.y * m.w + p.x];
   if (g >= 3 && st.player.implants.eyes?.id !== 'o_lagrimal') {
     addNoise(st, ev, 0.25);
-    if (st.turn % 4 === 0) { damagePlayer(st, ev, 1, 'spores'); ev.msg('msg.spores', {}, 'warn'); }
+    if (st.turn % 5 === 0) { damagePlayer(st, ev, 1, 'spores'); ev.msg('msg.spores', {}, 'warn'); }
   }
 }
 
@@ -225,7 +225,7 @@ function hazardsTurn(st: RunState, ev: EventSink): void {
   const s = m.sec[p.y * m.w + p.x];
   const S = s >= 0 ? m.sections[s] : null;
   if (S && S.radiation > 0) {
-    const every = Math.max(1, 4 - S.radiation);
+    const every = Math.max(2, 5 - S.radiation);
     if (st.turn % every === 0 && !chance(st.rng, stats.radResist)) {
       damagePlayer(st, ev, 1, 'radiation');
       if (st.turn % (every * 4) === 0) ev.msg('msg.radiation', {}, 'warn');
