@@ -125,3 +125,92 @@ export function mixHex(a: string, b: string, t: number): string {
   const bl = (na & 255) * (1 - t) + (nb & 255) * t;
   return `#${((1 << 24) | (Math.round(r) << 16) | (Math.round(g) << 8) | Math.round(bl)).toString(16).slice(1)}`;
 }
+
+// ---------------------------------------------------------------- pintor con luz (1.2)
+
+export interface PaintOpts {
+  /** Color base de cada valor de la rejilla (null = vacío). */
+  color: (v: number) => string | null;
+  /** Valores que emiten luz: no se sombrean y tiñen un poco a sus vecinos. */
+  emissive?: (v: number) => boolean;
+  /** Valores brillantes (metal, cristal): reciben un destello en la esquina iluminada. */
+  shiny?: (v: number) => boolean;
+  /** Luz de contorno fría en el lado derecho (criaturas). */
+  rim?: string;
+  /** Degradado vertical: oscurece la parte baja del sprite (0..1). */
+  gradient?: number;
+  /** Escala de salida (píxeles de lienzo por celda). */
+  scale?: number;
+}
+
+const WARM = '#fff4dc';
+const COOL_SHADOW = '#1b1430';
+const INK = '#06070a';
+
+/** Tono de un color según su exposición a la luz (de -2, en sombra, a 2, iluminado). */
+export function tone(base: string, e: number): string {
+  if (e > 0) return mixHex(shadeHex(base, 0.1 * e), WARM, 0.12 * e);
+  if (e < 0) return mixHex(shadeHex(base, 0.2 * e), COOL_SHADOW, 0.1 * -e);
+  return base;
+}
+
+/**
+ * Pinta una rejilla con luz desde arriba a la izquierda: varios tonos por material, contorno
+ * de color («sel-out»: el borde toma el color oscurecido de lo que rodea), destellos en metal,
+ * luz de contorno fría y halo de los emisores. Sustituye al sombreado plano de `shade/outline`.
+ */
+export function paint(g: Grid, o: PaintOpts): HTMLCanvasElement {
+  const { w, h: hh } = g;
+  const sc = o.scale ?? 1;
+  const em = o.emissive ?? ((): boolean => false);
+  const shiny = o.shiny ?? ((): boolean => false);
+  const get = (x: number, y: number): number => g.get(x, y);
+  const c = makeCanvas(w * sc, hh * sc);
+  const x2 = ctx2d(c);
+  // extensión vertical del dibujo, para el degradado
+  let top = hh; let bot = 0;
+  for (let y = 0; y < hh; y++) for (let x = 0; x < w; x++) if (get(x, y)) { top = Math.min(top, y); bot = Math.max(bot, y); }
+  const span = Math.max(1, bot - top);
+  const px = (x: number, y: number, col: string): void => { x2.fillStyle = col; x2.fillRect(x * sc, y * sc, sc, sc); };
+  for (let y = 0; y < hh; y++) {
+    for (let x = 0; x < w; x++) {
+      const v = get(x, y);
+      if (!v) {
+        // contorno: hueco junto a algo dibujado
+        const n = [get(x, y - 1), get(x - 1, y), get(x + 1, y), get(x, y + 1)];
+        const k = n.findIndex((q) => q !== 0);
+        if (k < 0) continue;
+        const nb = n[k];
+        const base = o.color(nb);
+        if (!base) continue;
+        if (em(nb)) { px(x, y, mixHex(base, INK, 0.45)); continue; }
+        // el lado inferior/derecho del dibujo (vecino arriba o a la izquierda) va más oscuro
+        const lower = get(x, y - 1) !== 0 || get(x - 1, y) !== 0;
+        px(x, y, mixHex(tone(base, -2), INK, lower ? 0.72 : 0.55));
+        continue;
+      }
+      const base = o.color(v);
+      if (!base) continue;
+      if (em(v)) {
+        const core = get(x, y - 1) === v && get(x, y + 1) === v && get(x - 1, y) === v && get(x + 1, y) === v;
+        px(x, y, core ? mixHex(base, '#ffffff', 0.45) : mixHex(base, '#ffffff', 0.15));
+        continue;
+      }
+      const up = get(x, y - 1); const lf = get(x - 1, y); const dn = get(x, y + 1); const rt = get(x + 1, y);
+      let e = 0;
+      if (!up || !lf) e += 1.5; else if (!get(x - 1, y - 1) || !get(x, y - 2) || !get(x - 2, y)) e += 0.6;
+      if (!dn || !rt) e -= 1.3; else if (!get(x + 1, y + 1) || !get(x, y + 2)) e -= 0.5;
+      // frontera entre materiales: el de abajo recibe luz, el de arriba hace sombra
+      if (up && up !== v && !em(up)) e += 0.4;
+      if (dn && dn !== v && !em(dn)) e -= 0.4;
+      if (o.gradient) e -= o.gradient * Math.max(0, (y - top) / span - 0.45) * 2.2;
+      let col = tone(base, Math.max(-2, Math.min(2, e)));
+      if (shiny(v) && !up && !lf) col = mixHex(col, '#ffffff', 0.55);
+      if (o.rim && !rt && (dn || y < bot)) col = mixHex(col, o.rim, 0.28);
+      // resplandor de los emisores sobre lo que tienen al lado
+      for (const q of [up, lf, dn, rt]) if (q && em(q)) { const ec = o.color(q); if (ec) col = mixHex(col, ec, 0.22); break; }
+      px(x, y, col);
+    }
+  }
+  return c;
+}

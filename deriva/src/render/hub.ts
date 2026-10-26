@@ -8,7 +8,7 @@ import { zoneDef } from '../data/zones';
 import { CLASSES } from '../data/classes';
 import { drawTile, TS } from './tiles';
 import { drawProp } from './props';
-import { personSprite } from './sprites';
+import { playerSprite } from './sprites';
 import type { WorldRenderer } from './world';
 import type { MetaState } from '../core/meta';
 import type { App } from '../app/app';
@@ -191,7 +191,7 @@ export class HubScene {
     // jugador
     this.drawX = (this.fx - 0.5) * TS; this.drawY = (this.fy - 0.5) * TS;
     const cls = CLASSES.find((k) => k.id === (m?.profile.lastClass ?? 'tecnico')) ?? CLASSES[0];
-    const spr = personSprite(`player_${cls.id}`, { suit: cls.suit, visor: '#9fe8ff', accessory: cls.id === 'hacker' ? 'antenna' : cls.id === 'medico' ? 'cross' : cls.id === 'soldador' ? 'mask' : cls.id === 'infiltrado' ? 'hood' : cls.id === 'eco' ? 'halo' : 'belt' });
+    const spr = playerSprite(cls);
     c.fillStyle = 'rgba(0,0,0,0.4)';
     c.fillRect(Math.round(this.drawX) + 3, Math.round(this.drawY) + 13, 10, 2);
     c.drawImage(spr.frames[Math.floor(now / 520) % 2], Math.round(this.drawX), Math.round(this.drawY));

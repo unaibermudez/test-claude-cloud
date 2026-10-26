@@ -4,7 +4,7 @@
  * El contorno y el sombreado se calculan automáticamente. Los adornos se añaden encima.
  */
 import type { SpriteSpec, SpriteBase } from '../core/content';
-import { Grid, vrand, hashStr, shadeHex } from './pixel';
+import { Grid, vrand, hashStr, shadeHex, paint, makeCanvas, ctx2d } from './pixel';
 
 type Drawer = (g: Grid, f: number, r: () => number) => void;
 
@@ -165,28 +165,43 @@ function colorsFor(spec: SpriteSpec, tint?: string): string[] {
   return ['', base, tint ? shadeHex(tint, -0.4) : s, tint ? shadeHex(tint, 0.35) : h, spec.eye ?? '#ffffff', shadeHex(base, -0.25), o];
 }
 
+/** Luz de contorno fría de la estación: separa a las criaturas del fondo oscuro. */
+const RIM = '#7fd0ff';
+const METAL_BASES = new Set<SpriteBase>(['robot', 'drone', 'turret', 'mech', 'orb']);
+
+/** Silueta blanca del primer fotograma (destello al recibir daño), con contorno incluido. */
+function flashOf(src: HTMLCanvasElement): HTMLCanvasElement {
+  const c = makeCanvas(src.width, src.height);
+  const x = ctx2d(c);
+  x.drawImage(src, 0, 0);
+  x.globalCompositeOperation = 'source-in';
+  x.fillStyle = '#ffffff';
+  x.fillRect(0, 0, c.width, c.height);
+  return c;
+}
+
 export function spriteFor(key: string, spec: SpriteSpec, tint?: string): SpriteSet {
   const ck = `${key}|${tint ?? ''}`;
   const c = cache.get(ck);
   if (c) return c;
   const seed = hashStr(key);
   const frames: HTMLCanvasElement[] = [];
-  let flashSrc: Grid | null = null;
+  const colors = colorsFor(spec, tint);
+  const metal = METAL_BASES.has(spec.base);
   for (let f = 0; f < 2; f++) {
     const g = new Grid(16, 16);
     const r = vrand(seed);
     DRAW[spec.base](g, f, r);
     overlay(g, spec.overlay, f, r);
-    // preservar ojos y acentos antes de sombrear
-    const keep = g.d.slice();
-    g.shade();
-    for (let i = 0; i < keep.length; i++) if (keep[i] === E || keep[i] === A) g.d[i] = keep[i];
-    g.outline();
-    frames.push(g.toCanvas(colorsFor(spec, tint)));
-    if (f === 0) flashSrc = g;
+    frames.push(paint(g, {
+      color: (v) => colors[v] || null,
+      emissive: (v) => v === E,
+      shiny: (v) => metal && (v === B || v === 3),
+      rim: RIM,
+      gradient: 0.35,
+    }));
   }
-  const flash = flashSrc!.toCanvas(['', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff']);
-  const set: SpriteSet = { frames, flash, size: 16 };
+  const set: SpriteSet = { frames, flash: flashOf(frames[0]), size: 16 };
   cache.set(ck, set);
   return set;
 }
@@ -206,7 +221,6 @@ export function personSprite(key: string, p: PersonSpec): SpriteSet {
   const c = cache.get(key);
   if (c) return c;
   const frames: HTMLCanvasElement[] = [];
-  let first: Grid | null = null;
   for (let f = 0; f < 2; f++) {
     const g = new Grid(16, 16);
     const top = p.small ? 4 : 1;
@@ -214,9 +228,17 @@ export function personSprite(key: string, p: PersonSpec): SpriteSet {
     // cabeza y cuerpo
     g.ellipse(8, top + 2.5, 2.5, 2.6, 7);
     g.rect(6, top + 5, 5, p.small ? 4 : 5, B);
-    g.rect(4, top + 6, 2, (p.small ? 3 : 4) + sw, B); g.rect(11, top + 6, 2, (p.small ? 3 : 4) + 1 - sw, B);
+    const armL = (p.small ? 3 : 4) + sw; const armR = (p.small ? 3 : 4) + 1 - sw;
+    g.rect(4, top + 6, 2, armL, B); g.rect(11, top + 6, 2, armR, B);
+    // hombreras, cuello y manos
+    g.rect(4, top + 5, 2, 1, A); g.rect(11, top + 5, 2, 1, A);
+    g.rect(7, top + 5, 3, 1, 2);
+    g.rect(4, top + 5 + armL, 2, 1, 7); g.rect(11, top + 5 + armR, 2, 1, 7);
     const legY = top + (p.small ? 9 : 10);
-    g.rect(6, legY, 2, 15 - legY - sw, 2); g.rect(9, legY, 2, 14 - legY + sw, 2);
+    const legL = 15 - legY - sw; const legR = 14 - legY + sw;
+    g.rect(6, legY, 2, legL, 2); g.rect(9, legY, 2, legR, 2);
+    // botas
+    g.rect(6, legY + legL - 1, 2, 1, 9); g.rect(9, legY + legR - 1, 2, 1, 9);
     // cara / visor
     if (p.visor) { g.rect(7, top + 2, 3, 1, E); } else { g.set(7, top + 2, E); g.set(9, top + 2, E); }
     if (p.hair) { g.rect(6, top, 5, 1, 8); g.set(5, top + 1, 8); g.set(11, top + 1, 8); }
@@ -233,19 +255,19 @@ export function personSprite(key: string, p: PersonSpec): SpriteSet {
       case 'glasses': g.rect(6, top + 2, 2, 1, A); g.rect(9, top + 2, 2, 1, A); break;
       case 'robot': g.rect(11, 11, 4, 4, A); g.set(12, 12, E); break;
     }
-    if (f === 0) first = g;
-    const keep = g.d.slice();
-    g.shade();
-    for (let i = 0; i < keep.length; i++) if (keep[i] >= 4) g.d[i] = keep[i];
-    g.outline();
     const [o, b, s, h] = p.suit;
-    const colors = ['', b, s, h, p.visor ?? '#e8f4ff', shadeHex(b, 0.3), o, p.skin ?? '#d9a988', p.hair ?? '#3a2a20'];
-    frames.push(g.toCanvas(colors));
+    const colors = ['', b, s, h, p.visor ?? '#e8f4ff', shadeHex(b, 0.3), o, p.skin ?? '#d9a988', p.hair ?? '#3a2a20', shadeHex(s, -0.45)];
+    frames.push(paint(g, { color: (v) => colors[v] || null, emissive: (v) => v === E && !!p.visor, rim: RIM, gradient: 0.25 }));
   }
-  const flash = first!.toCanvas(['', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff']);
-  const set = { frames, flash, size: 16 };
+  const set = { frames, flash: flashOf(frames[0]), size: 16 };
   cache.set(key, set);
   return set;
+}
+
+/** Aspecto del protagonista según su clase. */
+export function playerSprite(cls: { id: string; suit: [string, string, string, string] }): SpriteSet {
+  const acc: Record<string, PersonSpec['accessory']> = { hacker: 'antenna', medico: 'cross', soldador: 'mask', infiltrado: 'hood', eco: 'halo' };
+  return personSprite(`player_${cls.id}`, { suit: cls.suit, visor: '#9fe8ff', accessory: acc[cls.id] ?? 'belt' });
 }
 
 export const NPC_LOOK: Record<string, PersonSpec> = {

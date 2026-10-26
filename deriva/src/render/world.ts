@@ -12,7 +12,7 @@ import { zoneDef } from '../data/zones';
 import { BAL } from '../data/balance';
 import { TS, drawTile, tileSignature } from './tiles';
 import { drawProp } from './props';
-import { spriteFor, personSprite, NPC_LOOK, type SpriteSet } from './sprites';
+import { spriteFor, personSprite, playerSprite, NPC_LOOK, type SpriteSet } from './sprites';
 import { iconCanvas } from './icons';
 import { FxSystem } from './fx';
 import { makeCanvas, ctx2d, shadeHex } from './pixel';
@@ -254,7 +254,7 @@ export class WorldRenderer {
   spriteOf(st: RunState, a: Pick<Actor, 'def' | 'elite' | 'npc' | 'faction'> & { id?: number }): SpriteSet {
     if (a.id === st.pid || a.def === 'player') {
       const cls = CLASSES.find((k) => k.id === st.player.classId) ?? CLASSES[0];
-      return personSprite(`player_${cls.id}`, { suit: cls.suit, visor: '#9fe8ff', accessory: cls.id === 'hacker' ? 'antenna' : cls.id === 'medico' ? 'cross' : cls.id === 'soldador' ? 'mask' : cls.id === 'infiltrado' ? 'hood' : cls.id === 'eco' ? 'halo' : 'belt' });
+      return playerSprite(cls);
     }
     if (a.npc && NPC_LOOK[a.npc]) return personSprite(`npc_${a.npc}`, NPC_LOOK[a.npc]);
     const d = enemyDef(a.def);
@@ -352,9 +352,10 @@ export class WorldRenderer {
       const i = it.y * m.w + it.x;
       if (!vis.visible[i] && !m.seen[i]) continue;
       const bob = vis.visible[i] ? Math.round(Math.sin(now / 300 + it.id) * 0.8) : 0;
-      c.fillStyle = 'rgba(0,0,0,0.35)';
-      c.fillRect(it.x * TS + 4, it.y * TS + 12, 8, 2);
-      c.drawImage(iconCanvas(it.item.id, st.appear[it.item.id], !st.known[it.item.id]), it.x * TS + 2, it.y * TS + 1 + bob);
+      c.fillStyle = 'rgba(0,0,0,0.38)';
+      c.fillRect(it.x * TS + 3, it.y * TS + 13, 10, 2);
+      c.fillRect(it.x * TS + 4, it.y * TS + 12, 8, 1);
+      c.drawImage(iconCanvas(it.item.id, st.appear[it.item.id], !st.known[it.item.id]), it.x * TS, it.y * TS - 1 + bob);
     }
 
     // avisos de ataque

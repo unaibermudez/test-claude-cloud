@@ -8,6 +8,12 @@ import { getPlayer, freeSpotNear } from '../core/actors';
 import { invalidateVision } from '../core/vision';
 import type { Action } from '../core/player';
 import { botDecide, newBotMemory } from '../sim/bot';
+import { ALL_ITEMS } from '../data/items';
+import { ENEMIES } from '../data/enemies';
+import { CLASSES } from '../data/classes';
+import { iconCanvas } from '../render/icons';
+import { spriteFor, personSprite, playerSprite, NPC_LOOK } from '../render/sprites';
+import { portrait } from '../render/portraits';
 
 export interface E2EApi {
   app: App;
@@ -19,6 +25,8 @@ export interface E2EApi {
   godMode(): void;
   panels(): string[];
   bot(n: number): number;
+  /** Arte generado, para revisar iconos y sprites en una hoja de contactos. */
+  debug: { icons(): HTMLCanvasElement[]; sprites(): HTMLCanvasElement[]; portraits(): HTMLCanvasElement[] };
 }
 
 export function installE2E(app: App): void {
@@ -27,6 +35,15 @@ export function installE2E(app: App): void {
   let god = false;
   const api: E2EApi = {
     app,
+    debug: {
+      icons: () => ALL_ITEMS.map((d) => iconCanvas(d.id)),
+      sprites: () => [
+        ...ENEMIES.map((e) => spriteFor(e.id, e.sprite).frames[0]),
+        ...Object.entries(NPC_LOOK).map(([k, l]) => personSprite(`npc_${k}`, l).frames[0]),
+        ...CLASSES.map((c) => playerSprite(c).frames[0]),
+      ],
+      portraits: () => ['celia', 'tomas', 'bruno', 'solis', 'lenz', 'faro', 'ferran', 'lucia', 'tuerca', 'player', 'narrator', 'radio'].map((k) => portrait(k)),
+    },
     screen: () => app.screen,
     summary: () => {
       const st = app.run;

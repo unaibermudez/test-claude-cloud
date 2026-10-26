@@ -2,7 +2,7 @@
  * Retratos de diálogo (32×32 escalados) generados por código y el patrón abstracto de ÁGORA,
  * que cambia de forma y color según la Confianza.
  */
-import { Grid, shadeHex, makeCanvas, ctx2d } from './pixel';
+import { Grid, shadeHex, mixHex, makeCanvas, ctx2d, paint } from './pixel';
 import { NPC_LOOK, type PersonSpec } from './sprites';
 import { CLASSES } from '../data/classes';
 
@@ -63,17 +63,18 @@ function personFace(key: string, f: Face): HTMLCanvasElement {
     default: break;
   }
   if (f.visor && f.accessory !== 'glasses') g.rect(10, 13, 12, 3, E);
-  g.shade();
-  g.outline();
   const [o, b, s, h] = f.suit;
   const colors = ['', b, s, h, f.visor ?? '#e8f4ff', shadeHex(b, 0.3), o, f.skin ?? '#d9a988', f.hair ?? '#3a2a20', shadeHex(f.skin ?? '#d9a988', -0.4)];
-  // el sombreado convierte la base en sombra/brillo; recolorea la piel
   const cv = makeCanvas(32, 32);
   const c = ctx2d(cv);
-  c.fillStyle = f.bg;
+  // fondo con contraluz detrás de la cabeza
+  const grd = c.createRadialGradient(16, 12, 2, 16, 14, 22);
+  grd.addColorStop(0, mixHex(f.bg, '#9fb8d8', 0.22));
+  grd.addColorStop(1, shadeHex(f.bg, -0.35));
+  c.fillStyle = grd;
   c.fillRect(0, 0, 32, 32);
   for (let y = 0; y < 32; y += 2) { c.fillStyle = 'rgba(255,255,255,0.03)'; c.fillRect(0, y, 32, 1); }
-  c.drawImage(g.toCanvas(colors), 0, 0);
+  c.drawImage(paint(g, { color: (v) => colors[v] || null, emissive: (v) => v === E && !!f.visor, rim: '#8fd8ff', gradient: 0.2 }), 0, 0);
   void key;
   return cv;
 }
