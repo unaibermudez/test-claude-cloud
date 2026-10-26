@@ -155,7 +155,11 @@ export class Nav {
     for (let s = 1; s <= nRows; s++) {
       const tr = (r + d * s + nRows * s) % nRows;
       const idx = rows.map((x, k) => (x === tr ? k : -1)).filter((k) => k >= 0 && !this.disabled(k));
-      if (idx.length) { this.go(idx[Math.min(col, idx.length - 1)]); return; }
+      if (!idx.length) continue;
+      // al entrar en una fila se selecciona la opción activa (p. ej. el trato elegido), si la hay
+      const active = idx.find((k) => this.items[k].classList.contains('primary') || this.items[k].classList.contains('on'));
+      this.go(idx.length > 1 && active !== undefined ? active : idx[Math.min(col, idx.length - 1)]);
+      return;
     }
   }
 
