@@ -429,3 +429,33 @@ PANELS.doorMenu = (app: App, arg?: unknown): Panel => {
   const p: Panel = { el, onCommand: (e) => { if (closeOn(e)) { close(); return true; } return nav.handle(e) || true; } };
   return p;
 };
+
+// ------------------------------------------------------------------ elegir con qué interactuar
+
+PANELS.interactMenu = (app: App, arg?: unknown): Panel => {
+  const st = app.run!;
+  const cands = (arg as { prop: { id: number; kind: string; npc?: string; label?: string }; dir: number }[]) ?? [];
+  const close = (): void => app.pop(p);
+  const menu = h('div', { class: 'menu' });
+  const nav = new Nav();
+  const DN = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
+  const items: HTMLElement[] = cands.map((c) => {
+    const nm = c.prop.kind === 'npc' && c.prop.npc ? t(`npc.${c.prop.npc}.name`) : c.prop.kind === 'decor' ? t(`ui.decor.${c.prop.label}`) : t(`ui.prop.${c.prop.kind}`);
+    const where = c.dir >= 0 ? t(`ui.dir.${DN[c.dir]}`) : t('ui.here');
+    return h('button', { class: 'mi', onclick: () => { close(); app.act(c.dir >= 0 ? { t: 'interact', dir: c.dir } : { t: 'interact' }); } }, `${nm} · ${where}`);
+  });
+  items.push(h('button', { class: 'mi', onclick: close }, t('ui.cancel')));
+  menu.append(...items);
+  nav.set(items);
+  void st;
+  const el = h('div', { class: 'overlay clear' }, h('div', { class: 'panel narrow' }, h('header', {}, h('h2', {}, t('ui.interact.title'))), h('div', { class: 'body' }, menu)));
+  const p: Panel = {
+    el,
+    onCommand: (e) => {
+      if (closeOn(e)) { close(); return true; }
+      if (e.cmd === 'num' && e.num !== undefined && e.num >= 1 && e.num <= items.length) { items[e.num - 1].click(); return true; }
+      return nav.handle(e) || true;
+    },
+  };
+  return p;
+};

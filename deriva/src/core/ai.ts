@@ -332,7 +332,7 @@ function onHitAbilities(st: RunState, ev: EventSink, a: Actor): void {
   if (d.abilities.includes('drainO2')) st.player.o2 = Math.max(0, st.player.o2 - 6);
   if (d.abilities.includes('drainEnergy')) { st.player.energy = Math.max(0, st.player.energy - 6); ev.push({ t: 'dmg', x: p.x, y: p.y, amount: 6, kind: 'energy' }); }
   if (d.abilities.includes('blind') && chance(st.rng, 0.5)) { p.status.blind = 2; ev.msg('msg.blinded', {}, 'danger'); }
-  if (d.abilities.includes('mental')) addNoise(st, ev, 3);
+  if (d.abilities.includes('mental')) addNoise(st, ev, 1);
 }
 
 function passiveAbilities(st: RunState, ev: EventSink, a: Actor, target: Actor | null): void {

@@ -6,7 +6,7 @@ export type Command =
   | 'up' | 'down' | 'left' | 'right' | 'upleft' | 'upright' | 'downleft' | 'downright'
   | 'wait' | 'interact' | 'fire' | 'throw' | 'pickup' | 'sneak' | 'light' | 'inventory' | 'implants'
   | 'map' | 'archive' | 'agora' | 'active' | 'rest' | 'help' | 'pause'
-  | 'confirm' | 'cancel' | 'next' | 'prev' | 'shove' | 'door' | 'look' | 'drop' | 'num';
+  | 'confirm' | 'cancel' | 'next' | 'prev' | 'shove' | 'door' | 'look' | 'drop' | 'fullscreen' | 'num';
 
 export const DIR_OF: Partial<Record<Command, number>> = {
   up: 0, upright: 1, right: 2, downright: 3, down: 4, downleft: 5, left: 6, upleft: 7,

@@ -5,7 +5,7 @@
 import type { RunState, Prop } from '../core/state';
 import { TILE } from '../core/state';
 import type { Action } from '../core/player';
-import { terminalOps, RECIPES, canCraft, hackHint, rangedInfo, interactTarget } from '../core/player';
+import { terminalOps, RECIPES, canCraft, hackHint, rangedInfo, interactCandidates } from '../core/player';
 import { step } from '../core/game';
 import { getPlayer, actorAt } from '../core/actors';
 import { getVision } from '../core/vision';
@@ -52,6 +52,8 @@ function costFn(st: RunState, strategy: Strategy) {
   const enemies = st.actors.filter((a) => !a.dead && a.faction === 'enemy' && !a.phantom);
   const v = getVision(st);
   const danger = new Uint8Array(m.w * m.h);
+  const marks = new Set<number>();
+  for (const tg of st.telegraphs) for (const ti of tg.tiles) marks.add(ti);
   for (const e of enemies) {
     if (!v.seenActors.has(e.id)) continue;
     const r = strategy === 'sigilo' ? 3 : 1;
@@ -82,6 +84,7 @@ function costFn(st: RunState, strategy: Strategy) {
       for (const p of m.props) if (p.x === x && p.y === y && blocks(p)) return -1;
     }
     if (m.fire[i] > 0) c += 60;
+    if (marks.has(i)) c += 30;
     for (const d of DIRS) if (m.fire[i + d.y * m.w + d.x] > 0) { c += 4; break; }
     if (pressureAt(m, x, y) < 30 && m.zone !== 6) c += stats.vacuum > 0.5 ? 2 : 8;
     if (m.gas[i] >= 3) c += 8;
@@ -347,6 +350,22 @@ export function botDecide(st: RunState, strategy: Strategy, mem: BotMemory): Act
   const anySeen = st.actors.some((a) => !a.dead && a.faction === 'enemy' && v.seenActors.has(a.id));
   if (strategy === 'sigilo' && !st.player.sneak && anySeen) return { t: 'toggleSneak' };
   if (strategy === 'sigilo' && st.player.sneak && !anySeen) return { t: 'toggleSneak' };
+  // esquivar ataques avisados: salir de las casillas marcadas
+  const marked = new Set<number>();
+  for (const tg of st.telegraphs) for (const i of tg.tiles) marked.add(i);
+  if (marked.has(p.y * m.w + p.x)) {
+    const cf = costFn(st, strategy);
+    let best = -1; let bc = Infinity;
+    for (let d = 0; d < 8; d++) {
+      const x = p.x + DIRS[d].x; const y = p.y + DIRS[d].y;
+      const i = y * m.w + x;
+      if (marked.has(i) || actorAt(st, x, y)) continue;
+      const c = cf(x, y);
+      if (c < 0 || !passable(m, x, y, { allowVoid: m.zone === 6 && st.player.suit })) continue;
+      if (c < bc) { bc = c; best = d; }
+    }
+    if (best >= 0) return { t: 'move', dir: best };
+  }
   // salir del fuego
   if (m.fire[p.y * m.w + p.x] > 0) {
     for (let d = 0; d < 8; d++) {
@@ -355,7 +374,8 @@ export function botDecide(st: RunState, strategy: Strategy, mem: BotMemory): Act
     }
   }
   // combate
-  const visible = st.actors.filter((a) => !a.dead && a.faction === 'enemy' && v.seenActors.has(a.id));
+  // un jefe con escudo no se ataca: primero sus esbirros y las terminales de la sala
+  const visible = st.actors.filter((a) => !a.dead && a.faction === 'enemy' && v.seenActors.has(a.id) && !(a.boss && a.boss.shield));
   visible.sort((a, b) => chebyshev(a.x, a.y, p.x, p.y) - chebyshev(b.x, b.y, p.x, p.y));
   const threat = visible.find((a) => a.ai.mode === 'hunt' || chebyshev(a.x, a.y, p.x, p.y) <= 2 || strategy === 'agresivo' || a.boss ||
     (strategy === 'prudente' && chebyshev(a.x, a.y, p.x, p.y) <= 5 && enemyDef(a.def).behavior !== 'turret'));
@@ -425,8 +445,8 @@ export function botDecide(st: RunState, strategy: Strategy, mem: BotMemory): Act
     mem.ignoreItems.add(here.id);
   }
   // interacción adyacente útil
-  const adj = interactTarget(st);
-  if (adj && !mem.visitedProps.has(adj.id)) {
+  for (const { prop: adj, dir: adjDir } of interactCandidates(st)) {
+    if (mem.visitedProps.has(adj.id)) continue;
     const useful = (adj.kind === 'o2station' && st.player.o2 < stats.maxO2 * 0.75) || (adj.kind === 'powernode' && st.player.energy < stats.maxEnergy * 0.7) ||
       adj.kind === 'container' || adj.kind === 'log' || adj.kind === 'npc' || adj.kind === 'event' || adj.kind === 'core' ||
       (adj.kind === 'terminal' && !adj.hacked) || ((adj.kind === 'vending' || adj.kind === 'merchant') && st.player.scrap >= 20) ||
@@ -434,7 +454,7 @@ export function botDecide(st: RunState, strategy: Strategy, mem: BotMemory): Act
       (adj.kind === 'bed' && hpPct < 0.7);
     if (useful) {
       mem.visitedProps.add(adj.id);
-      return { t: 'interact', dir: DIRS.findIndex((d) => d.x === adj.x - p.x && d.y === adj.y - p.y) };
+      return adjDir >= 0 ? { t: 'interact', dir: adjDir } : { t: 'interact' };
     }
   }
   // objetivos conocidos
@@ -445,7 +465,7 @@ export function botDecide(st: RunState, strategy: Strategy, mem: BotMemory): Act
   const keyP = m.props.filter((q) => q.kind === 'keycard' && m.seen[q.y * m.w + q.x] === 1);
   // prioridades duras: oxígeno y llaves
   const hard: { x: number; y: number }[] = [];
-  if (wantO2) for (const q of m.props) if (q.kind === 'o2station' && !q.used && m.seen[q.y * m.w + q.x]) hard.push({ x: q.x, y: q.y });
+  if (wantO2 && mem.exploreOnly <= 0) for (const q of m.props) if (q.kind === 'o2station' && !q.used && m.seen[q.y * m.w + q.x]) hard.push({ x: q.x, y: q.y });
   if (hard.length) { const k = stepTo(st, hard, strategy, true); if (k >= 0) return { t: 'move', dir: k }; }
   if (keyP.length) { const k = stepTo(st, keyP, strategy, false); if (k >= 0) return { t: 'move', dir: k }; }
   // botín y narrativa cercana

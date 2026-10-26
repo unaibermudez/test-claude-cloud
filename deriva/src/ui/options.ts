@@ -6,6 +6,7 @@ import { DEFAULT_BINDS, type Settings, type Colorblind, type TextSize } from '..
 import { exportAll, importAll } from '../core/save';
 import { save, KEYS, remove } from '../platform/storage';
 import { serializeRun } from '../core/save';
+import { toggleFullscreen } from '../platform/fullscreen';
 
 type Tab = 'audio' | 'access' | 'game' | 'controls' | 'data';
 const TABS: Tab[] = ['audio', 'access', 'game', 'controls', 'data'];
@@ -58,6 +59,8 @@ PANELS.options = (app: App, arg?: unknown): Panel => {
       toggle('reduceFlicker'); toggle('reduceShake'); toggle('reduceGlitch'); toggle('crt');
       choice(t('ui.opt.pixelScale'), ['0', '1', '2', '3', '4', '5'], () => String(s.pixelScale), (v) => { s.pixelScale = Number(v); }, (v) => (v === '0' ? t('ui.opt.auto') : `×${v}`));
       toggle('showTutorial');
+      const fsBtn = h('button', { class: 'btn', onclick: () => toggleFullscreen() }, t(document.fullscreenElement ? 'ui.opt.fullscreen_off' : 'ui.opt.fullscreen_on'));
+      row(t('ui.opt.fullscreen'), fsBtn, t('ui.opt.fullscreen.desc'), undefined, () => fsBtn.click());
     } else if (tab === 'game') {
       shell.body.append(h('p', { class: 'dim' }, t('ui.opt.game_note')));
       toggle('generousO2'); toggle('assistHack'); toggle('skipHack'); toggle('dullEnemies'); toggle('longOrbit');

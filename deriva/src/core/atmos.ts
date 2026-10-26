@@ -186,7 +186,7 @@ function fireTurn(st: RunState, ev: EventSink): void {
       const ni = ny * m.w + nx;
       const t = m.tiles[ni];
       if (m.fire[ni] > 0 || (t !== TILE.FLOOR && t !== TILE.PLANTS && t !== TILE.GRATE && t !== TILE.RUBBLE)) continue;
-      const pch = BAL.fireSpread * (t === TILE.PLANTS ? 2 : 1);
+      const pch = BAL.fireSpread * (t === TILE.PLANTS ? 2 : 1) * (m.boss ? 0.5 : 1);
       if (chance(st.rng, pch)) next.push(ni);
       // barriles adyacentes
       for (const p of m.props) if (p.kind === 'barrel' && !p.used && p.x === nx && p.y === ny && chance(st.rng, 0.3)) { p.used = true; invalidateProps(m); explode(st, ev, nx, ny, 2, [6, 10], null); }
@@ -314,7 +314,7 @@ function playerVitals(st: RunState, ev: EventSink, exertion: boolean): void {
   // ruido mental
   let dn = stats.noisePerTurn;
   const z = st.map.zone;
-  if (z === 4) dn += 0.03;
+  if (z === 4) dn += 0.02;
   if (z === 5 || z === 6) dn += 0.01;
   if (st.map.event === 'ruido') dn += 0.12;
   if (st.opts.mode === 'pesadilla') dn += 0.02;
@@ -326,12 +326,13 @@ function playerVitals(st: RunState, ev: EventSink, exertion: boolean): void {
       st.player.lastHitBy = 'dissolution';
       return;
     }
-    if (z === 4) { st.narrative.flags.brink = 1; ev.msg('msg.brink', {}, 'hallu'); }
     ev.msg('msg.collapse', {}, 'hallu');
     st.narrative.flags.collapsed = 1;
     p.status.stun = BAL.noiseCollapseStun;
     damagePlayer(st, ev, BAL.noiseCollapseDmg, 'collapse');
     st.player.noise = BAL.noiseAfterCollapse;
+    // en los laboratorios, el primer derrumbe es un aviso: la mente se vacía un poco más
+    if (z === 4) { st.narrative.flags.brink = 1; ev.msg('msg.brink', {}, 'hallu'); st.player.noise = BAL.noiseAfterBrink; }
   }
   if (stats.migraine > 0 && chance(st.rng, stats.migraine)) {
     p.status.stun = Math.max(p.status.stun ?? 0, 1);

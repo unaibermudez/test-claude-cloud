@@ -24,6 +24,7 @@ export const BAL = {
   noiseCollapseStun: 3,
   noiseCollapseDmg: 5,
   noiseAfterCollapse: 70,
+  noiseAfterBrink: 40,
   noiseHallucination: 55,
   noiseDistort: 30,
   noiseHeavy: 75,
@@ -33,7 +34,7 @@ export const BAL = {
   lifeSupportRate: 3,
   fireSpread: 0.09,
   fireDmg: 2,
-  naturalRegen: 10,
+  naturalRegen: 8,
   fireMinPressure: 40,
   pullPressure: 60,
   // reloj
@@ -66,7 +67,12 @@ export const BAL = {
   memoriasPerKills: 15,
   // generación
   enemyScaleHp: 0.06, // +6 % de vida por piso dentro de la zona
-  enemyDmg: 0.85,
+  enemyDmg: 0.8,
+  bossHp: 0.72,
+  miniHp: 0.85,
+  bossDmg: 0.7,
+  miniDmg: 0.85,
+  patternDmg: 0.9, // se compone con enemyDmg en los ataques avisados
   hardHp: 1.25,
   hardDmg: 1.2,
   nightmareHp: 1.35,

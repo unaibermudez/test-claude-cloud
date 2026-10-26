@@ -103,6 +103,16 @@ export function interactTarget(st: RunState, dir?: number): Prop | null {
   return cands[0] ?? null;
 }
 
+/** Todos los objetos con los que se puede interactuar alrededor del jugador, con su dirección (-1 = bajo los pies). */
+export function interactCandidates(st: RunState): { prop: Prop; dir: number }[] {
+  const p = getPlayer(st);
+  const out: { prop: Prop; dir: number }[] = [];
+  const ok = (q: Prop): boolean => INTERACTIVE.has(q.kind) && !(q.used && (q.kind === 'o2station' || q.kind === 'powernode' || q.kind === 'container' || q.kind === 'bed' || q.kind === 'event' || q.kind === 'npc' || q.kind === 'log'));
+  for (const q of propsAt(st.map, p.x, p.y)) if (ok(q)) out.push({ prop: q, dir: -1 });
+  DIRS.forEach((d, i) => { for (const q of propsAt(st.map, p.x + d.x, p.y + d.y)) if (ok(q)) out.push({ prop: q, dir: i }); });
+  return out;
+}
+
 function facingTo(st: RunState, dx: number, dy: number): void {
   const di = dirIndex(dx, dy);
   if (di >= 0) getPlayer(st).facing = di;

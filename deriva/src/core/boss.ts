@@ -4,7 +4,8 @@ import type { EventSink } from './events';
 import type { BossPattern } from './content';
 import { enemyDef } from '../data/enemies';
 import { int, pick, chance } from './rng';
-import { getPlayer, spawnActor, freeSpotNear, actorAt } from './actors';
+import { BAL } from '../data/balance';
+import { getPlayer, spawnActor, freeSpotNear, actorAt, dmgMult } from './actors';
 import { damagePlayer, damageActor, ignite, breakWindow, addNoise, killActor } from './combat';
 import { passable, inBounds, tileAt } from './map';
 import { DIRS, chebyshev, dirIndex } from './geom';
@@ -320,7 +321,7 @@ function runPattern(st: RunState, ev: EventSink, a: Actor, pat: BossPattern): vo
       const r = pat.radius ?? 4;
       ev.fx('scream', a.x, a.y, { n: r });
       if (chebyshev(a.x, a.y, p.x, p.y) <= r) {
-        addNoise(st, ev, 6);
+        addNoise(st, ev, 4);
         p.status.stun = Math.max(p.status.stun ?? 0, 1);
         damagePlayer(st, ev, int(st.rng, (pat.dmg ?? [1, 2])[0], (pat.dmg ?? [1, 2])[1]), a.def, a);
         ev.msg('msg.boss_scream', { name: `@enemy.${a.def}.name` }, 'danger');
@@ -386,10 +387,10 @@ export function tickTelegraphs(st: RunState, ev: EventSink): void {
     for (const i of t.tiles) {
       const x = i % m.w; const y = Math.floor(i / m.w);
       ev.fx(t.effect === 'fire' ? 'firehit' : t.effect === 'cold' ? 'cold' : t.effect === 'root' ? 'roots' : 'impact', x, y);
-      if (t.effect === 'fire') ignite(st, ev, x, y);
+      if (t.effect === 'fire' && (x + y) % 2 === 0) ignite(st, ev, x, y);
       const victim = actorAt(st, x, y);
       if (!victim || victim === src || victim.faction === 'enemy') continue;
-      const dmg = int(st.rng, t.dmg[0], t.dmg[1]);
+      const dmg = Math.max(1, Math.round(int(st.rng, t.dmg[0], t.dmg[1]) * dmgMult(st, src) * BAL.patternDmg));
       if (victim.id === st.pid) {
         damagePlayer(st, ev, dmg, src.def, src);
         if (t.effect === 'root') victim.status.rooted = 2;

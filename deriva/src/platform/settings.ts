@@ -56,6 +56,7 @@ export const DEFAULT_BINDS: Record<string, string[]> = {
   pause: ['Escape'],
   look: ['KeyO'],
   drop: ['Delete', 'KeyT'],
+  fullscreen: ['F10'],
 };
 
 export function defaultSettings(): Settings {

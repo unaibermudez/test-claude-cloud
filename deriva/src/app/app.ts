@@ -5,7 +5,7 @@
 import type { RunState, RunOptions, Modal } from '../core/state';
 import type { GameEvent } from '../core/events';
 import type { Action } from '../core/player';
-import { rangedInfo, interactTarget } from '../core/player';
+import { rangedInfo, interactTarget, interactCandidates } from '../core/player';
 import { step, createRun, defaultOptions } from '../core/game';
 import { newMeta, snapshotFor, finishRun, checkAchievements, type MetaState, type RunSummary } from '../core/meta';
 import { serializeMeta, deserializeMeta, serializeRun, deserializeRun } from '../core/save';
@@ -30,6 +30,7 @@ import { Input, DIR_OF, type CommandEvent } from '../input/input';
 import { Hud } from '../ui/hud';
 import { h, clear, type Panel } from '../ui/dom';
 import { HubScene } from '../render/hub';
+import { toggleFullscreen } from '../platform/fullscreen';
 
 export type ScreenId = 'boot' | 'warning' | 'title' | 'intro' | 'create' | 'hub' | 'run' | 'over' | 'credits';
 
@@ -524,8 +525,9 @@ export class App {
   private interact(): void {
     const st = this.run!;
     const p = getPlayer(st);
-    const prop = interactTarget(st);
-    if (prop) { this.act({ t: 'interact' }); return; }
+    const cands = interactCandidates(st);
+    if (cands.length > 1 && new Set(cands.map((c) => c.prop.id)).size > 1) { this.open('interactMenu', cands); return; }
+    if (cands.length === 1) { this.act(cands[0].dir >= 0 ? { t: 'interact', dir: cands[0].dir } : { t: 'interact' }); return; }
     // puertas adyacentes: menú contextual
     const doors: { x: number; y: number }[] = [];
     for (const d of DIRS) {
@@ -813,6 +815,7 @@ export class App {
 
   /** Enrutado general de comandos: tutorial → panel superior → base. */
   private onCommand(e: CommandEvent): boolean {
+    if (e.cmd === 'fullscreen') { toggleFullscreen(); return true; }
     const top = this.top();
     if (top?.onCommand) {
       const r = top.onCommand(e);

@@ -667,5 +667,12 @@
  "ui.hack.finish": "Terminar (acceso conseguido)",
  "ui.hack.bonus": "Acceso conseguido. Puedes seguir para completar las secuencias extra o terminar ya.",
  "ui.miss": "fallo",
- "ui.decor.clone": "Un clon anterior"
+ "ui.decor.clone": "Un clon anterior",
+ "ui.opt.fullscreen": "Pantalla completa",
+ "ui.opt.fullscreen.desc": "También con F11 o la tecla asignada.",
+ "ui.opt.fullscreen_on": "Activar",
+ "ui.opt.fullscreen_off": "Desactivar",
+ "ui.cmd.fullscreen": "Pantalla completa",
+ "ui.here": "aquí",
+ "ui.interact.title": "¿Con qué?"
 }

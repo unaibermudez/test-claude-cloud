@@ -163,7 +163,7 @@ function applyTraits(st: RunState, ev: EventSink, att: Actor, tgt: Actor, spec: 
     }
     ev.msg('msg.harpoon', { target: `@enemy.${tgt.def}.name` }, 'combat');
   }
-  if (spec.traits.includes('mental') && isPlayerTarget) addNoise(st, ev, 4);
+  if (spec.traits.includes('mental') && isPlayerTarget) addNoise(st, ev, 2.5);
 }
 
 export function addNoise(st: RunState, ev: EventSink, amount: number): void {

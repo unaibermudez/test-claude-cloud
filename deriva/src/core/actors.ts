@@ -40,6 +40,9 @@ export function dmgMult(st: RunState, a: Actor): number {
     if (st.opts.mode === 'dificil') m *= BAL.hardDmg;
     if (st.opts.mode === 'pesadilla') m *= BAL.nightmareDmg;
     if (a.elite === 'resonante' || a.elite === 'voraz') m *= 1.15;
+    const rank = enemyDef(a.def).rank;
+    if (rank === 'boss') m *= BAL.bossDmg;
+    else if (rank === 'mini') m *= BAL.miniDmg;
   }
   return m;
 }
@@ -58,6 +61,8 @@ export function spawnActor(st: RunState, def: string, x: number, y: number, o: S
   const d = enemyDef(def);
   let hp = d.hp;
   if ((o.faction ?? 'enemy') === 'enemy' && !d.rank) hp = Math.round(hp * hpMult(st));
+  if (d.rank === 'boss') hp = Math.round(hp * BAL.bossHp);
+  if (d.rank === 'mini') hp = Math.round(hp * BAL.miniHp);
   if (d.rank && st.opts.mode === 'dificil') hp = Math.round(hp * 1.15);
   if (d.rank && st.opts.mode === 'pesadilla') hp = Math.round(hp * 1.25);
   if (o.elite === 'resonante') hp = Math.round(hp * 1.5);
