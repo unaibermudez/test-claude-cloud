@@ -24,6 +24,7 @@ export interface E2EApi {
 export function installE2E(app: App): void {
   app.e2e = true;
   const mem = newBotMemory();
+  let god = false;
   const api: E2EApi = {
     app,
     screen: () => app.screen,
@@ -60,9 +61,8 @@ export function installE2E(app: App): void {
     godMode: () => {
       const st = app.run;
       if (!st) return;
-      const p = getPlayer(st);
-      p.maxHp = 999; p.hp = 999;
-      st.player.o2 = 999;
+      god = true;
+      void st;
     },
     panels: () => app.stack.map((p) => p.id ?? '?'),
     bot: (n) => {
@@ -70,6 +70,7 @@ export function installE2E(app: App): void {
       for (; k < n; k++) {
         const st = app.run;
         if (!st || st.over) break;
+        if (god) { const p = getPlayer(st); p.hp = p.maxHp; st.player.o2 = Math.max(st.player.o2, 50); }
         app.act(botDecide(st, 'prudente', mem));
       }
       return k;

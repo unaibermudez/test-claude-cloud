@@ -76,6 +76,7 @@ export class App {
   lastSummary: { summary: RunSummary; achievements: string[]; run: RunState } | null = null;
   private modalKey = '';
   private seenTutorials = new Set<string>();
+  private tutorialTurn = -1;
   private raf = 0;
   e2e = false;
 
@@ -390,6 +391,7 @@ export class App {
       m.narrative = st.modal?.kind === 'dialog';
     }
     if (interrupt) { this.travel = null; this.resting = 0; }
+    if (this.tutorialTurn >= 0 && st.turn - this.tutorialTurn > 14) { this.hud.hideTutorial(); this.tutorialTurn = -1; }
     // diálogos y modales de la lógica
     this.syncModal();
     this.hud.update(st);
@@ -461,6 +463,7 @@ export class App {
     this.meta.flags[`tut_${id}`] = 1;
     const title = tOpt(`${key}.title`) || t('ui.tutorial');
     this.hud.showTutorial(title, t(key));
+    this.tutorialTurn = this.run?.turn ?? 0;
   }
 
   toast(title: string, body: string): void {
@@ -476,7 +479,7 @@ export class App {
     const st = this.run;
     if (!st || st.over) return false;
     if (this.targeting) return this.targetCommand(e);
-    if (e.cmd === 'cancel' && this.hud.hideTutorial()) return true;
+    if ((e.cmd === 'cancel' || e.cmd === 'pause') && this.hud.hideTutorial()) return true;
     const dir = DIR_OF[e.cmd];
     if (dir !== undefined) {
       this.travel = null;
@@ -681,7 +684,7 @@ export class App {
     if (m.gas[i] > 0) parts.push(t('ui.look.gas'));
     const s = m.sec[i] >= 0 ? m.sections[m.sec[i]] : null;
     if (s) {
-      if (s.pressure < 0.35 && m.zone !== 6) parts.push(t('ui.room.vacuum'));
+      if (s.pressure < 30 && m.zone !== 6) parts.push(t('ui.room.vacuum'));
       if (s.radiation > 0) parts.push(t('ui.room.radiation'));
     }
     if (!v.visible[i]) parts.push(t('ui.look.memory'));

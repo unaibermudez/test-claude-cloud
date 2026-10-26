@@ -663,5 +663,8 @@
  "tut.log.title": "Logs",
  "tut.vacuum.title": "Vacuum",
  "tut.hallu.title": "Hallucinations",
- "tut.npc.title": "Survivors"
+ "tut.npc.title": "Survivors",
+ "ui.hack.finish": "Finish (access granted)",
+ "ui.hack.bonus": "Access granted. You can keep going for the extra sequences or finish now.",
+ "ui.miss": "miss"
 }

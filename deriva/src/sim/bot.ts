@@ -250,6 +250,7 @@ function modalAction(st: RunState, strategy: Strategy, mem: BotMemory): Action {
     case 'hack': {
       const h = md.hack;
       const hint = hackHint(st);
+      if (h.success) return { t: 'hackAbort' };
       if (hint >= 0) return { t: 'hack', cell: hint };
       const vp = validPicks(h);
       if (vp.length && !h.finished) return { t: 'hack', cell: vp[0] };

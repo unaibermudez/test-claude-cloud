@@ -202,7 +202,7 @@ export function drawMinimap(st: RunState, cv: HTMLCanvasElement, cell: number): 
         case TILE.GIRDER: col = '#3a3d44'; break;
         default: {
           const s = m.sections[m.sec[i]];
-          col = s && s.pressure < 0.35 && m.zone !== 6 ? '#1a2a4a' : s?.radiation ? '#24341c' : '#22272f';
+          col = s && s.pressure < 30 && m.zone !== 6 ? '#1a2a4a' : s?.radiation ? '#24341c' : '#22272f';
         }
       }
       if (!col) continue;

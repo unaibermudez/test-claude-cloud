@@ -131,8 +131,8 @@ export class Hud {
     const m = st.map;
     const sec = m.sections[m.sec[p.y * m.w + p.x]];
     if (sec) {
-      if (sec.pressure < 0.35 && m.zone !== 6) chips.push(h('span', { class: 'chip bad' }, t('ui.room.vacuum')));
-      else if (sec.pressure < 0.75 && m.zone !== 6) chips.push(h('span', { class: 'chip bad' }, t('ui.room.lowpressure')));
+      if (sec.pressure < 30 && m.zone !== 6) chips.push(h('span', { class: 'chip bad' }, t('ui.room.vacuum')));
+      else if (sec.pressure < 70 && m.zone !== 6) chips.push(h('span', { class: 'chip bad' }, t('ui.room.lowpressure')));
       if (sec.radiation > 0) chips.push(h('span', { class: 'chip bad' }, t('ui.room.radiation')));
       if (sec.coolant) chips.push(h('span', { class: 'chip bad' }, t('ui.room.coolant')));
       if (sec.dark) chips.push(h('span', { class: 'chip' }, t('ui.room.dark')));

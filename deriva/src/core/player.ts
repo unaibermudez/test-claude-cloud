@@ -891,12 +891,14 @@ function hackAct(st: RunState, ev: EventSink, cell: number | 'skip' | 'abort'): 
   if (!modal || modal.kind !== 'hack') return FREE;
   const pr = st.map.props.find((q) => q.id === modal.propId);
   const h = modal.hack;
-  if (cell === 'abort') {
+  if (cell === 'abort' && h.success) {
+    // la secuencia principal ya está: desconectar conserva el acceso
+    h.finished = true;
+  } else if (cell === 'abort') {
     st.modal = { kind: 'terminal', propId: modal.propId };
     if (h.picks.length > 0) failHack(st, ev, pr);
     return FREE;
-  }
-  if (cell === 'skip') {
+  } else if (cell === 'skip') {
     if (st.player.energy < BAL.skipHackCost) { ev.msg('msg.no_energy_n', { n: BAL.skipHackCost }, 'warn'); return FREE; }
     st.player.energy -= BAL.skipHackCost;
     h.finished = true; h.success = true; h.targets[0].done = true;

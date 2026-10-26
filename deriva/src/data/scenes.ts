@@ -414,6 +414,9 @@ const ENDING: SceneDef[] = [
   }),
 ];
 
+// en el Núcleo, los finales no disponibles se muestran atenuados para que se sepa que existen
+for (const o of ENDING[0].nodes.n1.options ?? []) if (o.cond) o.hideIfLocked = false;
+
 export const SCENES: SceneDef[] = [...CELIA, ...TOMAS, ...BRUNO, ...SOLIS, ...LENZ, ...FARO, ...EVENTS, ...ENDING];
 const BY_ID = new Map(SCENES.map((s) => [s.id, s]));
 export function sceneDef(id: string): SceneDef | undefined {

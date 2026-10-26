@@ -663,5 +663,8 @@
  "tut.log.title": "Registros",
  "tut.vacuum.title": "Vacío",
  "tut.hallu.title": "Alucinaciones",
- "tut.npc.title": "Supervivientes"
+ "tut.npc.title": "Supervivientes",
+ "ui.hack.finish": "Terminar (acceso conseguido)",
+ "ui.hack.bonus": "Acceso conseguido. Puedes seguir para completar las secuencias extra o terminar ya.",
+ "ui.miss": "fallo"
 }

@@ -171,7 +171,10 @@ PANELS.modal_hack = (app: App): Panel => {
       h('p', { class: 'dim' }, t(hk.axis === 'row' ? 'ui.hack.row' : 'ui.hack.col', { n: hk.line + 1 })),
       h('div', { class: 'actions' },
         h('button', { class: 'btn', onclick: () => app.act({ t: 'hackSkip' }) }, t('ui.hack.skip', { n: BAL.skipHackCost })),
-        h('button', { class: 'btn danger', onclick: () => app.act({ t: 'hackAbort' }) }, t('ui.hack.abort'))));
+        hk.success
+          ? h('button', { class: 'btn primary', onclick: () => app.act({ t: 'hackAbort' }) }, t('ui.hack.finish'))
+          : h('button', { class: 'btn danger', onclick: () => app.act({ t: 'hackAbort' }) }, t('ui.hack.abort'))),
+      hk.success ? h('p', { class: 'good' }, t('ui.hack.bonus')) : null);
     shell.body.append(h('div', { class: 'hack' }, grid, side));
   };
   shell.footer.append(h('span', {}, t('ui.hack.footer')));

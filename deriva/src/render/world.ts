@@ -17,6 +17,7 @@ import { iconCanvas } from './icons';
 import { FxSystem } from './fx';
 import { makeCanvas, ctx2d, shadeHex } from './pixel';
 import type { ZonePalette } from '../core/content';
+import { t } from '../i18n';
 
 export interface ViewOpts {
   shake: number; // 0..1
@@ -176,7 +177,7 @@ export class WorldRenderer {
         case 'fx': if (this.opts.particles > 0 || e.id === 'shot' || e.id === 'throw') this.fx.spawn(e.id, e.x, e.y, now, e.tx, e.ty, e.n, e.color); break;
         case 'shake': this.addShake(e.power); break;
         case 'dmg': {
-          const txt = e.kind === 'miss' ? '·' : e.kind === 'heal' ? `+${e.amount}` : e.kind === 'scrap' ? `+${e.amount}⚙` : e.kind === 'o2' ? `${e.amount > 0 ? '+' : ''}${e.amount}` : String(e.amount);
+          const txt = e.kind === 'miss' ? t('ui.miss') : e.kind === 'heal' ? `+${e.amount}` : e.kind === 'scrap' ? `+${e.amount}⚙` : e.kind === 'o2' ? `${e.amount > 0 ? '+' : ''}${e.amount}` : String(e.amount);
           this.fx.number(e.x, e.y, txt, DMG_COLORS[e.kind ?? 'hp'], now, e.kind === 'crit');
           break;
         }
@@ -416,11 +417,11 @@ export class WorldRenderer {
         const sec = s >= 0 ? m.sections[s] : null;
         const px = x * TS; const py = y * TS;
         if (sec && t !== TILE.WALL) {
-          if (sec.pressure < 0.35 && m.zone !== 6) {
+          if (sec.pressure < 30 && m.zone !== 6) {
             c.fillStyle = 'rgba(40,70,140,0.18)';
             c.fillRect(px, py, TS, TS);
             if (visible[i] && ((x * 7 + y * 13 + fr) % 23) === 0) { c.fillStyle = 'rgba(220,235,255,0.6)'; c.fillRect(px + ((fr * 3 + x) % 16), py + ((y * 5) % 16), 1, 1); }
-          } else if (sec.pressure < 0.75 && m.zone !== 6) {
+          } else if (sec.pressure < 70 && m.zone !== 6) {
             c.fillStyle = 'rgba(60,90,160,0.08)';
             c.fillRect(px, py, TS, TS);
           }
