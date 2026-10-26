@@ -86,7 +86,7 @@ export function bossAct(st: RunState, ev: EventSink, a: Actor): boolean {
 function applicable(st: RunState, a: Actor, pat: BossPattern, dist: number): boolean {
   switch (pat.kind) {
     case 'slam': return dist <= 2;
-    case 'summon': return st.actors.filter((x) => !x.dead && x.summoned && x.faction === 'enemy').length < 6;
+    case 'summon': return st.actors.filter((x) => !x.dead && x.summoned && x.faction === 'enemy' && !x.phantom).length < (enemyDef(a.def).rank === 'mini' ? 3 : 5);
     case 'heal': return a.hp < a.maxHp * 0.9;
     case 'shield': return !a.boss!.shield && !a.status.shielded;
     case 'pull': return dist >= 3;

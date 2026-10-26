@@ -93,7 +93,11 @@ export function atmosphereTurn(st: RunState, ev: EventSink): void {
       const w = a.id === st.pid ? 2 : enemyDef(a.def).weight;
       if (a.id === st.pid && stats.magboots) return;
       if (a.id !== st.pid && enemyDef(a.def).rank) return;
-      if (w >= 3 || (w === 2 && !chance(st.rng, 0.35))) return;
+      if (w >= 3) return;
+      if (a.id === st.pid) {
+        const handhold = DIRS.some((d) => { const t = tileAt(m, a.x + d.x, a.y + d.y); return t === TILE.WALL || t === TILE.DOOR || t === TILE.PILLAR || t === TILE.COVER; });
+        if (!chance(st.rng, handhold ? 0.12 : 0.3)) return;
+      } else if (w === 2 && !chance(st.rng, 0.35)) return;
       let best: { x: number; y: number } | null = null;
       let bd = dm[a.y * m.w + a.x];
       if (bd >= UNREACHABLE) return;
@@ -293,6 +297,12 @@ function playerVitals(st: RunState, ev: EventSink, exertion: boolean): void {
     if (st.player.energy <= 0) { st.player.flashlight = false; ev.msg('msg.flashlight_dead', {}, 'warn'); }
   }
   if (stats.energyRegen) st.player.energy = Math.min(stats.maxEnergy, st.player.energy + stats.energyRegen);
+  // regeneración natural lenta fuera de combate
+  const calm = !st.actors.some((a) => !a.dead && a.faction === 'enemy' && !a.phantom && a.ai.mode === 'hunt' && chebyshev(a.x, a.y, p.x, p.y) <= 10);
+  if (calm && st.player.o2 > 0 && st.opts.mode !== 'pesadilla') {
+    st.narrative.flags.natRegen = (st.narrative.flags.natRegen ?? 0) + 1;
+    if (st.narrative.flags.natRegen >= BAL.naturalRegen) { st.narrative.flags.natRegen = 0; p.hp = Math.min(stats.maxHp, p.hp + 1); }
+  }
   // regeneración
   if (stats.regen > 0) {
     st.player.regenAcc++;

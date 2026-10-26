@@ -5,7 +5,7 @@ export const BAL = {
   critMult: 1.5,
   invSize: 14,
   // O₂ por turno
-  o2Base: 0.2,
+  o2Base: 0.15,
   o2Low: 0.5,
   o2Vacuum: 2.5,
   o2Exertion: 0.2,
@@ -31,8 +31,9 @@ export const BAL = {
   breachRate: 25,
   equalizeRate: 0.3,
   lifeSupportRate: 3,
-  fireSpread: 0.22,
-  fireDmg: 3,
+  fireSpread: 0.12,
+  fireDmg: 2,
+  naturalRegen: 12,
   fireMinPressure: 40,
   pullPressure: 60,
   // reloj

@@ -6,7 +6,7 @@ const W = (id: string, tier: number, price: number, icon: string, color: string,
 // ------------------------------------------------------------------ armas (29)
 export const WEAPONS: ItemDef[] = [
   // cuerpo a cuerpo
-  W('llave_inglesa', 1, 20, 'wrench', '#b8c0cc', { kind: 'melee', dmg: [2, 4], acc: 85, range: 1, noise: 4, traits: [] }, 0.6),
+  W('llave_inglesa', 1, 20, 'wrench', '#b8c0cc', { kind: 'melee', dmg: [3, 4], acc: 85, range: 1, noise: 4, traits: [] }, 0.6),
   W('tuberia', 1, 25, 'pipe', '#8d949e', { kind: 'melee', dmg: [3, 5], acc: 75, range: 1, noise: 5, traits: ['knockback'] }),
   W('cuchillo', 1, 25, 'knife', '#d8dde4', { kind: 'melee', dmg: [1, 3], acc: 92, range: 1, noise: 2, traits: ['silent', 'bleed', 'fast'], cost: 70 }),
   W('bisturi', 2, 45, 'scalpel', '#9fe8ff', { kind: 'melee', dmg: [2, 4], acc: 95, range: 1, noise: 1, traits: ['silent', 'bleed', 'fast'], cost: 70 }),

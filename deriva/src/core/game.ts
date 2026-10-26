@@ -168,6 +168,7 @@ export function enterFloor(st: RunState, ev: EventSink, zone: ZoneId, floor: num
   st.player.keys = [];
   st.player.drifting = false;
   st.narrative.agoraHelp = { identify: 0, door: 0, recharge: 0, map: 0 };
+  st.narrative.flags.killsAtFloor = st.stats.kills;
   const p = getPlayer(st);
   const allies = st.actors.filter((a) => !a.dead && a.faction === 'ally' && a.def !== 'senuelo' && a.def !== 'npc_solis');
   st.actors = [p];
@@ -228,6 +229,7 @@ export function enterFloor(st: RunState, ev: EventSink, zone: ZoneId, floor: num
 
 function nextFloor(st: RunState, ev: EventSink, hull: boolean): void {
   st.stats.floors++;
+  if (st.stats.kills === (st.narrative.flags.killsAtFloor ?? 0) && st.floorNo > 1 && !st.map.boss) st.narrative.flags.pacifistFloor = 1;
   const z = st.zone;
   const f = st.map.floor;
   if (hull) {

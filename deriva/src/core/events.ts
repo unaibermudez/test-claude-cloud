@@ -7,7 +7,7 @@ export type GameEvent =
   | { t: 'fx'; id: string; x: number; y: number; tx?: number; ty?: number; color?: string; n?: number }
   | { t: 'shake'; power: number }
   | { t: 'anim'; actor: number; anim: 'attack' | 'hurt' | 'death' | 'move'; dx?: number; dy?: number }
-  | { t: 'dmg'; x: number; y: number; amount: number; kind?: 'hp' | 'heal' | 'o2' | 'energy' | 'miss' | 'crit' | 'phantom' }
+  | { t: 'dmg'; x: number; y: number; amount: number; kind?: 'hp' | 'heal' | 'o2' | 'energy' | 'miss' | 'crit' | 'phantom' | 'scrap' }
   | { t: 'floor'; zone: number; floor: number }
   | { t: 'over' }
   | { t: 'log'; id: string }

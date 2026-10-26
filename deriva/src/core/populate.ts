@@ -245,7 +245,7 @@ function placeEnemies(st: RunState, tutorial: boolean, entry: { x: number; y: nu
       if (plant.length) cells = plant.filter((c) => chebyshev(c.x, c.y, entry.x, entry.y) >= 6);
     }
     if (!cells.length) continue;
-    const pack = d.behavior === 'swarm' ? int(rng, 2, 3) : 1;
+    const pack = d.behavior === 'swarm' ? int(rng, 2, m.zone >= 3 ? 3 : 2) : 1;
     for (let k = 0; k < pack && cells.length; k++) {
       const c = cells.splice(int(rng, 0, cells.length - 1), 1)[0];
       const elite = !tutorial && chance(rng, z.eliteChance + (st.opts.mode === 'pesadilla' ? 0.1 : 0)) ? pick(rng, ELITES) : undefined;

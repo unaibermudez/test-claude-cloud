@@ -278,7 +278,7 @@ export function killActor(st: RunState, ev: EventSink, a: Actor, src: Actor | nu
     if (scrap > 0 && kind !== 'vent') {
       st.player.scrap += scrap;
       st.stats.scrapEarned += scrap;
-      ev.push({ t: 'dmg', x: a.x, y: a.y, amount: scrap, kind: 'energy' });
+      ev.push({ t: 'dmg', x: a.x, y: a.y, amount: scrap, kind: 'scrap' });
     }
     if (kind !== 'vent' && chance(st.rng, d.rank ? 1 : 0.08)) dropLoot(st, a.x, a.y, d.rank ? 2 : 1);
   }
@@ -392,7 +392,7 @@ export function ignite(st: RunState, ev: EventSink, x: number, y: number): void 
   const t = m.tiles[i];
   if (t === TILE.WALL || t === TILE.VOID) return;
   if (m.fire[i] === 0) ev.sfx('ignite', x, y);
-  m.fire[i] = Math.max(m.fire[i], int(st.rng, 6, 10));
+  m.fire[i] = Math.max(m.fire[i], int(st.rng, 4, 7));
 }
 
 /** Explosión con daño, empuje, fuego y posible brecha en el casco. */

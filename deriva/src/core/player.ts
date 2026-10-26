@@ -371,7 +371,12 @@ function playerFire(st: RunState, ev: EventSink, tx: number, ty: number): Action
       for (const pt of line(p.x, p.y, tx, ty).slice(1, w.range + 1)) if (!blocksSight(st, pt.x, pt.y)) ignite(st, ev, pt.x, pt.y);
     }
   } else {
-    const path = projectilePath(st, p.x, p.y, tx, ty);
+    const tgtActor = actorAt(st, tx, ty);
+    const clearLos = !!tgtActor && hasLos(p.x, p.y, tx, ty, (x, y) => blocksSight(st, x, y));
+    const path = clearLos ? line(p.x, p.y, tx, ty).slice(1).filter((pt) => {
+      const t = tileAt(m, pt.x, pt.y);
+      return !(t === TILE.WALL || t === TILE.PILLAR || t === TILE.CRACKED || t === TILE.DOOR);
+    }) : projectilePath(st, p.x, p.y, tx, ty);
     let pierced = 0;
     for (const pt of path) {
       const t = tileAt(m, pt.x, pt.y);
@@ -1211,6 +1216,7 @@ export function playerAction(st: RunState, ev: EventSink, a: Action): ActionResu
       return tryOpenDoor(st, ev, a.x, a.y) ?? FREE;
     }
     case 'askAgora': return askAgora(st, ev, a.what);
+    case 'install': return installImplant(st, ev, a.slot, false);
     case 'craft': return craft(st, ev, a.recipe);
     case 'vent': {
       const s = st.map.sec[p.y * st.map.w + p.x];

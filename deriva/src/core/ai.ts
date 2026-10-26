@@ -166,7 +166,7 @@ export function monsterAct(st: RunState, ev: EventSink, a: Actor): void {
   if (a.faction === 'npc') return;
   if (a.faction === 'ally') { allyAct(st, ev, a); return; }
   const p = getPlayer(st);
-  if (a.boss) {
+  if (a.boss && a.ai.mode === 'hunt' && chebyshev(a.x, a.y, p.x, p.y) <= 14) {
     if (bossAct(st, ev, a)) return;
   }
   // percepción

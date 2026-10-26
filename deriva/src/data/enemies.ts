@@ -26,14 +26,14 @@ const z = (zone: ZoneId, list: E[]): EnemyDef[] => list.map((e) => ({ ...e, zone
 
 // ------------------------------------------------------------------ Zona 1: Criogenia y Residencial
 const Z1 = z(1, [
-  { id: 'eco_errante', hp: 8, dmg: [2, 3], acc: 70, armor: 0, evasion: 5, speed: 90, sight: 6, hearing: 1, weight: 2, behavior: 'melee', abilities: [], eco: true, organic: true, scrap: [1, 3], threat: 2, sprite: sp('hunched', 'eco', '#7fc4e0') },
-  { id: 'durmiente', hp: 7, dmg: [2, 4], acc: 75, armor: 0, evasion: 5, speed: 110, sight: 5, hearing: 1.2, weight: 2, behavior: 'ambush', abilities: [], eco: true, organic: true, scrap: [1, 3], threat: 2, sprite: sp('humanoid', 'ecoPale', '#9fe8ff', 'cracks') },
-  { id: 'juguete_roto', hp: 4, dmg: [1, 2], acc: 75, armor: 0, evasion: 15, speed: 140, sight: 6, hearing: 1, weight: 1, behavior: 'swarm', abilities: [], robot: true, scrap: [1, 2], threat: 1, sprite: sp('child', 'robot', '#ff5a5a', 'antenna') },
-  { id: 'servidor', hp: 12, dmg: [2, 4], acc: 75, armor: 1, evasion: 0, speed: 90, sight: 6, hearing: 0.8, weight: 2, behavior: 'melee', abilities: [], robot: true, doorBreaker: true, scrap: [2, 5], threat: 3, sprite: sp('robot', 'robot', '#7fc4e0') },
+  { id: 'eco_errante', hp: 8, dmg: [1, 3], acc: 65, armor: 0, evasion: 5, speed: 90, sight: 6, hearing: 1, weight: 2, behavior: 'melee', abilities: [], eco: true, organic: true, scrap: [1, 3], threat: 2, sprite: sp('hunched', 'eco', '#7fc4e0') },
+  { id: 'durmiente', hp: 7, dmg: [1, 3], acc: 70, armor: 0, evasion: 5, speed: 110, sight: 5, hearing: 1.2, weight: 2, behavior: 'ambush', abilities: [], eco: true, organic: true, scrap: [1, 3], threat: 2, sprite: sp('humanoid', 'ecoPale', '#9fe8ff', 'cracks') },
+  { id: 'juguete_roto', hp: 3, dmg: [1, 2], acc: 66, armor: 0, evasion: 15, speed: 140, sight: 6, hearing: 1, weight: 1, behavior: 'swarm', abilities: [], robot: true, scrap: [1, 2], threat: 1, sprite: sp('child', 'robot', '#ff5a5a', 'antenna') },
+  { id: 'servidor', hp: 11, dmg: [2, 3], acc: 68, armor: 0, evasion: 0, speed: 90, sight: 6, hearing: 0.8, weight: 2, behavior: 'melee', abilities: [], robot: true, doorBreaker: true, scrap: [2, 5], threat: 3, sprite: sp('robot', 'robot', '#7fc4e0') },
   { id: 'susurrante', hp: 6, dmg: [1, 2], acc: 85, armor: 0, evasion: 20, speed: 100, sight: 7, hearing: 1.4, weight: 1, behavior: 'stalker', abilities: ['mental'], eco: true, flying: true, darkvision: true, scrap: [0, 2], threat: 2, sprite: sp('orb', 'ecoPale', '#c48cff', 'static') },
   { id: 'enjambre_limpieza', hp: 3, dmg: [1, 1], acc: 80, armor: 0, evasion: 20, speed: 120, sight: 5, hearing: 1, weight: 1, behavior: 'swarm', abilities: [], robot: true, scrap: [0, 1], threat: 1, sprite: sp('swarm', 'robot', '#e8c46a') },
-  { id: 'torreta_seg', hp: 10, dmg: [2, 3], acc: 72, armor: 2, evasion: 0, speed: 100, sight: 7, hearing: 0.5, weight: 3, behavior: 'turret', abilities: [], range: 6, robot: true, vacuumImmune: true, scrap: [3, 6], threat: 3, sprite: sp('turret', 'robot', '#ff5a5a') },
-  { id: 'vigilante', hp: 9, dmg: [2, 3], acc: 68, armor: 1, evasion: 5, speed: 95, sight: 7, hearing: 1, weight: 2, behavior: 'ranged', abilities: ['callAllies'], range: 5, eco: true, organic: true, scrap: [2, 4], threat: 3, minFloor: 2, sprite: sp('humanoid', 'navy', '#ffd166', 'mask') },
+  { id: 'torreta_seg', hp: 9, dmg: [1, 3], acc: 64, armor: 1, evasion: 0, speed: 100, sight: 6, hearing: 0.5, weight: 3, behavior: 'turret', abilities: [], range: 5, robot: true, vacuumImmune: true, scrap: [3, 6], threat: 3, sprite: sp('turret', 'robot', '#ff5a5a') },
+  { id: 'vigilante', hp: 9, dmg: [1, 3], acc: 64, armor: 1, evasion: 5, speed: 95, sight: 7, hearing: 1, weight: 2, behavior: 'ranged', abilities: ['callAllies'], range: 5, eco: true, organic: true, scrap: [2, 4], threat: 3, minFloor: 2, sprite: sp('humanoid', 'navy', '#ffd166', 'mask') },
 ]);
 
 // ------------------------------------------------------------------ Zona 2: Jardines Hidropónicos
@@ -43,7 +43,7 @@ const Z2 = z(2, [
   { id: 'raiz', hp: 10, dmg: [2, 3], acc: 80, armor: 1, evasion: 0, speed: 100, sight: 3, hearing: 1.5, weight: 3, behavior: 'ambush', abilities: ['grab'], organic: true, darkvision: true, scrap: [0, 2], threat: 2, sprite: sp('tentacle', 'fungus', '#a6d96a') },
   { id: 'polinizador', hp: 5, dmg: [1, 3], acc: 78, armor: 0, evasion: 25, speed: 150, sight: 7, hearing: 1, weight: 1, behavior: 'flyer', abilities: [], robot: true, flying: true, scrap: [1, 2], threat: 2, sprite: sp('drone', 'gold', '#a6d96a', 'wings') },
   { id: 'moho', hp: 10, dmg: [2, 3], acc: 75, armor: 0, evasion: 0, speed: 60, sight: 3, hearing: 1, weight: 2, behavior: 'melee', abilities: ['split'], organic: true, darkvision: true, scrap: [0, 1], threat: 2, sprite: sp('crawler', 'fungus', '#f0e0a0') },
-  { id: 'abejas', hp: 3, dmg: [1, 2], acc: 80, armor: 0, evasion: 30, speed: 140, sight: 6, hearing: 1.2, weight: 1, behavior: 'swarm', abilities: [], robot: true, flying: true, scrap: [0, 1], threat: 1, sprite: sp('swarm', 'gold', '#ffd166') },
+  { id: 'abejas', hp: 3, dmg: [1, 2], acc: 72, armor: 0, evasion: 20, speed: 140, sight: 6, hearing: 1.2, weight: 1, behavior: 'swarm', abilities: [], robot: true, flying: true, scrap: [0, 1], threat: 1, sprite: sp('swarm', 'gold', '#ffd166') },
   { id: 'espantapajaros', hp: 18, dmg: [4, 6], acc: 85, armor: 2, evasion: 0, speed: 120, sight: 8, hearing: 0.5, weight: 3, behavior: 'stalker', abilities: [], eco: true, darkvision: true, scrap: [2, 5], threat: 4, minFloor: 2, sprite: sp('statue', 'fungus', '#ff5a5a', 'growth') },
   { id: 'compostador', hp: 24, dmg: [4, 7], acc: 70, armor: 1, evasion: 0, speed: 70, sight: 5, hearing: 1, weight: 3, behavior: 'melee', abilities: ['grab'], organic: true, eco: true, doorBreaker: true, scrap: [3, 6], threat: 4, minFloor: 2, sprite: sp('amalgam', 'plant', '#e3a344', 'growth') },
 ]);
@@ -102,22 +102,22 @@ const mini = (zone: ZoneId, e: Omit<E, 'threat' | 'rank'>): EnemyDef => ({ ...e,
 const B = (phases: BossDef['phases'], intro: string, death: string, music: string, extra: Partial<BossDef> = {}): BossDef => ({ phases, intro, death, music, ...extra });
 
 const MINIS: EnemyDef[] = [
-  mini(1, { id: 'anfitriona', hp: 40, dmg: [3, 5], acc: 78, armor: 2, evasion: 5, speed: 95, sight: 8, hearing: 1, weight: 3, behavior: 'boss', abilities: [], robot: true, scrap: [15, 25], sprite: sp('tall', 'robot', '#ffd166', 'mask', 2),
+  mini(1, { id: 'anfitriona', hp: 30, dmg: [2, 3], acc: 70, armor: 0, evasion: 5, speed: 95, sight: 8, hearing: 1, weight: 3, behavior: 'boss', abilities: [], robot: true, scrap: [15, 25], sprite: sp('tall', 'robot', '#ffd166', 'mask', 2),
     boss: B([
-      { hpPct: 1, patterns: [{ kind: 'summon', summon: 'servidor', count: 1, cooldown: 7 }, { kind: 'line', dmg: [4, 6], cooldown: 4 }], msg: 'boss.anfitriona.p1' },
-      { hpPct: 0.5, patterns: [{ kind: 'summon', summon: 'juguete_roto', count: 3, cooldown: 6 }, { kind: 'charge', dmg: [5, 7], cooldown: 4 }], speedBonus: 20, msg: 'boss.anfitriona.p2' },
+      { hpPct: 1, patterns: [{ kind: 'summon', summon: 'enjambre_limpieza', count: 2, cooldown: 9 }, { kind: 'line', dmg: [2, 4], cooldown: 5 }], msg: 'boss.anfitriona.p1' },
+      { hpPct: 0.5, patterns: [{ kind: 'summon', summon: 'juguete_roto', count: 2, cooldown: 8 }, { kind: 'charge', dmg: [4, 6], cooldown: 5 }], speedBonus: 15, msg: 'boss.anfitriona.p2' },
     ], 'boss.anfitriona.intro', 'boss.anfitriona.death', 'boss', { drop: ['granada'] }) }),
-  mini(1, { id: 'nana7', hp: 38, dmg: [2, 4], acc: 80, armor: 1, evasion: 5, speed: 100, sight: 8, hearing: 1.3, weight: 3, behavior: 'boss', abilities: [], robot: true, scrap: [15, 25], sprite: sp('robot', 'white', '#ff9db5', 'antenna', 2),
+  mini(1, { id: 'nana7', hp: 30, dmg: [2, 3], acc: 70, armor: 0, evasion: 5, speed: 100, sight: 8, hearing: 1.3, weight: 3, behavior: 'boss', abilities: [], robot: true, scrap: [15, 25], sprite: sp('robot', 'white', '#ff9db5', 'antenna', 2),
     boss: B([
       { hpPct: 1, patterns: [{ kind: 'scream', dmg: [1, 2], radius: 4, cooldown: 6 }, { kind: 'summon', summon: 'juguete_roto', count: 2, cooldown: 6 }], msg: 'boss.nana7.p1' },
       { hpPct: 0.45, patterns: [{ kind: 'ring', dmg: [3, 5], radius: 3, cooldown: 4 }, { kind: 'darkness', cooldown: 10 }], speedBonus: 15, msg: 'boss.nana7.p2' },
     ], 'boss.nana7.intro', 'boss.nana7.death', 'boss', { drop: ['dibujo_bruno'] }) }),
-  mini(2, { id: 'enjambre_reina', hp: 45, dmg: [2, 4], acc: 82, armor: 0, evasion: 20, speed: 110, sight: 8, hearing: 1.2, weight: 3, behavior: 'boss', abilities: [], robot: true, flying: true, scrap: [18, 28], sprite: sp('orb', 'gold', '#ff5a5a', 'wings', 2),
+  mini(2, { id: 'enjambre_reina', hp: 42, dmg: [2, 4], acc: 82, armor: 0, evasion: 20, speed: 110, sight: 8, hearing: 1.2, weight: 3, behavior: 'boss', abilities: [], robot: true, flying: true, scrap: [18, 28], sprite: sp('orb', 'gold', '#ff5a5a', 'wings', 2),
     boss: B([
       { hpPct: 1, patterns: [{ kind: 'summon', summon: 'abejas', count: 3, cooldown: 5 }, { kind: 'rain', dmg: [2, 4], count: 6, cooldown: 4 }], msg: 'boss.enjambre_reina.p1' },
       { hpPct: 0.5, patterns: [{ kind: 'summon', summon: 'polinizador', count: 2, cooldown: 6 }, { kind: 'charge', dmg: [4, 6], cooldown: 3 }], speedBonus: 20, msg: 'boss.enjambre_reina.p2' },
     ], 'boss.enjambre_reina.intro', 'boss.enjambre_reina.death', 'boss') }),
-  mini(2, { id: 'injerto', hp: 55, dmg: [4, 6], acc: 75, armor: 2, evasion: 0, speed: 85, sight: 7, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, organic: true, scrap: [18, 28], sprite: sp('amalgam', 'plant', '#ffd166', 'growth', 2),
+  mini(2, { id: 'injerto', hp: 52, dmg: [3, 5], acc: 74, armor: 1, evasion: 0, speed: 85, sight: 7, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, organic: true, scrap: [18, 28], sprite: sp('amalgam', 'plant', '#ffd166', 'growth', 2),
     boss: B([
       { hpPct: 1, patterns: [{ kind: 'roots', dmg: [2, 4], count: 8, cooldown: 4 }, { kind: 'slam', dmg: [5, 7], cooldown: 3 }], msg: 'boss.injerto.p1' },
       { hpPct: 0.5, patterns: [{ kind: 'spores', radius: 3, cooldown: 6 }, { kind: 'pull', cooldown: 5 }, { kind: 'roots', dmg: [3, 5], count: 12, cooldown: 4 }], msg: 'boss.injerto.p2' },
@@ -168,13 +168,13 @@ const MINIS: EnemyDef[] = [
 const boss = (zone: ZoneId, e: Omit<E, 'threat' | 'rank'>): EnemyDef => ({ ...e, zone, threat: 0, rank: 'boss' });
 
 const BOSSES: EnemyDef[] = [
-  boss(1, { id: 'hipnos', hp: 95, dmg: [4, 6], acc: 78, armor: 1, evasion: 0, speed: 85, sight: 10, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, organic: true, scrap: [40, 60], sprite: sp('amalgam', 'ecoPale', '#9fe8ff', 'cracks', 3),
+  boss(1, { id: 'hipnos', hp: 66, dmg: [3, 5], acc: 72, armor: 0, evasion: 0, speed: 85, sight: 10, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, organic: true, scrap: [40, 60], sprite: sp('amalgam', 'ecoPale', '#9fe8ff', 'cracks', 3),
     boss: B([
-      { hpPct: 1, patterns: [{ kind: 'summon', summon: 'durmiente', count: 2, cooldown: 6 }, { kind: 'slam', dmg: [5, 7], cooldown: 3 }], msg: 'boss.hipnos.p1', mechanic: 'pods' },
+      { hpPct: 1, patterns: [{ kind: 'summon', summon: 'durmiente', count: 1, cooldown: 7 }, { kind: 'slam', dmg: [3, 5], cooldown: 3 }], msg: 'boss.hipnos.p1', mechanic: 'pods' },
       { hpPct: 0.66, patterns: [{ kind: 'cold', radius: 3, cooldown: 5 }, { kind: 'cross', dmg: [5, 7], cooldown: 3 }], msg: 'boss.hipnos.p2' },
       { hpPct: 0.33, patterns: [{ kind: 'ring', dmg: [4, 6], radius: 3, cooldown: 3 }, { kind: 'rain', dmg: [4, 6], count: 8, cooldown: 4 }, { kind: 'charge', dmg: [6, 8], cooldown: 4 }], speedBonus: 20, msg: 'boss.hipnos.p3' },
     ], 'boss.hipnos.intro', 'boss.hipnos.death', 'boss1', { flag: 'boss_hipnos' }) }),
-  boss(2, { id: 'demeter', hp: 140, dmg: [5, 7], acc: 78, armor: 2, evasion: 0, speed: 80, sight: 10, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, organic: true, scrap: [45, 65], sprite: sp('plant', 'plant', '#ffd166', 'growth', 3),
+  boss(2, { id: 'demeter', hp: 120, dmg: [4, 6], acc: 76, armor: 1, evasion: 0, speed: 80, sight: 10, hearing: 1, weight: 3, behavior: 'boss', abilities: [], eco: true, organic: true, scrap: [45, 65], sprite: sp('plant', 'plant', '#ffd166', 'growth', 3),
     boss: B([
       { hpPct: 1, patterns: [{ kind: 'roots', dmg: [3, 5], count: 10, cooldown: 3 }, { kind: 'summon', summon: 'brote', count: 2, cooldown: 7 }], msg: 'boss.demeter.p1', mechanic: 'roots' },
       { hpPct: 0.66, patterns: [{ kind: 'spores', radius: 5, cooldown: 6 }, { kind: 'line', dmg: [5, 7], cooldown: 3 }, { kind: 'darkness', cooldown: 9 }], msg: 'boss.demeter.p2' },
@@ -214,6 +214,7 @@ const BOSSES: EnemyDef[] = [
 
 // ------------------------------------------------------------------ aliados, PNJ y especiales
 const SPECIAL: EnemyDef[] = [
+  { id: 'player', zone: 1, hp: 30, dmg: [1, 2], acc: 80, armor: 0, evasion: 5, speed: 100, sight: 9, hearing: 1, weight: 2, behavior: 'melee', abilities: [], organic: true, scrap: [0, 0], threat: 0, sprite: sp('humanoid', 'robot', '#ffffff') },
   { id: 'dron_aliado', zone: 1, hp: 8, dmg: [2, 3], acc: 85, armor: 1, evasion: 20, speed: 110, sight: 7, hearing: 1, weight: 1, behavior: 'ranged', abilities: [], range: 4, robot: true, flying: true, vacuumImmune: true, scrap: [0, 0], threat: 0, sprite: sp('drone', 'robot', '#7af0ff', 'antenna') },
   { id: 'robot_aliado', zone: 3, hp: 16, dmg: [3, 5], acc: 75, armor: 2, evasion: 0, speed: 90, sight: 6, hearing: 1, weight: 3, behavior: 'melee', abilities: [], robot: true, scrap: [0, 0], threat: 0, sprite: sp('robot', 'robot', '#9be36b', 'cables') },
   { id: 'senuelo', zone: 1, hp: 6, dmg: [0, 0], acc: 0, armor: 0, evasion: 0, speed: 100, sight: 0, hearing: 0, weight: 1, behavior: 'stationary', abilities: [], scrap: [0, 0], threat: 0, sprite: sp('humanoid', 'lete', '#ffffff', 'static') },

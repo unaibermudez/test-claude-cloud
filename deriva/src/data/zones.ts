@@ -5,7 +5,7 @@ export const ZONES: Record<ZoneId, ZoneDef> = {
     id: 1, w: 58, h: 36, rooms: [8, 11], roomW: [5, 10], roomH: [4, 7],
     darkChance: 0.15, vacuumChance: 0.0, radiationChance: 0, coolantChance: 0.05, sporeChance: 0,
     plants: 0, cover: 0.5, pillars: 0, windows: 0.35,
-    enemyBudget: [7, 2], eliteChance: 0.04, mentalAmbient: 0,
+    enemyBudget: [6, 2], eliteChance: 0.04, mentalAmbient: 0,
     music: 'zone1',
     palette: {
       floor: ['#2b3039', '#353b47', '#1f232a'], wall: ['#4c5363', '#606a7b', '#353a46'],
