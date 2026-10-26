@@ -83,7 +83,7 @@ async function newRun(page: Page): Promise<void> {
   await shot(page, '06-nueva-partida');
   await page.getByRole('button', { name: 'Bajar a la estación' }).click();
   await expect(page.locator('.vitals')).toBeVisible();
-  await page.keyboard.press('Escape'); // cerrar consejo inicial
+  // los consejos se cierran solos: Esc ya no se queda en ellos (abre la pausa)
 }
 
 test.beforeAll(async () => {
@@ -313,5 +313,45 @@ test('tiempo real: movimiento libre, reloj del mundo, ataque con el ratón y voc
     const app = (window as unknown as { __deriva: { app: { settings: { voice: boolean }; saveSettings: () => void; voice: { speak: (t: string, s: string) => void; stop: () => void } } } }).__deriva.app;
     app.settings.voice = true; app.saveSettings(); app.voice.speak('Prueba de voz.', 'agora'); app.voice.stop();
   });
+  expect(problems, problems.join('\n')).toEqual([]);
+});
+
+test('solo teclado: nombre, trato, lista de puestos, pestañas y menús numerados', async ({ page }) => {
+  watch(page);
+  await freshStart(page);
+  await expect(page.locator('.warning h2')).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.title-logo')).toBeVisible();
+  await page.keyboard.press('Digit1'); // «Despertar» por su número
+  await page.waitForTimeout(800);
+  await page.keyboard.press('Space');
+  // el campo de nombre recibe el foco: se escribe sin ratón
+  await expect(page.locator('input[type=text]')).toBeFocused();
+  await page.keyboard.type('Noa');
+  await page.keyboard.press('Enter'); // pasa a la fila de trato
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Enter'); // «ella (femenino)»
+  await page.keyboard.press('ArrowDown');
+  await shot(page, '50-teclado-creacion');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.hubhud')).toBeVisible();
+  const prof = await page.evaluate(() => (window as unknown as { __deriva: { app: { meta: { profile: { name: string; pronoun: string } } } } }).__deriva.app.meta.profile);
+  expect(prof).toEqual(expect.objectContaining({ name: 'Noa', pronoun: 'ella' }));
+  // lista de puestos con Tab y elección por número
+  await page.keyboard.press('Tab');
+  await expect(page.locator('.station').first()).toBeVisible();
+  await shot(page, '51-teclado-puestos');
+  await page.keyboard.press('Digit1');
+  await expect(page.getByRole('button', { name: 'Bajar a la estación' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  // menú de la Cápsula → Opciones, y cambio de pestaña con E
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.menu .mi').first()).toBeVisible();
+  await page.keyboard.press('Digit3');
+  await expect(page.locator('.tab.on')).toHaveText('Audio e idioma');
+  await page.keyboard.press('KeyE');
+  await expect(page.locator('.tab.on')).toHaveText('Accesibilidad');
+  await expect(page.locator('.keyhints').first()).toBeVisible();
+  await shot(page, '52-teclado-opciones');
   expect(problems, problems.join('\n')).toEqual([]);
 });
