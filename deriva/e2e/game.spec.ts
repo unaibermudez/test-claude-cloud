@@ -34,19 +34,28 @@ async function api<T>(page: Page, fn: (d: Api) => T): Promise<T> {
   }, fn.toString());
 }
 
+/** Cierra diálogos y modales que la partida haya abierto por su cuenta (escenas de radio, etc.). */
+async function closeDialogs(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const app = (window as unknown as { __deriva: { app: { run: { modal: { kind: string } | null } | null; act: (a: unknown) => void; stack: { id?: string }[]; pop: (p?: unknown) => void } } }).__deriva.app;
+    for (let i = 0; i < 30 && app.run?.modal; i++) app.act(app.run.modal.kind === 'dialog' ? { t: 'choice', index: 0 } : { t: 'closeModal' });
+    while (app.stack.length) app.pop();
+  });
+}
+
 async function shot(page: Page, name: string): Promise<void> {
   await page.waitForTimeout(250);
   await page.screenshot({ path: `${SHOTS}/${name}.png` });
 }
 
-async function freshStart(page: Page): Promise<void> {
-  await page.addInitScript(() => {
+async function freshStart(page: Page, timeMode: 'turns' | 'realtime' = 'turns'): Promise<void> {
+  await page.addInitScript((mode) => {
     if (!sessionStorage.getItem('e2e-init')) {
       localStorage.clear();
-      localStorage.setItem('deriva.settings.v1', JSON.stringify({ lang: 'es' }));
+      localStorage.setItem('deriva.settings.v1', JSON.stringify({ lang: 'es', timeMode: mode, voice: false }));
       sessionStorage.setItem('e2e-init', '1');
     }
-  });
+  }, timeMode);
   await page.goto('/?e2e=1');
 }
 
@@ -68,7 +77,7 @@ async function newRun(page: Page): Promise<void> {
   await page.locator('.warning .actions button').click();
   await expect(page.locator('.hubhud')).toBeVisible();
   await shot(page, '05-capsula');
-  for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowUp');
+  await page.keyboard.down('ArrowUp'); await page.waitForTimeout(1500); await page.keyboard.up('ArrowUp');
   await page.keyboard.press('KeyF');
   await expect(page.getByRole('button', { name: 'Bajar a la estación' })).toBeVisible();
   await shot(page, '06-nueva-partida');
@@ -108,6 +117,7 @@ test('arranque, partida nueva, movimiento, inventario, combate y guardado', asyn
   await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
   await page.keyboard.press('Escape');
+  await closeDialogs(page);
   const inv1 = (await api(page, (d) => d.summary()))!.inv;
   expect(inv1).toBeLessThanOrEqual(inv0);
 
@@ -145,7 +155,7 @@ test('arranque, partida nueva, movimiento, inventario, combate y guardado', asyn
     return e ? e.hp : 0;
   });
   const hp0 = await enemyHp();
-  for (let i = 0; i < 6; i++) await page.keyboard.press(key);
+  for (let i = 0; i < 6; i++) { await closeDialogs(page); await page.keyboard.press(key); }
   await shot(page, '10-combate');
   expect(await enemyHp()).toBeLessThan(hp0);
 
@@ -245,5 +255,63 @@ test('muerte, resumen y vuelta a La Cápsula con Memorias', async ({ page }) => 
   await shot(page, '33-opciones');
   await page.keyboard.press('Tab');
   await shot(page, '34-accesibilidad');
+  expect(problems, problems.join('\n')).toEqual([]);
+});
+
+test('tiempo real: movimiento libre, reloj del mundo, ataque con el ratón y voces sin errores', async ({ page }) => {
+  watch(page);
+  await freshStart(page, 'realtime');
+  await newRun(page);
+  await page.waitForTimeout(300);
+  await closeDialogs(page);
+  const pos = async (): Promise<number[]> => page.evaluate(() => {
+    const a = (window as unknown as { __deriva: { app: { rt: { px: number; py: number }; run: { turn: number } } } }).__deriva.app;
+    return [a.rt.px, a.rt.py, a.run.turn];
+  });
+  const a0 = await pos();
+  // el mundo avanza solo
+  await page.waitForTimeout(1200);
+  await closeDialogs(page);
+  const a1 = await pos();
+  expect(a1[2]).toBeGreaterThan(a0[2]);
+  // movimiento continuo en alguna dirección libre
+  let moved = false;
+  for (const k of ['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp']) {
+    const b0 = await pos();
+    await page.keyboard.down(k); await page.waitForTimeout(450); await page.keyboard.up(k);
+    const b1 = await pos();
+    if (Math.hypot(b1[0] - b0[0], b1[1] - b0[1]) > 0.3) { moved = true; break; }
+  }
+  expect(moved).toBe(true);
+  await shot(page, '40-tiempo-real');
+  // un enemigo junto al jugador y un clic hacia él
+  const target = await page.evaluate(() => {
+    const d = (window as unknown as { __deriva: { app: { run: { actors: { id: number; def: string; x: number; y: number; hp: number; maxHp: number; faction: string; ai: unknown; status: Record<string, number>; facing: number; ap: number }[]; pid: number; nextId: number; map: { w: number; tiles: number[] } }; world: { worldToScreen: (x: number, y: number) => { x: number; y: number } } } } }).__deriva;
+    const st = d.app.run;
+    const p = st.actors.find((a) => a.id === st.pid)!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const tx = p.x + dx; const ty = p.y + dy;
+      if (st.map.tiles[ty * st.map.w + tx] !== 2 || st.actors.some((a) => a.x === tx && a.y === ty)) continue;
+      (window as unknown as { __enemyId: number }).__enemyId = st.nextId;
+      st.actors.push({ id: st.nextId++, def: 'eco_errante', x: tx, y: ty, hp: 40, maxHp: 40, ap: 0, faction: 'enemy', ai: { mode: 'idle', tx: 0, ty: 0, timer: 0, cd: {}, homeX: 0, homeY: 0 }, status: {}, facing: 4 });
+      return d.app.world.worldToScreen(tx + 0.5, ty + 0.5);
+    }
+    return null;
+  });
+  expect(target).not.toBeNull();
+  const hpOf = async (): Promise<number> => page.evaluate(() => {
+    const st = (window as unknown as { __deriva: { app: { run: { actors: { id: number; hp: number; dead?: boolean }[] } } } }).__deriva.app.run;
+    const id = (window as unknown as { __enemyId: number }).__enemyId;
+    return st.actors.find((a) => a.id === id && !a.dead)?.hp ?? 0;
+  });
+  const h0 = await hpOf();
+  for (let i = 0; i < 8; i++) { await page.mouse.click(target!.x, target!.y); await page.waitForTimeout(350); }
+  expect(await hpOf()).toBeLessThan(h0);
+  await shot(page, '41-tiempo-real-combate');
+  // las voces se pueden activar y probar sin errores
+  await page.evaluate(() => {
+    const app = (window as unknown as { __deriva: { app: { settings: { voice: boolean }; saveSettings: () => void; voice: { speak: (t: string, s: string) => void; stop: () => void } } } }).__deriva.app;
+    app.settings.voice = true; app.saveSettings(); app.voice.speak('Prueba de voz.', 'agora'); app.voice.stop();
+  });
   expect(problems, problems.join('\n')).toEqual([]);
 });
