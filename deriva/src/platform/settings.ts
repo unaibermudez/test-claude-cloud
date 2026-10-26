@@ -45,7 +45,7 @@ export const DEFAULT_BINDS: Record<string, string[]> = {
   pickup: ['KeyP', 'Comma'],
   sneak: ['KeyX'],
   light: ['KeyL'],
-  inventory: ['KeyI', 'Tab'],
+  inventory: ['KeyI'],
   implants: ['KeyU'],
   map: ['KeyM'],
   archive: ['KeyJ'],
@@ -54,6 +54,8 @@ export const DEFAULT_BINDS: Record<string, string[]> = {
   rest: ['KeyV'],
   help: ['KeyH', 'Slash'],
   pause: ['Escape'],
+  look: ['KeyO'],
+  drop: ['Delete', 'KeyT'],
 };
 
 export function defaultSettings(): Settings {
