@@ -77,6 +77,15 @@ export class AudioEngine {
     return buf;
   }
 
+  private ducked = false;
+
+  /** Baja la música mientras habla una voz. */
+  duck(on: boolean): void {
+    if (this.ducked === on) return;
+    this.ducked = on;
+    this.applyVolumes();
+  }
+
   setVolumes(v: { master: number; music: number; sfx: number; muted: boolean }): void {
     this.vols = { ...v };
     this.applyVolumes();
@@ -86,7 +95,7 @@ export class AudioEngine {
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
     this.master.gain.setTargetAtTime(this.vols.muted ? 0 : this.vols.master, t, 0.05);
-    this.musicBus.gain.setTargetAtTime(this.vols.music * 0.55, t, 0.05);
+    this.musicBus.gain.setTargetAtTime(this.vols.music * 0.55 * (this.ducked ? 0.35 : 1), t, this.ducked ? 0.15 : 0.6);
     this.sfxBus.gain.setTargetAtTime(this.vols.sfx, t, 0.05);
   }
 
