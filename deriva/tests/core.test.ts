@@ -377,3 +377,30 @@ describe('atmósfera', () => {
 });
 
 void spawnActor;
+
+describe('tiempo real (pasos libres)', () => {
+  it('un paso libre mueve sin hacer avanzar el mundo; un paso normal sí', () => {
+    const st = arena(ROOM);
+    const p = getPlayer(st);
+    const t0 = st.turn; const x0 = p.x;
+    run(st, { t: 'move', dir: 2, free: true });
+    expect(p.x).toBe(x0 + 1);
+    expect(st.turn).toBe(t0);
+    run(st, { t: 'move', dir: 2 });
+    expect(p.x).toBe(x0 + 2);
+    expect(st.turn).toBe(t0 + 1);
+  });
+  it('orientarse no cuesta tiempo y cambia la dirección', () => {
+    const st = arena(ROOM);
+    const t0 = st.turn;
+    run(st, { t: 'face', dir: 6 });
+    expect(getPlayer(st).facing).toBe(6);
+    expect(st.turn).toBe(t0);
+  });
+  it('un golpe contra un enemigo nunca es gratis aunque se marque como paso libre', () => {
+    const st = arena(['#####', '#@e.#', '#####']);
+    const t0 = st.turn;
+    run(st, { t: 'move', dir: 2, free: true });
+    expect(st.turn).toBeGreaterThan(t0);
+  });
+});

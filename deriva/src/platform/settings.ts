@@ -27,6 +27,16 @@ export interface Settings {
   binds: Record<string, string[]>;
   pixelScale: number; // 0 = automático
   showTutorial: boolean;
+  /** Tiempo real (movimiento libre) o por turnos (clásico, accesible). */
+  timeMode: 'realtime' | 'turns';
+  rtSpeed: 'slow' | 'normal' | 'fast';
+  /** Voces sintetizadas que leen los textos. */
+  voice: boolean;
+  voiceVolume: number;
+  voiceRate: number;
+  voiceDialogs: boolean;
+  voiceLogs: boolean;
+  voiceMessages: boolean;
 }
 
 export const DEFAULT_BINDS: Record<string, string[]> = {
@@ -66,6 +76,7 @@ export function defaultSettings(): Settings {
     colorblind: 'none', reduceFlicker: false, reduceShake: false, reduceGlitch: false, crt: true, assistHack: false,
     skipHack: false, generousO2: false, dullEnemies: false, longOrbit: false, warningSeen: false,
     binds: JSON.parse(JSON.stringify(DEFAULT_BINDS)) as Record<string, string[]>, pixelScale: 0, showTutorial: true,
+    timeMode: 'realtime', rtSpeed: 'normal', voice: true, voiceVolume: 0.9, voiceRate: 1, voiceDialogs: true, voiceLogs: true, voiceMessages: true,
   };
 }
 

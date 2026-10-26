@@ -21,7 +21,8 @@ import { createHack, hackPick, solveNext } from './hack';
 import { bossTerminalHacked } from './boss';
 
 export type Action =
-  | { t: 'move'; dir: number }
+  | { t: 'move'; dir: number; free?: boolean }
+  | { t: 'face'; dir: number }
   | { t: 'shove'; dir: number }
   | { t: 'wait' }
   | { t: 'rest' }
@@ -52,7 +53,8 @@ export type Action =
   | { t: 'askAgora'; what: 'identify' | 'door' | 'map' }
   | { t: 'vent' };
 
-export interface ActionResult { cost: number; exertion?: boolean }
+/** `moved`: el jugador cambió de casilla con un paso normal (en tiempo real, el paso no consume turno). */
+export interface ActionResult { cost: number; exertion?: boolean; moved?: boolean }
 const FREE: ActionResult = { cost: 0 };
 
 // ------------------------------------------------------------------ recetas
@@ -271,7 +273,7 @@ function playerMove(st: RunState, ev: EventSink, dir: number): ActionResult {
     }
   }
   pickupAuto(st, ev);
-  return { cost: sneakCost(st) };
+  return { cost: sneakCost(st), moved: true };
 }
 
 function driftMove(st: RunState, ev: EventSink, dir: number): ActionResult {
@@ -1146,9 +1148,10 @@ export function playerAction(st: RunState, ev: EventSink, a: Action): ActionResu
     }
   }
   const p = getPlayer(st);
-  if (p.status.stun && a.t !== 'toggleLight') { ev.msg('msg.stunned', {}, 'warn'); return { cost: 100 }; }
+  if (p.status.stun && a.t !== 'toggleLight' && a.t !== 'face') { ev.msg('msg.stunned', {}, 'warn'); return { cost: 100 }; }
   switch (a.t) {
     case 'move': return playerMove(st, ev, a.dir);
+    case 'face': if (DIRS[a.dir]) facingTo(st, DIRS[a.dir].x, DIRS[a.dir].y); return FREE;
     case 'shove': {
       const d = DIRS[a.dir];
       const occ = actorAt(st, p.x + d.x, p.y + d.y);

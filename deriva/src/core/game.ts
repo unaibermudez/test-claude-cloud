@@ -324,7 +324,9 @@ export function step(st: RunState, action: Action): GameEvent[] {
   const ev = new EventSink();
   if (st.over) return [];
   const res = playerAction(st, ev, action);
-  if (res.cost > 0 && !st.over) advance(st, ev, res.cost, !!res.exertion);
+  // en tiempo real los pasos libres no hacen avanzar el mundo: lo hace el reloj (acción `wait`)
+  const cost = action.t === 'move' && action.free && res.moved ? 0 : res.cost;
+  if (cost > 0 && !st.over) advance(st, ev, cost, !!res.exertion);
   const p = getPlayer(st);
   if (!st.over && p.hp <= 0) {
     const d = deathCause(st);

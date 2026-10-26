@@ -53,6 +53,8 @@ export class HubScene {
   facing = 4;
   private drawX = 12 * TS;
   private drawY = 6 * TS;
+  fx = 12.5;
+  fy = 6.5;
   meta: MetaState | null = null;
   stars: { x: number; y: number; b: number; s: number }[] = [];
 
@@ -66,6 +68,7 @@ export class HubScene {
   enter(app: App): void {
     this.meta = app.meta;
     this.px = 12; this.py = 6; this.facing = 0;
+    this.fx = 12.5; this.fy = 6.5;
     this.drawX = this.px * TS; this.drawY = this.py * TS;
     this.layer = null;
   }
@@ -80,11 +83,34 @@ export class HubScene {
     return this.visibleStations().some((s) => s.x === x && s.y === y) || DECOR.some((d) => d.x === x && d.y === y && d.block && (!d.when || (this.meta && d.when(this.meta))));
   }
 
+  /** Movimiento continuo con las teclas mantenidas o el stick. */
+  update(app: App, dt: number): void {
+    const v = app.input.moveVector();
+    if (v.x === 0 && v.y === 0) return;
+    const step = Math.min(0.4, (4.2 * dt) / 1000);
+    const R = 0.3;
+    const free = (x: number, y: number): boolean => {
+      for (let ty = Math.floor(y - R); ty <= Math.floor(y + R); ty++) {
+        for (let tx = Math.floor(x - R); tx <= Math.floor(x + R); tx++) {
+          if (!this.blocked(tx, ty)) continue;
+          const cx = Math.max(tx, Math.min(x, tx + 1)); const cy = Math.max(ty, Math.min(y, ty + 1));
+          if ((x - cx) ** 2 + (y - cy) ** 2 < R * R) return false;
+        }
+      }
+      return true;
+    };
+    if (free(this.fx + v.x * step, this.fy)) this.fx += v.x * step;
+    if (free(this.fx, this.fy + v.y * step)) this.fy += v.y * step;
+    this.px = Math.floor(this.fx); this.py = Math.floor(this.fy);
+    const a = Math.atan2(v.y, v.x);
+    this.facing = ((Math.round(a / (Math.PI / 4)) + 2) % 8 + 8) % 8;
+  }
+
   move(dir: number): void {
     const D = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]][dir];
     this.facing = dir;
     const nx = this.px + D[0]; const ny = this.py + D[1];
-    if (!this.blocked(nx, ny)) { this.px = nx; this.py = ny; }
+    if (!this.blocked(nx, ny)) { this.px = nx; this.py = ny; this.fx = nx + 0.5; this.fy = ny + 0.5; }
   }
 
   adjacent(): Station | null {
@@ -99,7 +125,7 @@ export class HubScene {
       app.open(st.panel);
       return;
     }
-    if (!this.blocked(tl.x, tl.y)) { this.px = tl.x; this.py = tl.y; }
+    if (!this.blocked(tl.x, tl.y)) { this.px = tl.x; this.py = tl.y; this.fx = tl.x + 0.5; this.fy = tl.y + 0.5; }
   }
 
   private toTile(cx: number, cy: number): { x: number; y: number } {
@@ -151,8 +177,7 @@ export class HubScene {
     c.fillStyle = 'rgba(232,196,106,0.55)';
     for (let i = 0; i < marks; i++) c.fillRect(TS * 14 + (i % 26) * 3, (H - 1) * TS + 4 + Math.floor(i / 26) * 4, 1, 3);
     // jugador
-    const tx = this.px * TS; const ty = this.py * TS;
-    this.drawX += (tx - this.drawX) * 0.35; this.drawY += (ty - this.drawY) * 0.35;
+    this.drawX = (this.fx - 0.5) * TS; this.drawY = (this.fy - 0.5) * TS;
     const cls = CLASSES.find((k) => k.id === (m?.profile.lastClass ?? 'tecnico')) ?? CLASSES[0];
     const spr = personSprite(`player_${cls.id}`, { suit: cls.suit, visor: '#9fe8ff', accessory: cls.id === 'hacker' ? 'antenna' : cls.id === 'medico' ? 'cross' : cls.id === 'soldador' ? 'mask' : cls.id === 'infiltrado' ? 'hood' : cls.id === 'eco' ? 'halo' : 'belt' });
     c.fillStyle = 'rgba(0,0,0,0.4)';

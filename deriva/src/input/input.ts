@@ -27,12 +27,18 @@ export class Input {
   private padDirT = 0;
   private padDir = -1;
   moveRepeatMs = 85;
+  /** Teclas mantenidas (para el movimiento continuo en tiempo real). */
+  held = new Set<string>();
+  /** Vector analógico del stick izquierdo del mando. */
+  padVec = { x: 0, y: 0 };
   enabled = true;
 
   constructor(binds: Record<string, string[]>) {
     this.binds = binds;
     this.rebuild();
     window.addEventListener('keydown', (e) => this.onKey(e));
+    window.addEventListener('keyup', (e) => { this.held.delete(e.code); });
+    window.addEventListener('blur', () => { this.held.clear(); });
     window.addEventListener('gamepadconnected', () => { this.padPrev = []; });
   }
 
@@ -63,7 +69,25 @@ export class Input {
     return this.keyName(c);
   }
 
+  /** Dirección de movimiento continua (-1..1 en cada eje) a partir de teclas mantenidas y del stick. */
+  moveVector(): { x: number; y: number } {
+    let x = 0; let y = 0;
+    for (const code of this.held) {
+      const cmd = this.codeMap.get(code);
+      if (!cmd) continue;
+      const d = DIR_OF[cmd];
+      if (d === undefined) continue;
+      x += [0, 1, 1, 1, 0, -1, -1, -1][d];
+      y += [-1, -1, 0, 1, 1, 1, 0, -1][d];
+    }
+    x = Math.max(-1, Math.min(1, x)); y = Math.max(-1, Math.min(1, y));
+    if (Math.hypot(this.padVec.x, this.padVec.y) > 0.25) { x = this.padVec.x; y = this.padVec.y; }
+    const len = Math.hypot(x, y);
+    return len > 1 ? { x: x / len, y: y / len } : { x, y };
+  }
+
   private onKey(e: KeyboardEvent): void {
+    if (!e.repeat) this.held.add(e.code);
     if (this.capture) {
       e.preventDefault();
       const cb = this.capture;
@@ -119,6 +143,7 @@ export class Input {
     let dx = (b[15] ? 1 : 0) - (b[14] ? 1 : 0);
     let dy = (b[13] ? 1 : 0) - (b[12] ? 1 : 0);
     const ax = gp.axes[0] ?? 0; const ay = gp.axes[1] ?? 0;
+    this.padVec = Math.hypot(ax, ay) > 0.25 ? { x: ax, y: ay } : { x: (b[15] ? 1 : 0) - (b[14] ? 1 : 0), y: (b[13] ? 1 : 0) - (b[12] ? 1 : 0) };
     if (Math.hypot(ax, ay) > 0.5) {
       const a = Math.atan2(ay, ax);
       const oct = Math.round(a / (Math.PI / 4));
