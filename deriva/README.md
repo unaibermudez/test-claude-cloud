@@ -7,7 +7,8 @@
 espacial a la deriva con oxígeno y energía limitados, decides en quién confiar (empezando por ÁGORA,
 la IA que te despierta) y, muerte a muerte, reconstruyes qué pasó con el Proyecto LETE… y contigo.
 
-Todo es código: el arte se dibuja con rectángulos, la música y los efectos se sintetizan con Web Audio
+Todo es código: el arte se dibuja con mapas de píxeles y un pintor con luz (tonos por material,
+contorno de color, destellos y luz de contorno), la música y los efectos se sintetizan con Web Audio
 y los personajes hablan con la síntesis de voz del navegador. No hay recursos externos.
 
 ## Cómo jugar
@@ -60,6 +61,12 @@ puedes cambiar al modo **por turnos** (el mundo solo avanza cuando actúas) y el
 | Pantalla completa | F10 | — |
 | Ayuda · pausa | H · Esc | Start |
 
+**Menús y paneles, todo con teclado:** flechas para elegir, Intro para aceptar, Esc para volver, Q/E o
+Tab para cambiar de pestaña, 1–9 para elegir directamente en los menús numerados, Inicio/Fin y
+RePág/AvPág para saltar. Cada panel muestra abajo sus teclas (con las que tengas asignadas). En
+**La Cápsula**, Tab o M abren la lista de puestos para ir a cualquiera sin caminar. Los campos de texto
+(nombre, semilla) reciben el foco al seleccionarlos.
+
 Todos los controles se pueden reasignar en **Opciones → Controles**.
 
 ## Lo esencial
@@ -67,6 +74,9 @@ Todos los controles se pueden reasignar en **Opciones → Controles**.
 - **Tiempo real sobre un núcleo por turnos**: el reloj del mundo marca un turno cada 230–400 ms
   (según la velocidad elegida); atacar o abrir puertas consume tiempo. En modo por turnos, el mundo
   solo avanza cuando actúas.
+- **Objetivo siempre a la vista**: la tarjeta de navegación dice qué hacer ahora (buscar la tarjeta
+  ámbar, llegar al ascensor, derrotar al jefe, recargar O₂…) con flecha y distancia cuando ya sabes dónde
+  está. Abajo a la derecha, una franja recuerda las teclas principales (se puede ocultar).
 - **Voces**: ÁGORA, los PNJ, la radio, los registros, la introducción y los epílogos se leen en voz alta
   con la síntesis de voz del navegador (cada personaje con su timbre). Se configura en **Opciones → Audio**.
 - **Oxígeno y energía**: el O₂ baja cada turno (y mucho en vacío); la energía alimenta la linterna,

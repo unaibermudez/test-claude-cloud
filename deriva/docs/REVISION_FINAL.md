@@ -51,12 +51,24 @@ Puntos débiles nuevos: la calidad y variedad de las voces dependen de las insta
 Linux sin voces el juego queda en silencio con subtítulos); los enemigos siguen moviéndose casilla a casilla
 (interpolados) porque la IA y el combate siguen siendo por turnos.
 
+## Versión 1.2 — teclado, claridad y arte
+
+| Área | Estado |
+|---|---|
+| Teclado | Todo el juego se puede jugar y configurar sin ratón: creación del personaje, idioma, Cápsula (lista de puestos), paneles con pestañas, hackeo (Tab a los botones), tienda, taller, opciones (D30). Probado con una E2E solo de teclado. |
+| Claridad | Ayudas de teclas en cada panel con las teclas reales (D31), objetivo con dirección en el HUD y franja de teclas (D32), Esc ya no se pierde en los consejos. |
+| Arte | Iconos 16×16 multimaterial y pintor con luz común (D33). Los objetos en el suelo se leen mejor y los del inventario se distinguen de un vistazo. |
+
+Problemas encontrados y corregidos en esta ronda: el campo de nombre no recibía el foco porque el panel aún
+no estaba en el documento; al entrar en una fila de opciones se elegía la primera en vez de la activa; una
+prueba E2E dependía de que Esc cerrara el consejo inicial.
+
 ## Puntos débiles que quedan (honestamente)
 
 - **Balance sin personas.** El bot llega con regularidad a la zona 3 y gana a todos los jefes con la
   progresión, pero no cierra campañas completas. Las cifras de duración son estimaciones. Las ayudas de
   accesibilidad cubren el margen de error, pero haría falta una ronda de pruebas con jugadores.
-- **Arte procedural sencillo.** Los sprites son siluetas de 16×16 con dos fotogramas; las animaciones de
+- **Arte procedural sencillo.** Los sprites de criaturas siguen siendo siluetas de 16×16 con dos fotogramas (ahora con luz y contorno de color); las animaciones de
   ataque, daño y muerte son transformaciones (desplazamiento, destello, desvanecido), no fotogramas dibujados.
   Es coherente y legible, pero no es pixel art artesanal.
 - **Audio no verificable de forma automática.** Se comprueba que no produce errores, pero la mezcla y el

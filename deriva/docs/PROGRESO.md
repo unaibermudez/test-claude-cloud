@@ -15,6 +15,7 @@ Este documento se lee al empezar cada sesión y se actualiza al cerrar cada fase
 | 7. QA y balance | ✅ 55 pruebas unitarias, content-check, 3 E2E con capturas revisadas, informe de balance (`BALANCE.md`) |
 | 8. Cierre | ✅ README, `REVISION_FINAL.md`, versión 1.0.0, rama `main` unificada y publicación en GitHub Pages |
 | 9. Versión 1.1 | ✅ Tiempo real con movimiento libre, escenario sin cuadrícula, voces sintetizadas, HUD e interfaces rediseñados |
+| 10. Versión 1.2 | ✅ Navegación completa con teclado, ayudas de teclas, objetivo en el HUD, iconos 16×16 multimaterial y pintor con luz para todos los sprites |
 
 ## Diario
 
@@ -45,6 +46,13 @@ Este documento se lee al empezar cada sesión y se actualiza al cerrar cada fase
 - Voces (`src/audio/voice.ts`): diálogos, ÁGORA, radio, registros, introducción y epílogos leídos en voz alta con perfiles por personaje; botones de repetir/escuchar; sección de voces en Opciones.
 - HUD y estilos rediseñados (tarjetas, barras segmentadas, minimapa vivo, barra de acceso rápido, aviso flotante de interacción); paneles y diálogos con animaciones y retrato más grande.
 - Pruebas: 58 unitarias (3 nuevas de pasos libres), 4 E2E (nueva: tiempo real, ataque con ratón y voces sin errores), content-check sin errores. Versión 1.1.0.
+
+### Sesión 6
+- Auditoría recorriendo el juego solo con teclado (Playwright): no se podía escribir el nombre ni elegir idioma sin ratón, Esc se quedaba en los consejos, los botones del hackeo y las acciones secundarias del inventario no tenían tecla, las rejillas de tarjetas se navegaban mal.
+- `Nav` reescrito (filas, saltos, números, campos de texto, rejillas por geometría); pestañas Q/E/Tab; ayudas de teclas en todos los paneles; lista de puestos en La Cápsula; menús numerados; desplazamiento con teclado en paneles de lectura.
+- HUD: objetivo actual con flecha y distancia; franja de teclas principales (opción «Teclas en pantalla»).
+- Arte: 75 iconos nuevos de 16×16 con materiales; pintor con luz compartido por iconos, criaturas, personas y retratos; manos, botas y hombreras en las personas; contraluz en los retratos.
+- Pruebas: 60 unitarias (nueva: validación del arte de iconos), 5 E2E (nueva: flujo completo solo con teclado). Versión 1.2.0.
 
 ## Problemas conocidos
 - Ver «Puntos débiles que quedan» en `REVISION_FINAL.md` (balance sin pruebas con personas, arte procedural sencillo, mando sin probar en hardware, sin controles táctiles; la calidad de las voces depende de las que tenga instaladas el sistema).

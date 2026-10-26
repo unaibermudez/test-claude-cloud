@@ -9,7 +9,7 @@ import { MAIN_ENDINGS } from '../data/endings';
 import { DIR_OF } from '../input/input';
 import { getStats } from '../core/rules';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 
 function menuPanel(el: HTMLElement, items: HTMLElement[], extra?: (e: Parameters<NonNullable<Panel['onCommand']>>[0]) => boolean, numbered = false): Panel & { nav: Nav } {
   const nav = new Nav();
